@@ -1,0 +1,274 @@
+@using FilamentTracker.Models
+@using FilamentTracker.Services
+@inject FilamentService FilamentService
+@inject ThresholdService ThresholdService
+
+<section>
+    <div class="pageHeader">
+        <h1>Filament Inventory</h1>
+        <div class="sub">Track your filament spools • Click to manage • Warning for low stock</div>
+    </div>
+
+    <section class="kpis">
+        <div class="kpi">
+            <div class="label">Total Filaments</div>
+            <div class="value">@statistics.GetValueOrDefault("Total", 0)</div>
+        </div>
+        <div class="kpi">
+            <div class="label">Low Stock</div>
+            <div class="value" style="color: var(--warn);">@statistics.GetValueOrDefault("Low", 0)</div>
+        </div>
+        <div class="kpi">
+            <div class="label">Critical</div>
+            <div class="value" style="color: var(--danger);">@statistics.GetValueOrDefault("Critical", 0)</div>
+        </div>
+    </section>
+
+    @if (lowStockCount > 0)
+    {
+        <section class="strip">
+            <div class="left">
+                <span class="pill @(criticalCount > 0 ? "danger" : "warn")">
+                    @if (criticalCount > 0)
+                    {
+                        <text>Critical Stock</text>
+                    }
+                    else
+                    {
+                        <text>Low Stock</text>
+                    }
+                </span>
+                <div style="color:var(--text);font-weight:900;">
+                    @lowStockCount filament@(lowStockCount != 1 ? "s" : "") running low
+                    @if (criticalCount > 0)
+                    {
+                        <text> (@criticalCount critical)</text>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <button class="btn" @onclick="ToggleLowFilter">
+                    @(filterLowOnly ? "Show All" : "Show Low")
+                </button>
+            </div>
+        </section>
+    }
+
+    <div class="controls">
+        <input class="input" placeholder="Search (brand, color, type, finish)..." @bind="searchText" @bind:event="oninput" @bind:after="FilterFilaments" />
+        <select @bind="typeFilter" @bind:after="FilterFilaments">
+            <option value="all">All Types</option>
+            <option value="PLA">PLA</option>
+            <option value="PETG">PETG</option>
+            <option value="ASA">ASA</option>
+            <option value="ABS">ABS</option>
+            <option value="TPU">TPU</option>
+            <option value="NYLON">NYLON</option>
+        </select>
+        <select @bind="sortOption" @bind:after="FilterFilaments">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="remainingAsc">Lowest Remaining</option>
+            <option value="remainingDesc">Highest Remaining</option>
+            <option value="nameAsc">Name A→Z</option>
+            <option value="nameDesc">Name Z→A</option>
+            <option value="colorDark">Color: Darkest First</option>
+            <option value="colorLight">Color: Lightest First</option>
+        </select>
+        <div class="spacer"></div>
+        <span class="pill">@filteredFilaments.Count items</span>
+    </div>
+
+    <section class="grid">
+        @foreach (var filament in filteredFilaments)
+        {
+            <div class="tile @GetFilamentStatus(filament) @(filament.SpoolCount > 1 ? "stacked" : "")" 
+                 tabindex="0" 
+                 @onclick="() => OpenDetail(filament)">
+                
+                @if (filament.SpoolCount > 1)
+                {
+                    <div class="stackBadge">×@filament.SpoolCount</div>
+                }
+                
+                <div class="swatch" style="background: @filament.ColorCode;">
+                    <div class="badge">
+                        @{
+                            var status = GetFilamentStatus(filament);
+                        }
+                        @if (status == "critical")
+                        {
+                            <text>⛔ Critical</text>
+                        }
+                        else if (status == "low")
+                        {
+                            <text>⚠️ Low</text>
+                        }
+                        else
+                        {
+                            <text>✅ OK</text>
+                        }
+                    </div>
+                </div>
+                
+                <div class="tileBody">
+                    <div class="brand">@filament.Brand</div>
+                    <div class="nameRow">
+                        <div class="name">@filament.ColorName</div>
+                        <div class="pct">@Math.Round(filament.PercentRemaining, 0)%</div>
+                    </div>
+                    
+                    <div class="meta">
+                        <span class="tag type">@filament.Type</span>
+                        @if (!string.IsNullOrEmpty(filament.Finish))
+                        {
+                            <span class="tag finish">@filament.Finish</span>
+                        }
+                    </div>
+                    
+                    <div class="barWrap">
+                        <div class="bar @(filament.Status == "ok" ? "" : "low")" 
+                             style="width: @(Math.Round(filament.PercentRemaining, 0))%"></div>
+                    </div>
+                    
+                    <div class="tileFooter">
+                        <span>@Math.Round(filament.WeightRemaining, 0)g / @Math.Round(filament.TotalWeight, 0)g</span>
+                    </div>
+                </div>
+            </div>
+        }
+        
+        @if (filteredFilaments.Count == 0)
+        {
+            <div class="colSpan4" style="text-align: center; padding: 40px; color: var(--muted);">
+                No filaments found. Try adjusting your filters or add a new filament.
+            </div>
+        }
+    </section>
+</section>
+
+@if (selectedFilament != null)
+{
+    <FilamentDetailModal Filament="selectedFilament" OnClose="CloseDetail" OnUpdate="RefreshData" />
+}
+
+@code {
+    private List<Filament> allFilaments = new();
+    private List<Filament> filteredFilaments = new();
+    private Dictionary<string, int> statistics = new();
+    private Filament? selectedFilament;
+    
+    private string searchText = "";
+    private string typeFilter = "all";
+    private string sortOption = "newest";
+    private bool filterLowOnly = false;
+    
+    private int lowStockCount => statistics.GetValueOrDefault("Low", 0) + statistics.GetValueOrDefault("Critical", 0);
+    private int criticalCount => statistics.GetValueOrDefault("Critical", 0);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        allFilaments = await FilamentService.GetAllFilamentsAsync();
+        statistics = await FilamentService.GetStatisticsAsync();
+        FilterFilaments();
+        StateHasChanged();
+    }
+    
+    private string GetFilamentStatus(Filament filament)
+    {
+        return ThresholdService.GetStatus(filament.WeightRemaining);
+    }
+
+    private void FilterFilaments()
+    {
+        filteredFilaments = allFilaments
+            .Where(f =>
+            {
+                // Search filter
+                if (!string.IsNullOrWhiteSpace(searchText))
+                {
+                    var search = searchText.ToLower();
+                    if (!f.Brand.ToLower().Contains(search) &&
+                        !f.ColorName.ToLower().Contains(search) &&
+                        !f.Type.ToLower().Contains(search) &&
+                        !(f.Finish?.ToLower().Contains(search) ?? false))
+                        return false;
+                }
+                
+                // Type filter
+                if (typeFilter != "all" && f.Type != typeFilter)
+                    return false;
+                
+                // Low stock filter
+                if (filterLowOnly && GetFilamentStatus(f) == "ok")
+                    return false;
+                
+                return true;
+            })
+            .ToList();
+        
+        // Sort
+        filteredFilaments = sortOption switch
+        {
+            "oldest" => filteredFilaments.OrderBy(f => f.DateAdded).ToList(),
+            "remainingAsc" => filteredFilaments.OrderBy(f => f.WeightRemaining).ToList(),
+            "remainingDesc" => filteredFilaments.OrderByDescending(f => f.WeightRemaining).ToList(),
+            "nameAsc" => filteredFilaments.OrderBy(f => f.ColorName).ToList(),
+            "nameDesc" => filteredFilaments.OrderByDescending(f => f.ColorName).ToList(),
+            "colorDark" => filteredFilaments.OrderBy(f => GetColorBrightness(f.ColorCode)).ToList(),
+            "colorLight" => filteredFilaments.OrderByDescending(f => GetColorBrightness(f.ColorCode)).ToList(),
+            _ => filteredFilaments.OrderByDescending(f => f.DateAdded).ToList()
+        };
+    }
+
+    private double GetColorBrightness(string hexColor)
+    {
+        try
+        {
+            // Remove # if present
+            var hex = hexColor.TrimStart('#');
+            
+            // Handle 3-digit hex codes
+            if (hex.Length == 3)
+            {
+                hex = string.Concat(hex[0], hex[0], hex[1], hex[1], hex[2], hex[2]);
+            }
+            
+            if (hex.Length != 6) return 0;
+            
+            // Convert hex to RGB
+            var r = Convert.ToInt32(hex.Substring(0, 2), 16);
+            var g = Convert.ToInt32(hex.Substring(2, 2), 16);
+            var b = Convert.ToInt32(hex.Substring(4, 2), 16);
+            
+            // Calculate perceived brightness using standard formula
+            // Human eye perceives green more than red, and red more than blue
+            return (0.299 * r + 0.587 * g + 0.114 * b);
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    private void ToggleLowFilter()
+    {
+        filterLowOnly = !filterLowOnly;
+        FilterFilaments();
+    }
+
+    private void OpenDetail(Filament filament)
+    {
+        selectedFilament = filament;
+    }
+
+    private void CloseDetail()
+    {
+        selectedFilament = null;
+    }
+}

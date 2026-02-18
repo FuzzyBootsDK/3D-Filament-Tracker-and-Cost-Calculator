@@ -1,0 +1,537 @@
+{
+  "Version": 1,
+  "Hash": "tI8oI5f/dsA3UpzFdEoXg/6IiKpJhWaQPM/nZA0jlfY=",
+  "Source": "FilamentTracker",
+  "BasePath": "_content/FilamentTracker",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "FilamentTracker/wwwroot",
+      "Source": "FilamentTracker",
+      "ContentRoot": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/",
+      "BasePath": "_content/FilamentTracker",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/css/site.css",
+      "SourceId": "FilamentTracker",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/",
+      "BasePath": "_content/FilamentTracker",
+      "RelativePath": "css/site#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "bx7mav27wd",
+      "Integrity": "YSjQCMyPAcnS2ojKFTewSI1k8wnSzq4GyLQ0xsIAL6k=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/css/site.css"
+    },
+    {
+      "Identity": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/calculator-app.js",
+      "SourceId": "FilamentTracker",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/",
+      "BasePath": "_content/FilamentTracker",
+      "RelativePath": "js/calculator-app#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "0ao1r3cijf",
+      "Integrity": "2KcGZWqmS/jXHyeI+BksVOJuwn45F4kD2zyl0VxjbCQ=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/js/calculator-app.js"
+    },
+    {
+      "Identity": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/calculator-gcode.js",
+      "SourceId": "FilamentTracker",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/",
+      "BasePath": "_content/FilamentTracker",
+      "RelativePath": "js/calculator-gcode#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "b2cfbs00in",
+      "Integrity": "LTqzyLQxMB3kbebsw7YzKZxOf2z/kt8EmlrFUhF6X/Q=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/js/calculator-gcode.js"
+    },
+    {
+      "Identity": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/calculator-pdf.js",
+      "SourceId": "FilamentTracker",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/",
+      "BasePath": "_content/FilamentTracker",
+      "RelativePath": "js/calculator-pdf#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "rsh29p24q0",
+      "Integrity": "ZWyckgr2oKLZIkM82zyIKrkcmCTyirlaLARz4PCMk7M=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/js/calculator-pdf.js"
+    },
+    {
+      "Identity": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/site.js",
+      "SourceId": "FilamentTracker",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/",
+      "BasePath": "_content/FilamentTracker",
+      "RelativePath": "js/site#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "3j11elxioj",
+      "Integrity": "/4+sA7VgTFoKukhdVxzVgW0G8WgP6Y5cmoW3GInNviM=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/js/site.js"
+    }
+  ],
+  "Endpoints": [
+    {
+      "Route": "css/site.bx7mav27wd.css",
+      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/css/site.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "24444"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"YSjQCMyPAcnS2ojKFTewSI1k8wnSzq4GyLQ0xsIAL6k=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "bx7mav27wd"
+        },
+        {
+          "Name": "label",
+          "Value": "css/site.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-YSjQCMyPAcnS2ojKFTewSI1k8wnSzq4GyLQ0xsIAL6k="
+        }
+      ]
+    },
+    {
+      "Route": "css/site.css",
+      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/css/site.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "24444"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"YSjQCMyPAcnS2ojKFTewSI1k8wnSzq4GyLQ0xsIAL6k=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-YSjQCMyPAcnS2ojKFTewSI1k8wnSzq4GyLQ0xsIAL6k="
+        }
+      ]
+    },
+    {
+      "Route": "js/calculator-app.0ao1r3cijf.js",
+      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/calculator-app.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "14930"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"2KcGZWqmS/jXHyeI+BksVOJuwn45F4kD2zyl0VxjbCQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "0ao1r3cijf"
+        },
+        {
+          "Name": "label",
+          "Value": "js/calculator-app.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-2KcGZWqmS/jXHyeI+BksVOJuwn45F4kD2zyl0VxjbCQ="
+        }
+      ]
+    },
+    {
+      "Route": "js/calculator-app.js",
+      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/calculator-app.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "14930"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"2KcGZWqmS/jXHyeI+BksVOJuwn45F4kD2zyl0VxjbCQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-2KcGZWqmS/jXHyeI+BksVOJuwn45F4kD2zyl0VxjbCQ="
+        }
+      ]
+    },
+    {
+      "Route": "js/calculator-gcode.b2cfbs00in.js",
+      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/calculator-gcode.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2144"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"LTqzyLQxMB3kbebsw7YzKZxOf2z/kt8EmlrFUhF6X/Q=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "b2cfbs00in"
+        },
+        {
+          "Name": "label",
+          "Value": "js/calculator-gcode.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-LTqzyLQxMB3kbebsw7YzKZxOf2z/kt8EmlrFUhF6X/Q="
+        }
+      ]
+    },
+    {
+      "Route": "js/calculator-gcode.js",
+      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/calculator-gcode.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2144"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"LTqzyLQxMB3kbebsw7YzKZxOf2z/kt8EmlrFUhF6X/Q=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-LTqzyLQxMB3kbebsw7YzKZxOf2z/kt8EmlrFUhF6X/Q="
+        }
+      ]
+    },
+    {
+      "Route": "js/calculator-pdf.js",
+      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/calculator-pdf.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3591"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ZWyckgr2oKLZIkM82zyIKrkcmCTyirlaLARz4PCMk7M=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-ZWyckgr2oKLZIkM82zyIKrkcmCTyirlaLARz4PCMk7M="
+        }
+      ]
+    },
+    {
+      "Route": "js/calculator-pdf.rsh29p24q0.js",
+      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/calculator-pdf.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3591"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ZWyckgr2oKLZIkM82zyIKrkcmCTyirlaLARz4PCMk7M=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "rsh29p24q0"
+        },
+        {
+          "Name": "label",
+          "Value": "js/calculator-pdf.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-ZWyckgr2oKLZIkM82zyIKrkcmCTyirlaLARz4PCMk7M="
+        }
+      ]
+    },
+    {
+      "Route": "js/site.3j11elxioj.js",
+      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/site.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "280"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"/4+sA7VgTFoKukhdVxzVgW0G8WgP6Y5cmoW3GInNviM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Feb 2026 02:20:36 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "3j11elxioj"
+        },
+        {
+          "Name": "label",
+          "Value": "js/site.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-/4+sA7VgTFoKukhdVxzVgW0G8WgP6Y5cmoW3GInNviM="
+        }
+      ]
+    },
+    {
+      "Route": "js/site.js",
+      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/site.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "280"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"/4+sA7VgTFoKukhdVxzVgW0G8WgP6Y5cmoW3GInNviM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Feb 2026 02:20:36 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-/4+sA7VgTFoKukhdVxzVgW0G8WgP6Y5cmoW3GInNviM="
+        }
+      ]
+    }
+  ]
+}

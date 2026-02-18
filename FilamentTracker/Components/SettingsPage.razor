@@ -1,0 +1,436 @@
+@using FilamentTracker.Services
+@using Microsoft.JSInterop
+@inject ThemeService ThemeService
+@inject FilamentService FilamentService
+@inject CsvService CsvService
+@inject ThresholdService ThresholdService
+@inject IJSRuntime JS
+
+<section>
+    <div class="pageHeader">
+        <h1>Settings</h1>
+        <div class="sub">Customize your experience and manage your data</div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="strip" style="margin-top: 14px; @(messageIsError ? "border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12);" : "border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.12);")">
+            <div>@message</div>
+        </div>
+    }
+
+    <div class="formCard">
+        <h2 style="margin-top: 0;">🎨 Appearance</h2>
+        <div style="color: var(--muted); margin-bottom: 16px;">
+            Switch between dark and light modes based on your preference.
+        </div>
+        <div class="row">
+            <button class="btn @(ThemeService.IsDarkMode ? "primary" : "")" @onclick="() => SetTheme(true)">
+                🌙 Dark Mode
+            </button>
+            <button class="btn @(!ThemeService.IsDarkMode ? "primary" : "")" @onclick="() => SetTheme(false)">
+                ☀️ Light Mode
+            </button>
+        </div>
+    </div>
+
+    <div class="formCard">
+        <h2 style="margin-top: 0;">⚖️ Stock Thresholds</h2>
+        <div style="color: var(--muted); margin-bottom: 16px;">
+            Configure when filaments should be marked as "Low" or "Critical" based on weight remaining.
+        </div>
+        <div style="margin-bottom: 16px;">
+            <label class="label">Low Threshold (grams)</label>
+            <input type="number" class="input" @bind="lowThreshold" @bind:event="oninput" min="1" max="10000" step="50" />
+            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                Filaments below this weight will be marked as "Low" (yellow warning)
+            </div>
+        </div>
+        <div style="margin-bottom: 16px;">
+            <label class="label">Critical Threshold (grams)</label>
+            <input type="number" class="input" @bind="criticalThreshold" @bind:event="oninput" min="1" max="10000" step="50" />
+            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                Filaments below this weight will be marked as "Critical" (red alert)
+            </div>
+        </div>
+        <button class="btn primary" @onclick="SaveThresholds" disabled="@isProcessing">
+            @if (isProcessing)
+            {
+                <text>Saving...</text>
+            }
+            else
+            {
+                <text>💾 Save Thresholds</text>
+            }
+        </button>
+    </div>
+
+    <div class="formCard">
+        <h2 style="margin-top: 0;">📤 Export Data</h2>
+        <div style="color: var(--muted); margin-bottom: 16px;">
+            Download all your filament data as a CSV file for backup or analysis.
+        </div>
+        <button class="btn primary" @onclick="ExportData" disabled="@isProcessing">
+            @if (isProcessing)
+            {
+                <text>Exporting...</text>
+            }
+            else
+            {
+                <text>📥 Export to CSV</text>
+            }
+        </button>
+    </div>
+
+    <div class="formCard">
+        <h2 style="margin-top: 0;">📥 Import Data</h2>
+        <div style="color: var(--muted); margin-bottom: 16px;">
+            Upload a CSV file to import filament data. The CSV should have the following columns:
+            Brand, Type, Finish, Color Name, Color Code, Total Weight (g), Weight Remaining (g), 
+            Quantity, Spool Type, Spool Material, Reusable Spool, Diameter (mm), Location, Notes, Date Added
+        </div>
+        <div style="margin-bottom: 16px;">
+            <button class="btn" @onclick="DownloadTemplate" disabled="@isProcessing">
+                📄 Download CSV Template
+            </button>
+        </div>
+        <div class="row">
+            <InputFile OnChange="HandleFileSelected" class="input" style="flex: initial;" accept=".csv" disabled="@isProcessing" />
+            <button class="btn primary" @onclick="ImportData" disabled="@(selectedFile == null || isProcessing)">
+                @if (isProcessing)
+                {
+                    <text>Importing...</text>
+                }
+                else
+                {
+                    <text>📤 Import CSV</text>
+                }
+            </button>
+        </div>
+        @if (selectedFile != null)
+        {
+            <div style="margin-top: 8px; color: var(--muted); font-size: 12px;">
+                Selected: @selectedFile.Name (@(selectedFile.Size / 1024.0)KB)
+            </div>
+        }
+    </div>
+
+    <div class="formCard">
+        <h2 style="margin-top: 0;">🏷️ Manage Brands</h2>
+        <div style="color: var(--muted); margin-bottom: 16px;">
+            Manage the brands that appear in the Brand dropdown when adding filaments.
+        </div>
+        
+        <div class="spoolList" style="max-height: 300px; overflow-y: auto; margin-bottom: 16px;">
+            @if (brands.Any())
+            {
+                @foreach (var brand in brands)
+                {
+                    <div class="spoolRow">
+                        <div class="left">
+                            <div class="title">@brand.Name</div>
+                            <div class="subline">Added @brand.DateAdded.ToString("MMM dd, yyyy")</div>
+                        </div>
+                        <div class="right">
+                            <button class="tinyBtn danger" @onclick="() => DeleteBrand(brand.Id)">Delete</button>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p style="color: var(--muted); text-align: center; padding: 20px;">
+                    No brands yet. Add your first brand using the "Add Filament" page!
+                </p>
+            }
+        </div>
+        
+        <div style="font-size: 12px; color: var(--muted);">
+            <strong>Tip:</strong> Use the "Other (Add Custom)" option in the Brand dropdown on the Add Filament page 
+            to add new brands. They will automatically appear here and in the dropdown for future use.
+        </div>
+    </div>
+
+    <div class="formCard" style="border-color: rgba(239,68,68,.40);">
+        <h2 style="margin-top: 0; color: var(--danger);">⚠️ Danger Zone</h2>
+        <div style="color: var(--muted); margin-bottom: 16px;">
+            <strong>Warning:</strong> This action will permanently delete ALL filament data from the database. 
+            This cannot be undone! Make sure to export your data first if you need it.
+        </div>
+        
+        @if (!showPurgeConfirm)
+        {
+            <button class="btn danger" @onclick="() => showPurgeConfirm = true" disabled="@isProcessing">
+                🗑️ Purge Database
+            </button>
+        }
+        else
+        {
+            <div class="panel" style="background: rgba(239,68,68,.10); border-color: rgba(239,68,68,.35); padding: 16px;">
+                <div style="font-weight: 900; margin-bottom: 12px;">
+                    Are you absolutely sure?
+                </div>
+                <div style="color: var(--muted); margin-bottom: 16px; font-size: 14px;">
+                    This will delete ALL @filamentCount filament(s) and @spoolCount spool(s) from your database.
+                    This action cannot be undone!
+                </div>
+                <div class="row">
+                    <button class="btn danger" @onclick="PurgeDatabase" disabled="@isProcessing">
+                        @if (isProcessing)
+                        {
+                            <text>Deleting...</text>
+                        }
+                        else
+                        {
+                            <text>Yes, Delete Everything</text>
+                        }
+                    </button>
+                    <button class="btn" @onclick="() => showPurgeConfirm = false">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="formCard">
+        <h2 style="margin-top: 0;">ℹ️ About</h2>
+        <div style="color: var(--muted); line-height: 1.6;">
+            <p><strong>Filament Tracker v2.0</strong></p>
+            <p>
+                A comprehensive filament inventory management system for 3D printing enthusiasts.
+                Track your filaments, manage spools, monitor usage, and never run out unexpectedly.
+            </p>
+            <p style="margin-top: 16px;">
+                <strong>Features:</strong>
+            </p>
+            <ul>
+                <li>Multi-spool filament tracking</li>
+                <li>Low stock warnings</li>
+                <li>Reusable spool management</li>
+                <li>CSV import/export</li>
+                <li>Dark/Light themes</li>
+                <li>Advanced filtering and search</li>
+            </ul>
+            <p style="margin-top: 16px;">
+                <strong>Database:</strong> SQLite<br />
+                <strong>Framework:</strong> Blazor Server (.NET 8)<br />
+                <strong>Storage:</strong> Local file-based database
+            </p>
+        </div>
+    </div>
+</section>
+
+@code {
+    private IBrowserFile? selectedFile;
+    private bool isProcessing = false;
+    private bool showPurgeConfirm = false;
+    private string message = "";
+    private bool messageIsError = false;
+    private int filamentCount = 0;
+    private int spoolCount = 0;
+    private List<FilamentTracker.Models.Brand> brands = new();
+    private int lowThreshold = 500;
+    private int criticalThreshold = 250;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateCounts();
+        await LoadBrands();
+        await LoadThresholds();
+    }
+    
+    private async Task LoadThresholds()
+    {
+        var settings = await FilamentService.GetSettingsAsync();
+        lowThreshold = (int)settings.LowThreshold;
+        criticalThreshold = (int)settings.CriticalThreshold;
+    }
+    
+    private async Task SaveThresholds()
+    {
+        try
+        {
+            // Validate thresholds
+            if (criticalThreshold >= lowThreshold)
+            {
+                ShowMessage("Critical threshold must be less than Low threshold", true);
+                return;
+            }
+            
+            if (criticalThreshold < 1 || lowThreshold < 1)
+            {
+                ShowMessage("Thresholds must be greater than 0", true);
+                return;
+            }
+            
+            isProcessing = true;
+            StateHasChanged();
+            
+            var settings = await FilamentService.GetSettingsAsync();
+            settings.LowThreshold = lowThreshold;
+            settings.CriticalThreshold = criticalThreshold;
+            
+            await FilamentService.UpdateSettingsAsync(settings);
+            ThresholdService.SetThresholds(lowThreshold, criticalThreshold);
+            
+            ShowMessage("Thresholds saved successfully! Changes apply immediately.", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error saving thresholds: {ex.Message}", true);
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+    
+    private async Task LoadBrands()
+    {
+        brands = await FilamentService.GetBrandsAsync();
+    }
+    
+    private async Task DeleteBrand(int brandId)
+    {
+        try
+        {
+            await FilamentService.DeleteBrandAsync(brandId);
+            await LoadBrands();
+            ShowMessage("Brand deleted successfully", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error deleting brand: {ex.Message}", true);
+        }
+    }
+
+    private async Task UpdateCounts()
+    {
+        var filaments = await FilamentService.GetAllFilamentsAsync();
+        filamentCount = filaments.Count;
+        spoolCount = filaments.Sum(f => f.SpoolCount);
+    }
+
+    private void SetTheme(bool isDark)
+    {
+        ThemeService.SetDarkMode(isDark);
+        ShowMessage($"Theme changed to {(isDark ? "Dark" : "Light")} mode", false);
+    }
+
+    private async Task DownloadTemplate()
+    {
+        try
+        {
+            var template = "Brand,Type,Finish,Color Name,Color Code,Total Weight (g),Weight Remaining (g),Quantity,Spool Type,Spool Material,Reusable Spool,Diameter (mm),Location,Notes,Date Added\n" +
+                          "Bambu Lab,PLA,Matte,Example Color,#FF0000,1000,1000,1,spool,plastic,Yes,1.75,Shelf A,Example notes,02/18/2026";
+            
+            var bytes = System.Text.Encoding.UTF8.GetBytes(template);
+            var base64 = Convert.ToBase64String(bytes);
+            
+            await JS.InvokeVoidAsync("downloadFile", "filament-template.csv", base64);
+            
+            ShowMessage("Template downloaded successfully!", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error downloading template: {ex.Message}", true);
+        }
+    }
+
+    private async Task ExportData()
+    {
+        try
+        {
+            isProcessing = true;
+            StateHasChanged();
+            
+            var csv = await CsvService.ExportToCsvAsync();
+            var fileName = $"filament-inventory-{DateTime.Now:yyyy-MM-dd}.csv";
+            
+            var bytes = System.Text.Encoding.UTF8.GetBytes(csv);
+            var base64 = Convert.ToBase64String(bytes);
+            
+            await JS.InvokeVoidAsync("downloadFile", fileName, base64);
+            
+            ShowMessage($"Successfully exported {filamentCount} filament(s) to {fileName}", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error exporting data: {ex.Message}", true);
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    private async Task ImportData()
+    {
+        if (selectedFile == null) return;
+        
+        try
+        {
+            isProcessing = true;
+            StateHasChanged();
+            
+            using var stream = selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // 10MB max
+            using var reader = new StreamReader(stream);
+            var csv = await reader.ReadToEndAsync();
+            
+            await CsvService.ImportFromCsvAsync(csv);
+            await UpdateCounts();
+            
+            ShowMessage($"Successfully imported filaments from {selectedFile.Name}", false);
+            selectedFile = null;
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error importing data: {ex.Message}", true);
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+
+    private async Task PurgeDatabase()
+    {
+        try
+        {
+            isProcessing = true;
+            StateHasChanged();
+            
+            await FilamentService.PurgeDatabaseAsync();
+            await UpdateCounts();
+            
+            showPurgeConfirm = false;
+            ShowMessage("Database purged successfully. All filament data has been deleted.", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error purging database: {ex.Message}", true);
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+
+    private void ShowMessage(string msg, bool isError)
+    {
+        message = msg;
+        messageIsError = isError;
+        
+        _ = Task.Delay(5000).ContinueWith(_ =>
+        {
+            message = "";
+            InvokeAsync(StateHasChanged);
+        });
+    }
+}

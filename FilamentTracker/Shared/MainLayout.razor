@@ -1,0 +1,44 @@
+@inherits LayoutComponentBase
+@using Microsoft.JSInterop
+@inject ThemeService ThemeService
+@inject IJSRuntime JS
+@implements IDisposable
+
+<div class="@(ThemeService.IsDarkMode ? "dark" : "light")">
+    @Body
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        ThemeService.OnThemeChanged += OnThemeChangedHandler;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await UpdateBodyClass();
+    }
+
+    private async void OnThemeChangedHandler()
+    {
+        await UpdateBodyClass();
+        StateHasChanged();
+    }
+    
+    private async Task UpdateBodyClass()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("eval", $"document.body.className = '{(ThemeService.IsDarkMode ? "dark" : "light")}';");
+        }
+        catch
+        {
+            // JS might not be available on first render
+        }
+    }
+
+    public void Dispose()
+    {
+        ThemeService.OnThemeChanged -= OnThemeChangedHandler;
+    }
+}

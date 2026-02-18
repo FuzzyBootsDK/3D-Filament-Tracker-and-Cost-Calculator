@@ -1,0 +1,65 @@
+@page "/"
+@using FilamentTracker.Models
+@using FilamentTracker.Services
+@inject FilamentService FilamentService
+@inject NavigationManager Navigation
+
+<PageTitle>Filament Inventory</PageTitle>
+
+<div class="wrap">
+    <!-- Top Nav -->
+    <div class="topnav">
+        <button class="navbtn @(currentPage == "inventory" ? "active" : "")" @onclick='() => SetPage("inventory")'>
+            <span class="navicon">📦</span> Inventory
+        </button>
+        <button class="navbtn @(currentPage == "add" ? "active" : "")" @onclick='() => SetPage("add")'>
+            <span class="navicon">➕</span> Add Filament
+        </button>
+        <button class="navbtn @(currentPage == "spools" ? "active" : "")" @onclick='() => SetPage("spools")'>
+            <span class="navicon">🔁</span> Spools
+        </button>
+        <button class="navbtn @(currentPage == "calculator" ? "active" : "")" @onclick='() => SetPage("calculator")'>
+            <span class="navicon">🧮</span> Calculator
+        </button>
+        <button class="navbtn @(currentPage == "help" ? "active" : "")" @onclick='() => SetPage("help")'>
+            <span class="navicon">❓</span> Help
+        </button>
+        <button class="navbtn @(currentPage == "settings" ? "active" : "")" @onclick='() => SetPage("settings")'>
+            <span class="navicon">⚙️</span> Settings
+        </button>
+    </div>
+
+    @if (currentPage == "inventory")
+    {
+        <InventoryPage />
+    }
+    else if (currentPage == "add")
+    {
+        <AddFilamentPage />
+    }
+    else if (currentPage == "spools")
+    {
+        <SpoolsPage />
+    }
+    else if (currentPage == "calculator")
+    {
+        <PrintCalculatorPage />
+    }
+    else if (currentPage == "help")
+    {
+        <HelpPage />
+    }
+    else if (currentPage == "settings")
+    {
+        <SettingsPage />
+    }
+</div>
+
+@code {
+    private string currentPage = "inventory";
+
+    private void SetPage(string page)
+    {
+        currentPage = page;
+    }
+}

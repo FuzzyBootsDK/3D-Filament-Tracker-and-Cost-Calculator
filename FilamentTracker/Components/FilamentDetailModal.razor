@@ -1,0 +1,449 @@
+@using FilamentTracker.Models
+@using FilamentTracker.Services
+@inject FilamentService FilamentService
+@inject ThresholdService ThresholdService
+
+@if (Filament != null)
+{
+    <div class="backdrop show" @onclick="HandleBackdropClick">
+        <div class="modal" @onclick:stopPropagation="true">
+            <div class="modalHeader">
+                <div class="modalTitle">
+                    <div class="modalSwatch" style="background: @Filament.ColorCode;"></div>
+                    <div>
+                        <h2>@Filament.Brand @Filament.ColorName</h2>
+                        <div class="sub">@Filament.Type@(!string.IsNullOrEmpty(Filament.Finish) ? $" • {Filament.Finish}" : "")</div>
+                    </div>
+                </div>
+                <button class="iconBtn" @onclick="Close" aria-label="Close">✕</button>
+            </div>
+
+            <div class="modalBody">
+                <div class="twoCol">
+                    <!-- Left: Spool list -->
+                    <div class="panel">
+                        <div class="panelTitle">Spools (@Filament.SpoolCount)</div>
+                        <div class="help">
+                            Total: @Math.Round(Filament.WeightRemaining, 0)g / @Math.Round(Filament.TotalWeight, 0)g 
+                            (@Math.Round(Filament.PercentRemaining, 0)%)
+                        </div>
+
+                        <div class="spoolList">
+                            @foreach (var spool in Filament.Spools.OrderByDescending(s => s.WeightRemaining))
+                            {
+                                <div class="spoolRow @(selectedSpool?.Id == spool.Id ? "selected" : "")" 
+                                     @onclick="() => SelectSpool(spool)">
+                                    <div class="left">
+                                        <div class="miniSwatch" style="background: @Filament.ColorCode;"></div>
+                                        <div style="min-width: 0;">
+                                            <div class="title">
+                                                @(spool.IsRefill ? "Refill" : "On Spool") 
+                                                - @Math.Round(spool.WeightRemaining, 0)g
+                                            </div>
+                                            <div class="subline">
+                                                @Math.Round(spool.PercentRemaining, 0)% • 
+                                                @(spool.SpoolMaterial ?? "none")
+                                                @(spool.IsReusable ? " • Reusable" : "")
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <span class="pill @GetSpoolStatus(spool)">
+                                            @GetSpoolStatusText(spool)
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        
+                        <button class="btn" style="margin-top: 12px; width: 100%;" @onclick="ToggleAddSpool">
+                            @(showAddSpool ? "❌ Cancel" : "➕ Add New Spool")
+                        </button>
+                        
+                        @if (showAddSpool)
+                        {
+                            <div style="margin-top: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: rgba(59, 130, 246, .08);">
+                                <div style="margin-bottom: 10px;">
+                                    <label>Spool Type</label>
+                                    <select class="input" @bind="newSpoolIsRefill">
+                                        <option value="false">On Spool</option>
+                                        <option value="true">Refill</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="margin-bottom: 10px;">
+                                    <label>Total Weight (g)</label>
+                                    <input class="input" type="number" @bind="newSpoolTotalWeight" min="1" step="1" />
+                                </div>
+                                
+                                <div style="margin-bottom: 10px;">
+                                    <label>Weight Remaining (g)</label>
+                                    <input class="input" type="number" @bind="newSpoolWeightRemaining" min="0" step="1" />
+                                </div>
+                                
+                                <div style="margin-bottom: 10px;">
+                                    <label>Spool Material</label>
+                                    <select class="input" @bind="newSpoolMaterial">
+                                        <option value="">None</option>
+                                        <option value="plastic">Plastic</option>
+                                        <option value="cardboard">Cardboard</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                                    <input type="checkbox" @bind="newSpoolIsReusable" id="newSpoolReusableCheck" />
+                                    <label for="newSpoolReusableCheck" style="margin: 0; cursor: pointer;">Reusable Spool</label>
+                                </div>
+                                
+                                <button class="btn primary" style="width: 100%;" @onclick="AddNewSpool">
+                                    Add Spool
+                                </button>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Right: Edit panel -->
+                    <div class="panel">
+                        <div class="panelTitle">Manage Spool</div>
+                        
+                        @if (selectedSpool == null)
+                        {
+                            <div class="help">Select a spool on the left to manage it.</div>
+                        }
+                        else
+                        {
+                            <div class="help">Editing: @(selectedSpool.IsRefill ? "Refill" : "Spool") (@Math.Round(selectedSpool.WeightRemaining, 0)g)</div>
+
+                            <!-- Record usage -->
+                            <div style="margin-top: 16px;">
+                                <label>Record Usage</label>
+                                <div class="row">
+                                    <div class="field">
+                                        <input class="input" type="number" @bind="gramsToSubtract" min="0" step="1" placeholder="Grams used" />
+                                    </div>
+                                    <button class="btn primary" @onclick="RecordUsage">Record</button>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 8px;">
+                                <button class="btn" @onclick="() => RecordUsageQuick(25)">-25g</button>
+                                <button class="btn" @onclick="() => RecordUsageQuick(50)">-50g</button>
+                                <button class="btn" @onclick="() => RecordUsageQuick(100)">-100g</button>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(usageMessage))
+                            {
+                                <div class="help" style="color: var(--ok); margin-top: 8px;">
+                                    @usageMessage
+                                </div>
+                            }
+
+                            <hr style="border: none; border-top: 1px solid rgba(255,255,255,.10); margin: 16px 0;" />
+
+                            <!-- Edit spool details -->
+                            <div>
+                                <label>Spool Type</label>
+                                <select class="input" @bind="editIsRefill">
+                                    <option value="false">On Spool</option>
+                                    <option value="true">Refill</option>
+                                </select>
+                            </div>
+
+                            <div style="margin-top: 10px;">
+                                <label>Remaining (g)</label>
+                                <input class="input" type="number" @bind="editRemaining" min="0" step="1" />
+                            </div>
+
+                            <div style="margin-top: 10px;">
+                                <label>Total Capacity (g)</label>
+                                <input class="input" type="number" @bind="editCapacity" min="1" step="1" />
+                            </div>
+
+                            <div style="margin-top: 10px;">
+                                <label>Spool Material</label>
+                                <select class="input" @bind="editMaterial">
+                                    <option value="">None</option>
+                                    <option value="plastic">Plastic</option>
+                                    <option value="cardboard">Cardboard</option>
+                                    <option value="reusable">Reusable</option>
+                                </select>
+                            </div>
+
+                            <div class="checkRow" style="margin-top: 12px;">
+                                <input type="checkbox" @bind="editReusable" id="editReusableCheck" />
+                                <label for="editReusableCheck" style="margin: 0; cursor: pointer;">Reusable Spool</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Filament-level info -->
+                <div class="panel" style="margin-top: 14px;">
+                    <div class="panelTitle">Filament Details</div>
+                    <div class="row">
+                        <div class="field">
+                            <label>Storage Location</label>
+                            <input class="input" @bind="editLocation" />
+                        </div>
+                        <div class="field">
+                            <label>Diameter (mm)</label>
+                            <input class="input" type="number" @bind="editDiameter" step="0.01" />
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label>Notes</label>
+                        <textarea class="input" @bind="editNotes"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modalFooter">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn primary" @onclick="SaveChanges">Save All Changes</button>
+                    <button class="btn" @onclick="Close">Close</button>
+                </div>
+                @if (selectedSpool != null)
+                {
+                    <button class="btn danger" @onclick="DeleteSpool">Delete This Spool</button>
+                }
+                else
+                {
+                    <button class="btn danger" @onclick="DeleteFilament">Delete Entire Filament</button>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Filament? Filament { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnUpdate { get; set; }
+
+    private Spool? selectedSpool;
+    private decimal gramsToSubtract = 50;
+    private string usageMessage = "";
+
+    // Edit fields
+    private bool editIsRefill;
+    private decimal editRemaining;
+    private decimal editCapacity;
+    private string? editMaterial;
+    private bool editReusable;
+    private string? editLocation;
+    private string? editNotes;
+    private decimal editDiameter;
+    
+    // Add new spool fields
+    private bool showAddSpool = false;
+    private bool newSpoolIsRefill = false;
+    private decimal newSpoolTotalWeight = 1000;
+    private decimal newSpoolWeightRemaining = 1000;
+    private string? newSpoolMaterial = "";
+    private bool newSpoolIsReusable = false;
+
+    protected override void OnParametersSet()
+    {
+        if (Filament != null)
+        {
+            selectedSpool = Filament.Spools.FirstOrDefault();
+            LoadSpoolForEditing();
+            LoadFilamentForEditing();
+        }
+    }
+
+    private void SelectSpool(Spool spool)
+    {
+        selectedSpool = spool;
+        LoadSpoolForEditing();
+        usageMessage = "";
+    }
+
+    private void LoadSpoolForEditing()
+    {
+        if (selectedSpool != null)
+        {
+            editIsRefill = selectedSpool.IsRefill;
+            editRemaining = selectedSpool.WeightRemaining;
+            editCapacity = selectedSpool.TotalWeight;
+            editMaterial = selectedSpool.SpoolMaterial;
+            editReusable = selectedSpool.IsReusable;
+        }
+    }
+
+    private void LoadFilamentForEditing()
+    {
+        if (Filament != null)
+        {
+            editLocation = Filament.Location;
+            editNotes = Filament.Notes;
+            editDiameter = Filament.Diameter;
+        }
+    }
+
+    private async Task RecordUsage()
+    {
+        if (selectedSpool == null || gramsToSubtract <= 0) return;
+
+        selectedSpool.WeightRemaining = Math.Max(0, selectedSpool.WeightRemaining - gramsToSubtract);
+        editRemaining = selectedSpool.WeightRemaining;
+        
+        await FilamentService.UpdateSpoolAsync(selectedSpool);
+        await OnUpdate.InvokeAsync();
+        
+        usageMessage = $"Recorded {gramsToSubtract}g usage. {Math.Round(selectedSpool.WeightRemaining, 0)}g remaining.";
+        
+        _ = Task.Delay(3000).ContinueWith(_ =>
+        {
+            usageMessage = "";
+            InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private async Task RecordUsageQuick(decimal grams)
+    {
+        gramsToSubtract = grams;
+        await RecordUsage();
+    }
+
+    private async Task SaveChanges()
+    {
+        if (Filament == null) return;
+
+        // Update spool if selected
+        if (selectedSpool != null)
+        {
+            selectedSpool.IsRefill = editIsRefill;
+            selectedSpool.WeightRemaining = editRemaining;
+            selectedSpool.TotalWeight = editCapacity;
+            selectedSpool.SpoolMaterial = editMaterial;
+            selectedSpool.IsReusable = editReusable;
+            
+            await FilamentService.UpdateSpoolAsync(selectedSpool);
+        }
+
+        // Update filament
+        Filament.Location = editLocation;
+        Filament.Notes = editNotes;
+        Filament.Diameter = editDiameter;
+        
+        await FilamentService.UpdateFilamentAsync(Filament);
+        await OnUpdate.InvokeAsync();
+        
+        usageMessage = "Changes saved successfully!";
+        _ = Task.Delay(2000).ContinueWith(_ =>
+        {
+            usageMessage = "";
+            InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private async Task DeleteSpool()
+    {
+        if (selectedSpool == null) return;
+
+        await FilamentService.DeleteSpoolAsync(selectedSpool.Id);
+        
+        // Reload filament
+        if (Filament != null)
+        {
+            var updated = await FilamentService.GetFilamentByIdAsync(Filament.Id);
+            if (updated != null && updated.Spools.Any())
+            {
+                Filament = updated;
+                selectedSpool = Filament.Spools.FirstOrDefault();
+                LoadSpoolForEditing();
+            }
+            else
+            {
+                // No spools left, close modal
+                await Close();
+            }
+        }
+        
+        await OnUpdate.InvokeAsync();
+    }
+
+    private async Task DeleteFilament()
+    {
+        if (Filament == null) return;
+
+        await FilamentService.DeleteFilamentAsync(Filament.Id);
+        await OnUpdate.InvokeAsync();
+        await Close();
+    }
+
+    private async Task Close()
+    {
+        await OnClose.InvokeAsync();
+    }
+
+    private void HandleBackdropClick()
+    {
+        _ = Close();
+    }
+
+    private string GetSpoolStatus(Spool spool)
+    {
+        var status = ThresholdService.GetStatus(spool.WeightRemaining);
+        return status == "critical" ? "danger" : (status == "low" ? "warn" : "ok");
+    }
+
+    private string GetSpoolStatusText(Spool spool)
+    {
+        var status = ThresholdService.GetStatus(spool.WeightRemaining);
+        return status == "critical" ? "Critical" : (status == "low" ? "Low" : "OK");
+    }
+    
+    private void ToggleAddSpool()
+    {
+        showAddSpool = !showAddSpool;
+        
+        // Reset form when opening
+        if (showAddSpool)
+        {
+            newSpoolIsRefill = false;
+            newSpoolTotalWeight = 1000;
+            newSpoolWeightRemaining = 1000;
+            newSpoolMaterial = "";
+            newSpoolIsReusable = false;
+        }
+    }
+    
+    private async Task AddNewSpool()
+    {
+        if (Filament == null) return;
+        
+        var newSpool = new Spool
+        {
+            FilamentId = Filament.Id,
+            IsRefill = newSpoolIsRefill,
+            TotalWeight = newSpoolTotalWeight,
+            WeightRemaining = newSpoolWeightRemaining,
+            SpoolMaterial = string.IsNullOrWhiteSpace(newSpoolMaterial) ? null : newSpoolMaterial,
+            IsReusable = newSpoolIsReusable,
+            DateAdded = DateTime.Now
+        };
+        
+        await FilamentService.AddSpoolToFilamentAsync(Filament.Id, newSpool);
+        
+        // Reload filament
+        var updated = await FilamentService.GetFilamentByIdAsync(Filament.Id);
+        if (updated != null)
+        {
+            Filament = updated;
+            selectedSpool = newSpool;
+            LoadSpoolForEditing();
+        }
+        
+        showAddSpool = false;
+        await OnUpdate.InvokeAsync();
+        
+        usageMessage = "New spool added successfully!";
+        _ = Task.Delay(3000).ContinueWith(_ =>
+        {
+            usageMessage = "";
+            InvokeAsync(StateHasChanged);
+        });
+    }
+}
