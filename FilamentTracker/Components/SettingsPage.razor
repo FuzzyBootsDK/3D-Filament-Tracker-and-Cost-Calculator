@@ -35,6 +35,52 @@
     </div>
 
     <div class="formCard">
+        <h2 style="margin-top: 0;">💱 Currency Settings</h2>
+        <div style="color: var(--muted); margin-bottom: 16px;">
+            Select your preferred currency for all calculations and displays.
+        </div>
+        <div style="margin-bottom: 16px;">
+            <label class="label">Currency</label>
+            <select class="input" @bind="selectedCurrency">
+                <option value="DKK">DKK - Danish Krone</option>
+                <option value="USD">USD - US Dollar</option>
+                <option value="EUR">EUR - Euro</option>
+                <option value="GBP">GBP - British Pound</option>
+                <option value="SEK">SEK - Swedish Krona</option>
+                <option value="NOK">NOK - Norwegian Krone</option>
+                <option value="CHF">CHF - Swiss Franc</option>
+                <option value="JPY">JPY - Japanese Yen</option>
+                <option value="CNY">CNY - Chinese Yuan</option>
+                <option value="AUD">AUD - Australian Dollar</option>
+                <option value="CAD">CAD - Canadian Dollar</option>
+                <option value="NZD">NZD - New Zealand Dollar</option>
+                <option value="SGD">SGD - Singapore Dollar</option>
+                <option value="HKD">HKD - Hong Kong Dollar</option>
+                <option value="INR">INR - Indian Rupee</option>
+                <option value="KRW">KRW - South Korean Won</option>
+                <option value="MXN">MXN - Mexican Peso</option>
+                <option value="BRL">BRL - Brazilian Real</option>
+                <option value="ZAR">ZAR - South African Rand</option>
+                <option value="PLN">PLN - Polish Złoty</option>
+                <option value="CZK">CZK - Czech Koruna</option>
+                <option value="HUF">HUF - Hungarian Forint</option>
+                <option value="RON">RON - Romanian Leu</option>
+                <option value="TRY">TRY - Turkish Lira</option>
+            </select>
+        </div>
+        <button class="btn primary" @onclick="SaveCurrency" disabled="@isProcessing">
+            @if (isProcessing)
+            {
+                <text>Saving...</text>
+            }
+            else
+            {
+                <text>💾 Save Currency</text>
+            }
+        </button>
+    </div>
+
+    <div class="formCard">
         <h2 style="margin-top: 0;">⚖️ Stock Thresholds</h2>
         <div style="color: var(--muted); margin-bottom: 16px;">
             Configure when filaments should be marked as "Low" or "Critical" based on weight remaining.
@@ -232,6 +278,7 @@
     private List<FilamentTracker.Models.Brand> brands = new();
     private int lowThreshold = 500;
     private int criticalThreshold = 250;
+    private string selectedCurrency = "DKK";
 
     protected override async Task OnInitializedAsync()
     {
@@ -245,6 +292,31 @@
         var settings = await FilamentService.GetSettingsAsync();
         lowThreshold = (int)settings.LowThreshold;
         criticalThreshold = (int)settings.CriticalThreshold;
+        selectedCurrency = settings.Currency;
+    }
+    
+    private async Task SaveCurrency()
+    {
+        try
+        {
+            isProcessing = true;
+            StateHasChanged();
+            
+            var settings = await FilamentService.GetSettingsAsync();
+            settings.Currency = selectedCurrency;
+            
+            await FilamentService.UpdateSettingsAsync(settings);
+            
+            ShowMessage("Currency saved successfully!", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error saving currency: {ex.Message}", true);
+        }
+        finally
+        {
+            isProcessing = false;
+        }
     }
     
     private async Task SaveThresholds()

@@ -272,7 +272,8 @@ public class FilamentService
             settings = new AppSettings
             {
                 LowThreshold = 500,
-                CriticalThreshold = 250
+                CriticalThreshold = 250,
+                Currency = "DKK"
             };
             context.AppSettings.Add(settings);
             await context.SaveChangesAsync();
@@ -287,4 +288,115 @@ public class FilamentService
         context.AppSettings.Update(settings);
         await context.SaveChangesAsync();
     }
+    
+    // Smart usage recording - automatically uses oldest/partially used spools first
+    public async Task<UsageResult> RecordFilamentUsageAsync(int filamentId, decimal gramsUsed)
+    {
+        using var context = await _contextFactory.CreateDbContextAsync();
+        
+        var filament = await context.Filaments
+            .Include(f => f.Spools.Where(s => s.WeightRemaining > 0 && !s.DateEmptied.HasValue))
+            .FirstOrDefaultAsync(f => f.Id == filamentId);
+            
+        if (filament == null)
+            throw new Exception("Filament not found");
+        
+        // Get spools ordered by: partially used first, then oldest first
+        var availableSpools = filament.Spools
+            .Where(s => s.WeightRemaining > 0 && !s.DateEmptied.HasValue)
+            .OrderBy(s => s.PercentRemaining == 100 ? 1 : 0) // Partially used first
+            .ThenBy(s => s.DateAdded) // Then oldest first
+            .ToList();
+            
+        if (!availableSpools.Any())
+            throw new Exception("No spools available with remaining filament");
+        
+        var result = new UsageResult
+        {
+            TotalGramsUsed = gramsUsed,
+            SpoolsAffected = new List<SpoolUsage>()
+        };
+        
+        decimal remainingToSubtract = gramsUsed;
+        
+        foreach (var spool in availableSpools)
+        {
+            if (remainingToSubtract <= 0)
+                break;
+                
+            decimal gramsFromThisSpool = Math.Min(remainingToSubtract, spool.WeightRemaining);
+            spool.WeightRemaining -= gramsFromThisSpool;
+            
+            // Mark as emptied if fully used
+            if (spool.WeightRemaining <= 0)
+            {
+                spool.WeightRemaining = 0;
+                spool.DateEmptied = DateTime.Now;
+            }
+            
+            context.Spools.Update(spool);
+            
+            result.SpoolsAffected.Add(new SpoolUsage
+            {
+                SpoolId = spool.Id,
+                GramsUsed = gramsFromThisSpool,
+                WasEmptied = spool.WeightRemaining <= 0,
+                RemainingAfter = spool.WeightRemaining
+            });
+            
+            remainingToSubtract -= gramsFromThisSpool;
+        }
+        
+        if (remainingToSubtract > 0)
+        {
+            result.InsufficientFilament = true;
+            result.ShortfallGrams = remainingToSubtract;
+        }
+        
+        await context.SaveChangesAsync();
+        return result;
+    }
+}
+
+// Result class for smart usage recording
+public class UsageResult
+{
+    public decimal TotalGramsUsed { get; set; }
+    public List<SpoolUsage> SpoolsAffected { get; set; } = new();
+    public bool InsufficientFilament { get; set; }
+    public decimal ShortfallGrams { get; set; }
+    
+    public string GetSummaryMessage()
+    {
+        if (InsufficientFilament)
+        {
+            return $"⚠️ Only {TotalGramsUsed - ShortfallGrams:F0}g available. Short by {ShortfallGrams:F0}g!";
+        }
+        
+        if (SpoolsAffected.Count == 1)
+        {
+            var spool = SpoolsAffected[0];
+            if (spool.WasEmptied)
+            {
+                return $"✅ Used {spool.GramsUsed:F0}g from spool. Spool is now empty!";
+            }
+            return $"✅ Used {spool.GramsUsed:F0}g from spool. {spool.RemainingAfter:F0}g remaining.";
+        }
+        
+        var emptiedCount = SpoolsAffected.Count(s => s.WasEmptied);
+        if (emptiedCount > 0)
+        {
+            return $"✅ Used {TotalGramsUsed:F0}g across {SpoolsAffected.Count} spool(s). {emptiedCount} spool(s) emptied.";
+        }
+        
+        return $"✅ Used {TotalGramsUsed:F0}g across {SpoolsAffected.Count} spool(s).";
+    }
+}
+
+public class SpoolUsage
+{
+    public int SpoolId { get; set; }
+    public decimal GramsUsed { get; set; }
+    public bool WasEmptied { get; set; }
+    public decimal RemainingAfter { get; set; }
 }

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "tI8oI5f/dsA3UpzFdEoXg/6IiKpJhWaQPM/nZA0jlfY=",
+  "Hash": "q1vIcqRUAYRsKmjsaFTjB8StzuAmIkGEmEZ+SZuELcc=",
   "Source": "FilamentTracker",
   "BasePath": "_content/FilamentTracker",
   "Mode": "Default",
@@ -31,8 +31,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "bx7mav27wd",
-      "Integrity": "YSjQCMyPAcnS2ojKFTewSI1k8wnSzq4GyLQ0xsIAL6k=",
+      "Fingerprint": "rohq8zrlou",
+      "Integrity": "C0BGLPUUbYQu/X+wj1R8mVebkq3xKAq6/fvgfESPJ4Q=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/css/site.css"
@@ -52,8 +52,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "0ao1r3cijf",
-      "Integrity": "2KcGZWqmS/jXHyeI+BksVOJuwn45F4kD2zyl0VxjbCQ=",
+      "Fingerprint": "7vckx4u3i6",
+      "Integrity": "I29/MiGMqIc/y28U8vcldl7e3ouDAwVg+t11Zrga+8A=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/js/calculator-app.js"
@@ -73,8 +73,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "b2cfbs00in",
-      "Integrity": "LTqzyLQxMB3kbebsw7YzKZxOf2z/kt8EmlrFUhF6X/Q=",
+      "Fingerprint": "1guc5545ux",
+      "Integrity": "3wGMKmH4dkujUACcIZhN1go0A39NCb5+idzrcGPh+bs=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/js/calculator-gcode.js"
@@ -94,8 +94,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "rsh29p24q0",
-      "Integrity": "ZWyckgr2oKLZIkM82zyIKrkcmCTyirlaLARz4PCMk7M=",
+      "Fingerprint": "f8mk2n16cw",
+      "Integrity": "ccTI/U0Z/SC4r31nP/cnSmXo0J6uF9n/vcgfPtrQotQ=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/js/calculator-pdf.js"
@@ -124,51 +124,6 @@
   ],
   "Endpoints": [
     {
-      "Route": "css/site.bx7mav27wd.css",
-      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/css/site.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "24444"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"YSjQCMyPAcnS2ojKFTewSI1k8wnSzq4GyLQ0xsIAL6k=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "bx7mav27wd"
-        },
-        {
-          "Name": "label",
-          "Value": "css/site.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-YSjQCMyPAcnS2ojKFTewSI1k8wnSzq4GyLQ0xsIAL6k="
-        }
-      ]
-    },
-    {
       "Route": "css/site.css",
       "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/css/site.css",
       "Selectors": [],
@@ -179,7 +134,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "24444"
+          "Value": "24690"
         },
         {
           "Name": "Content-Type",
@@ -187,11 +142,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"YSjQCMyPAcnS2ojKFTewSI1k8wnSzq4GyLQ0xsIAL6k=\""
+          "Value": "\"C0BGLPUUbYQu/X+wj1R8mVebkq3xKAq6/fvgfESPJ4Q=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
+          "Value": "Wed, 18 Feb 2026 13:10:48 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -201,13 +156,13 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-YSjQCMyPAcnS2ojKFTewSI1k8wnSzq4GyLQ0xsIAL6k="
+          "Value": "sha256-C0BGLPUUbYQu/X+wj1R8mVebkq3xKAq6/fvgfESPJ4Q="
         }
       ]
     },
     {
-      "Route": "js/calculator-app.0ao1r3cijf.js",
-      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/calculator-app.js",
+      "Route": "css/site.rohq8zrlou.css",
+      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/css/site.css",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -216,19 +171,19 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "14930"
+          "Value": "24690"
         },
         {
           "Name": "Content-Type",
-          "Value": "text/javascript"
+          "Value": "text/css"
         },
         {
           "Name": "ETag",
-          "Value": "\"2KcGZWqmS/jXHyeI+BksVOJuwn45F4kD2zyl0VxjbCQ=\""
+          "Value": "\"C0BGLPUUbYQu/X+wj1R8mVebkq3xKAq6/fvgfESPJ4Q=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
+          "Value": "Wed, 18 Feb 2026 13:10:48 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -238,7 +193,52 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "0ao1r3cijf"
+          "Value": "rohq8zrlou"
+        },
+        {
+          "Name": "label",
+          "Value": "css/site.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-C0BGLPUUbYQu/X+wj1R8mVebkq3xKAq6/fvgfESPJ4Q="
+        }
+      ]
+    },
+    {
+      "Route": "js/calculator-app.7vckx4u3i6.js",
+      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/calculator-app.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "17446"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"I29/MiGMqIc/y28U8vcldl7e3ouDAwVg+t11Zrga+8A=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Feb 2026 13:25:04 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "7vckx4u3i6"
         },
         {
           "Name": "label",
@@ -246,7 +246,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-2KcGZWqmS/jXHyeI+BksVOJuwn45F4kD2zyl0VxjbCQ="
+          "Value": "sha256-I29/MiGMqIc/y28U8vcldl7e3ouDAwVg+t11Zrga+8A="
         }
       ]
     },
@@ -261,7 +261,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "14930"
+          "Value": "17446"
         },
         {
           "Name": "Content-Type",
@@ -269,11 +269,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"2KcGZWqmS/jXHyeI+BksVOJuwn45F4kD2zyl0VxjbCQ=\""
+          "Value": "\"I29/MiGMqIc/y28U8vcldl7e3ouDAwVg+t11Zrga+8A=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
+          "Value": "Wed, 18 Feb 2026 13:25:04 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -283,12 +283,12 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-2KcGZWqmS/jXHyeI+BksVOJuwn45F4kD2zyl0VxjbCQ="
+          "Value": "sha256-I29/MiGMqIc/y28U8vcldl7e3ouDAwVg+t11Zrga+8A="
         }
       ]
     },
     {
-      "Route": "js/calculator-gcode.b2cfbs00in.js",
+      "Route": "js/calculator-gcode.1guc5545ux.js",
       "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/calculator-gcode.js",
       "Selectors": [],
       "ResponseHeaders": [
@@ -298,7 +298,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2144"
+          "Value": "2248"
         },
         {
           "Name": "Content-Type",
@@ -306,11 +306,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"LTqzyLQxMB3kbebsw7YzKZxOf2z/kt8EmlrFUhF6X/Q=\""
+          "Value": "\"3wGMKmH4dkujUACcIZhN1go0A39NCb5+idzrcGPh+bs=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
+          "Value": "Wed, 18 Feb 2026 13:19:22 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -320,7 +320,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "b2cfbs00in"
+          "Value": "1guc5545ux"
         },
         {
           "Name": "label",
@@ -328,7 +328,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-LTqzyLQxMB3kbebsw7YzKZxOf2z/kt8EmlrFUhF6X/Q="
+          "Value": "sha256-3wGMKmH4dkujUACcIZhN1go0A39NCb5+idzrcGPh+bs="
         }
       ]
     },
@@ -343,7 +343,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2144"
+          "Value": "2248"
         },
         {
           "Name": "Content-Type",
@@ -351,11 +351,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"LTqzyLQxMB3kbebsw7YzKZxOf2z/kt8EmlrFUhF6X/Q=\""
+          "Value": "\"3wGMKmH4dkujUACcIZhN1go0A39NCb5+idzrcGPh+bs=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
+          "Value": "Wed, 18 Feb 2026 13:19:22 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -365,7 +365,52 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-LTqzyLQxMB3kbebsw7YzKZxOf2z/kt8EmlrFUhF6X/Q="
+          "Value": "sha256-3wGMKmH4dkujUACcIZhN1go0A39NCb5+idzrcGPh+bs="
+        }
+      ]
+    },
+    {
+      "Route": "js/calculator-pdf.f8mk2n16cw.js",
+      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/calculator-pdf.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3553"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ccTI/U0Z/SC4r31nP/cnSmXo0J6uF9n/vcgfPtrQotQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Feb 2026 13:02:39 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "f8mk2n16cw"
+        },
+        {
+          "Name": "label",
+          "Value": "js/calculator-pdf.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-ccTI/U0Z/SC4r31nP/cnSmXo0J6uF9n/vcgfPtrQotQ="
         }
       ]
     },
@@ -380,7 +425,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "3591"
+          "Value": "3553"
         },
         {
           "Name": "Content-Type",
@@ -388,11 +433,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"ZWyckgr2oKLZIkM82zyIKrkcmCTyirlaLARz4PCMk7M=\""
+          "Value": "\"ccTI/U0Z/SC4r31nP/cnSmXo0J6uF9n/vcgfPtrQotQ=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
+          "Value": "Wed, 18 Feb 2026 13:02:39 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -402,52 +447,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-ZWyckgr2oKLZIkM82zyIKrkcmCTyirlaLARz4PCMk7M="
-        }
-      ]
-    },
-    {
-      "Route": "js/calculator-pdf.rsh29p24q0.js",
-      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/js/calculator-pdf.js",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "3591"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/javascript"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"ZWyckgr2oKLZIkM82zyIKrkcmCTyirlaLARz4PCMk7M=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Wed, 18 Feb 2026 11:45:03 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "rsh29p24q0"
-        },
-        {
-          "Name": "label",
-          "Value": "js/calculator-pdf.js"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-ZWyckgr2oKLZIkM82zyIKrkcmCTyirlaLARz4PCMk7M="
+          "Value": "sha256-ccTI/U0Z/SC4r31nP/cnSmXo0J6uF9n/vcgfPtrQotQ="
         }
       ]
     },

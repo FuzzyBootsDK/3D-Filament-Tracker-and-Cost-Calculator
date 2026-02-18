@@ -24,6 +24,8 @@ public class Spool
     
     public bool IsReusable { get; set; }
     
+    public decimal? PurchasePricePerKg { get; set; }
+    
     public DateTime DateAdded { get; set; } = DateTime.Now;
     
     public DateTime? DateEmptied { get; set; }

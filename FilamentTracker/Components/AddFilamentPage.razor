@@ -154,6 +154,12 @@
                     </InputSelect>
                 </div>
 
+                <div>
+                    <label>Purchase Price Per Kg (optional)</label>
+                    <InputNumber class="input" @bind-Value="newSpool.PurchasePricePerKg" min="0" step="0.01" placeholder="e.g., 149.00" />
+                    <small style="color: var(--muted); font-size: 11px; margin-top: 4px; display: block;">Price for these spool(s) - used for weighted average</small>
+                </div>
+
                 <div class="colSpan2">
                     <label>Storage Location</label>
                     <InputText class="input" @bind-Value="newFilament.Location" placeholder="e.g., Shelf A, Box 1" />

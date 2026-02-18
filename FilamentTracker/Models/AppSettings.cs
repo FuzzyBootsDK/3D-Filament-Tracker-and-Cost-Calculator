@@ -11,4 +11,8 @@ public class AppSettings
     
     [Required]
     public decimal CriticalThreshold { get; set; } = 250;
+    
+    [Required]
+    [MaxLength(10)]
+    public string Currency { get; set; } = "DKK";
 }

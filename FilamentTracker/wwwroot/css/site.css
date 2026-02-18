@@ -1114,7 +1114,7 @@ label {
 
 .calculator-materials-header {
   display: grid;
-  grid-template-columns: 1.2fr 0.9fr 0.9fr 0.4fr;
+  grid-template-columns: 1.8fr 0.8fr 0.8fr 0.4fr;
   gap: 0.5rem;
   font-size: 0.75rem;
   color: var(--calc-text-muted);
@@ -1124,13 +1124,14 @@ label {
 
 .material-row {
   display: grid;
-  grid-template-columns: 1.2fr 0.9fr 0.9fr 0.4fr;
+  grid-template-columns: 1.8fr 0.8fr 0.8fr 0.4fr;
   gap: 0.5rem;
   margin-bottom: 0.35rem;
   align-items: center;
 }
 
-.material-row input {
+.material-row input,
+.material-row select {
   width: 100%;
   border-radius: 0.5rem;
   border: 1px solid var(--calc-border-subtle);
@@ -1138,6 +1139,20 @@ label {
   color: var(--calc-text-main);
   padding: 0.4rem 0.55rem;
   font-size: 0.85rem;
+}
+
+.calculator-material-select {
+  font-size: 0.85rem;
+}
+
+.calculator-material-input {
+  font-size: 0.85rem;
+}
+
+.calculator-material-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--calc-bg-pill);
 }
 
 /* Calculator G-code */

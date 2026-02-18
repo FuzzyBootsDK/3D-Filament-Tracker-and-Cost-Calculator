@@ -1,26 +1,49 @@
 /* ============================================================
-   3D PRINT COST CALCULATOR — CLEAN REWRITE + PRINTER PROFILES
+   3D PRINT COST CALCULATOR — WITH INVENTORY INTEGRATION
    ============================================================ */
 
 /* ------------------------------------------------------------
    Helpers
 ------------------------------------------------------------ */
 
-function formatDKK(value) {
-  return (value || 0).toLocaleString("da-DK", {
+let currentCurrency = "DKK";
+let inventoryFilaments = [];
+
+function formatCurrency(value) {
+  return (value || 0).toLocaleString(undefined, {
     style: "currency",
-    currency: "DKK",
+    currency: currentCurrency,
     minimumFractionDigits: 2,
   });
 }
 
 function getNumber(id) {
-  return parseFloat(document.getElementById(id).value) || 0;
+  const el = document.getElementById(id);
+  return el ? parseFloat(el.value) || 0 : 0;
 }
 
 function getInt(id) {
-  return parseInt(document.getElementById(id).value, 10) || 0;
+  const el = document.getElementById(id);
+  return el ? parseInt(el.value, 10) || 0 : 0;
 }
+
+// Called from Blazor to initialize
+window.initCalculatorWithInventory = function(data) {
+  console.log("Initializing calculator with inventory data:", data);
+  currentCurrency = data.currency || "DKK";
+  inventoryFilaments = data.inventory || [];
+  console.log("Inventory filaments loaded:", inventoryFilaments.length);
+  
+  setTimeout(() => {
+    const materialsBody = document.getElementById("materialsBody");
+    console.log("Materials body found:", materialsBody !== null);
+    if (materialsBody) {
+      initCalculator();
+      console.log("Calculator initialized");
+    }
+  }, 100);
+};
+
 
 /* ------------------------------------------------------------
    Printer Profiles (Bambu Lab + structure for custom)
@@ -113,42 +136,84 @@ let activePrinterProfile = null;
    Materials
 ------------------------------------------------------------ */
 
-function createMaterialRow(name = "PLA", pricePerKg = 149, weightGrams = 0) {
+function createMaterialRow(selectedId = null, pricePerKg = 149, weightGrams = 0) {
   const row = document.createElement("div");
   row.className = "material-row";
 
-  const nameInput = document.createElement("input");
-  nameInput.type = "text";
-  nameInput.value = name;
-  nameInput.dataset.role = "name";
+  // Create dropdown with inventory
+  const select = document.createElement("select");
+  select.className = "calculator-material-select";
+  
+  // Add manual entry option
+  const manualOption = document.createElement("option");
+  manualOption.value = "";
+  manualOption.textContent = "Manual Entry";
+  select.appendChild(manualOption);
+  
+  // Add inventory filaments
+  inventoryFilaments.forEach(filament => {
+    const option = document.createElement("option");
+    option.value = filament.id;
+    option.textContent = filament.name;
+    if (selectedId === filament.id) {
+      option.selected = true;
+    }
+    select.appendChild(option);
+  });
 
   const priceInput = document.createElement("input");
   priceInput.type = "number";
-  priceInput.step = "1";
+  priceInput.step = "0.01";
+  priceInput.className = "calculator-material-input";
   priceInput.value = pricePerKg;
+  priceInput.placeholder = "Price/kg";
   priceInput.dataset.role = "price";
 
   const weightInput = document.createElement("input");
   weightInput.type = "number";
   weightInput.step = "1";
+  weightInput.className = "calculator-material-input";
   weightInput.value = weightGrams;
+  weightInput.placeholder = "Weight (g)";
   weightInput.dataset.role = "weight";
 
   const removeBtn = document.createElement("button");
   removeBtn.type = "button";
   removeBtn.textContent = "✕";
-  removeBtn.className = "btn-secondary";
+  removeBtn.className = "calculator-btn-secondary";
   removeBtn.style.padding = "0.2rem 0.4rem";
   removeBtn.addEventListener("click", () => {
     row.remove();
     updateUI();
   });
 
-  [nameInput, priceInput, weightInput].forEach((el) =>
+  // Handle filament selection
+  select.addEventListener("change", () => {
+    const selectedFilamentId = select.value;
+    if (selectedFilamentId) {
+      // Find selected filament and populate price
+      const filament = inventoryFilaments.find(f => f.id == selectedFilamentId);
+      if (filament) {
+        priceInput.value = filament.pricePerKg;
+        priceInput.disabled = true;
+        priceInput.style.opacity = "0.7";
+        priceInput.style.cursor = "not-allowed";
+      }
+    } else {
+      // Manual entry mode
+      priceInput.disabled = false;
+      priceInput.style.opacity = "1";
+      priceInput.style.cursor = "text";
+    }
+    updateUI();
+  });
+
+  // Add input listeners
+  [priceInput, weightInput].forEach(el => 
     el.addEventListener("input", updateUI)
   );
 
-  row.appendChild(nameInput);
+  row.appendChild(select);
   row.appendChild(priceInput);
   row.appendChild(weightInput);
   row.appendChild(removeBtn);
@@ -157,11 +222,27 @@ function createMaterialRow(name = "PLA", pricePerKg = 149, weightGrams = 0) {
 }
 
 function getMaterials() {
-  return [...document.querySelectorAll(".material-row")].map((row) => ({
-    name: row.querySelector("input[data-role='name']").value || "Materiale",
-    pricePerKg: parseFloat(row.querySelector("input[data-role='price']").value) || 0,
-    weightGrams: parseFloat(row.querySelector("input[data-role='weight']").value) || 0,
-  }));
+  return [...document.querySelectorAll(".material-row")].map((row) => {
+    const select = row.querySelector("select");
+    const priceInput = row.querySelector("input[data-role='price']");
+    const weightInput = row.querySelector("input[data-role='weight']");
+    
+    const selectedFilamentId = select ? select.value : null;
+    let name = "Manual Entry";
+    
+    if (selectedFilamentId) {
+      const filament = inventoryFilaments.find(f => f.id == selectedFilamentId);
+      if (filament) {
+        name = filament.name;
+      }
+    }
+    
+    return {
+      name: name,
+      pricePerKg: parseFloat(priceInput?.value) || 0,
+      weightGrams: parseFloat(weightInput?.value) || 0,
+    };
+  });
 }
 
 /* ------------------------------------------------------------
@@ -264,11 +345,11 @@ function calculateCosts() {
 ------------------------------------------------------------ */
 
 const pricingPresets = [
-  { id: "competitive", name: "Konkurrencedygtig", margin: 25 },
+  { id: "competitive", name: "Competitive", margin: 25 },
   { id: "standard", name: "Standard", margin: 40 },
   { id: "premium", name: "Premium", margin: 60 },
-  { id: "luxury", name: "Luksus", margin: 80 },
-  { id: "custom", name: "Tilpasset", margin: null },
+  { id: "luxury", name: "Luxury", margin: 80 },
+  { id: "custom", name: "Custom", margin: null },
 ];
 
 let selectedPresetId = "standard";
@@ -287,13 +368,13 @@ function buildPricingRows() {
         <div class="pricing-name">${preset.name}</div>
         <div class="pricing-meta">${
           preset.id === "custom"
-            ? "Sæt din egen vinstmargin manuelt"
-            : `${preset.margin}% vinstmargin`
+            ? "Set your own profit margin manually"
+            : `${preset.margin}% profit margin`
         }</div>
       </div>
       <div class="pricing-value" id="price-${preset.id}">
-        <span>0,00 kr.</span>
-        <span>inkl. moms</span>
+        <span>0.00</span>
+        <span>incl. VAT</span>
       </div>
     `;
 
@@ -324,15 +405,15 @@ function updateBatchTable(costs) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${qty}</td>
-      <td>${formatDKK(unitCost)}</td>
-      <td>${formatDKK(price)}</td>
+      <td>${formatCurrency(unitCost)}</td>
+      <td>${formatCurrency(price)}</td>
     `;
     tbody.appendChild(tr);
 
     rows.push({
       qty,
-      unitCost: formatDKK(unitCost),
-      price: formatDKK(price),
+      unitCost: formatCurrency(unitCost),
+      price: formatCurrency(price),
     });
   });
 
@@ -348,7 +429,7 @@ function collectExportState() {
   const vatRate = getNumber("vatRate") / 100;
   const customMargin = getNumber("customMargin");
 
-  let selectedPrice = "0,00 kr.";
+  let selectedPrice = "0.00";
   let selectedMargin = "0%";
 
   pricingPresets.forEach((preset) => {
@@ -359,7 +440,7 @@ function collectExportState() {
     const priceIncVat = priceExVat * (1 + vatRate);
 
     if (preset.id === selectedPresetId) {
-      selectedPrice = formatDKK(priceIncVat);
+      selectedPrice = formatCurrency(priceIncVat);
       selectedMargin = `${margin}%`;
     }
   });
@@ -369,16 +450,16 @@ function collectExportState() {
   return {
     partName: document.getElementById("partName").value || "",
     batchSize: costs.batchSize,
-    unitCost: formatDKK(costs.baseCostPerUnit),
+    unitCost: formatCurrency(costs.baseCostPerUnit),
     selectedPrice,
     selectedMargin,
     costBreakdown: {
-      material: formatDKK(costs.materialPerUnit),
-      labor: formatDKK(costs.laborPerUnit),
-      machine: formatDKK(costs.machinePerUnit),
-      hardware: formatDKK(costs.hardwarePerUnit),
-      packaging: formatDKK(costs.packagingPerUnit),
-      total: formatDKK(costs.baseCostPerUnit),
+      material: formatCurrency(costs.materialPerUnit),
+      labor: formatCurrency(costs.laborPerUnit),
+      machine: formatCurrency(costs.machinePerUnit),
+      hardware: formatCurrency(costs.hardwarePerUnit),
+      packaging: formatCurrency(costs.packagingPerUnit),
+      total: formatCurrency(costs.baseCostPerUnit),
     },
     batchTable: batchRows,
   };
@@ -394,26 +475,26 @@ function updateUI() {
   const customMargin = getNumber("customMargin");
 
   document.getElementById("batchLabel").textContent =
-    costs.batchSize + " stk";
+    costs.batchSize + " pcs";
   document.getElementById("unitCostLabel").textContent =
-    formatDKK(costs.baseCostPerUnit);
+    formatCurrency(costs.baseCostPerUnit);
 
-  document.getElementById("costMaterial").textContent = formatDKK(
+  document.getElementById("costMaterial").textContent = formatCurrency(
     costs.materialPerUnit
   );
-  document.getElementById("costLabor").textContent = formatDKK(
+  document.getElementById("costLabor").textContent = formatCurrency(
     costs.laborPerUnit
   );
-  document.getElementById("costMachine").textContent = formatDKK(
+  document.getElementById("costMachine").textContent = formatCurrency(
     costs.machinePerUnit
   );
-  document.getElementById("costHardware").textContent = formatDKK(
+  document.getElementById("costHardware").textContent = formatCurrency(
     costs.hardwarePerUnit
   );
-  document.getElementById("costPackaging").textContent = formatDKK(
+  document.getElementById("costPackaging").textContent = formatCurrency(
     costs.packagingPerUnit
   );
-  document.getElementById("costTotal").textContent = formatDKK(
+  document.getElementById("costTotal").textContent = formatCurrency(
     costs.baseCostPerUnit
   );
 
@@ -435,13 +516,13 @@ function updateUI() {
     const priceIncVat = priceExVat * (1 + vatRate);
 
     const valueEl = document.getElementById(`price-${preset.id}`);
-    valueEl.innerHTML = `${formatDKK(
+    valueEl.innerHTML = `${formatCurrency(
       priceExVat
-    )}<span>${formatDKK(priceIncVat)} inkl. moms</span>`;
+    )}<span>${formatCurrency(priceIncVat)} incl. VAT</span>`;
 
     if (preset.id === selectedPresetId) {
       document.getElementById("selectedPrice").textContent =
-        formatDKK(priceIncVat);
+        formatCurrency(priceIncVat);
       document.getElementById("selectedMargin").textContent =
         margin + "%";
     }
@@ -453,29 +534,29 @@ function updateUI() {
 ------------------------------------------------------------ */
 
 function initCalculator() {
-  // Default material
-  document
-    .getElementById("materialsBody")
-    .appendChild(createMaterialRow());
+  // Add default material row
+  const materialsBody = document.getElementById("materialsBody");
+  if (materialsBody) {
+    materialsBody.appendChild(createMaterialRow());
+  }
 
-  // Add material button
-  document
-    .getElementById("addMaterialBtn")
-    .addEventListener("click", () => {
-      document
-        .getElementById("materialsBody")
-        .appendChild(createMaterialRow());
+  // Wire up add material button
+  const addBtn = document.getElementById("addMaterialBtn");
+  if (addBtn) {
+    addBtn.addEventListener("click", () => {
+      document.getElementById("materialsBody").appendChild(createMaterialRow());
       updateUI();
     });
+  }
 
   // Pricing rows
   buildPricingRows();
 
   // Printer profile selector
-  document
-    .getElementById("printerProfile")
-    .addEventListener("change", () => {
-      const name = document.getElementById("printerProfile").value;
+  const profileSelect = document.getElementById("printerProfile");
+  if (profileSelect) {
+    profileSelect.addEventListener("change", () => {
+      const name = profileSelect.value;
       const profile = printerProfiles[name];
       activePrinterProfile = profile || null;
       if (!profile) {
@@ -483,28 +564,25 @@ function initCalculator() {
         return;
       }
 
-      document.getElementById("printerPrice").value =
-        profile.printerPrice;
-      document.getElementById("printerLifetimeYears").value =
-        profile.lifetimeYears;
-      document.getElementById("uptimePercent").value =
-        profile.uptimePercent;
-      document.getElementById("maintenanceYearly").value =
-        profile.maintenanceYearly;
+      document.getElementById("printerPrice").value = profile.printerPrice;
+      document.getElementById("printerLifetimeYears").value = profile.lifetimeYears;
+      document.getElementById("uptimePercent").value = profile.uptimePercent;
+      document.getElementById("maintenanceYearly").value = profile.maintenanceYearly;
       document.getElementById("powerWatt").value = profile.powerWatt;
-      document.getElementById("electricityPrice").value =
-        profile.electricityPrice;
-      document.getElementById("materialFactor").value =
-        profile.materialFactor;
-      document.getElementById("bufferFactor").value =
-        profile.bufferFactor;
+      document.getElementById("electricityPrice").value = profile.electricityPrice;
+      document.getElementById("materialFactor").value = profile.materialFactor;
+      document.getElementById("bufferFactor").value = profile.bufferFactor;
 
       updateUI();
     });
+  }
 
-  // Inputs
+  // Input listeners for all inputs and selects
   document.querySelectorAll("input, select").forEach((el) => {
-    el.addEventListener("input", updateUI);
+    if (!el.dataset.hasListener) {
+      el.addEventListener("input", updateUI);
+      el.dataset.hasListener = "true";
+    }
   });
 
   // PDF export
@@ -513,11 +591,3 @@ function initCalculator() {
   updateUI();
 }
 
-// Only initialize if we're on calculator page
-if (document.getElementById("materialsBody")) {
-  if (document.readyState === 'loading') {
-    document.addEventListener("DOMContentLoaded", initCalculator);
-  } else {
-    initCalculator();
-  }
-}

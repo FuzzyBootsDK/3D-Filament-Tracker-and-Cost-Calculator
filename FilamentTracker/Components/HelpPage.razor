@@ -248,11 +248,23 @@
                 
                 <li><strong>Materials (Multi-Material)</strong>
                     <ul>
-                        <li>Add one or more filaments used in the print</li>
-                        <li>Enter material name (e.g., "PLA Black")</li>
-                        <li>Price per kilogram (DKK/kg)</li>
-                        <li>Weight used in grams</li>
-                        <li>Click "+ Tilføj materiale" to add more materials</li>
+                        <li><strong>Inventory Integration:</strong> Select filaments directly from your inventory
+                            <ul>
+                                <li>Dropdown shows all your filaments: "Brand Type - Color Name"</li>
+                                <li>Prices auto-fill from your purchase history (weighted average)</li>
+                                <li>If no price is set, defaults to 149 per kg (editable)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Manual Entry:</strong> Or enter custom material details
+                            <ul>
+                                <li>Select "Manual Entry" from dropdown</li>
+                                <li>Enter any price per kilogram</li>
+                                <li>Perfect for materials not in your inventory</li>
+                            </ul>
+                        </li>
+                        <li>Enter weight used in grams for each material</li>
+                        <li>Click "+ Add Material" to add more materials for multi-color prints</li>
+                        <li>Each material can be from inventory or manual entry</li>
                     </ul>
                 </li>
                 
@@ -342,22 +354,39 @@
     <div class="formCard">
         <h2 style="margin-top: 0;">📊 Recording Usage</h2>
         <div style="color: var(--muted); line-height: 1.8;">
-            <p>To track how much filament you've used:</p>
+            <p>Track how much filament you've used with the improved usage recording system:</p>
+            
+            <h3>How to Record Usage:</h3>
             <ol>
                 <li>Click on a filament card in the Inventory</li>
-                <li>Select which specific spool you want to update (if you have multiple)</li>
-                <li>Enter the amount used in grams, or use quick buttons (-25g, -50g, -100g)</li>
-                <li>Click "Record" to subtract that amount</li>
+                <li>In the detail modal, select a specific spool from the list on the left</li>
+                <li>In the <strong>"Manage Spool"</strong> section on the right:
+                    <ul>
+                        <li>Enter the amount used in grams</li>
+                        <li>OR use quick buttons (-25g, -50g, -100g)</li>
+                        <li>Click "Record" to subtract that amount</li>
+                    </ul>
+                </li>
+                <li>Updates happen <strong>immediately</strong> - no need to close the modal!</li>
             </ol>
             
-            <p>
-                The app will automatically update:
-            </p>
+            <h3>Smart Spool Ordering:</h3>
+            <p>The spool list automatically organizes your spools in priority order:</p>
+            <ul>
+                <li><strong>▶ "Next to use"</strong> indicator shows which spool should be used first</li>
+                <li><strong>Partially-used spools</strong> appear at the top (finish opened spools before starting new ones)</li>
+                <li><strong>Full spools</strong> ordered by age (oldest first - FIFO inventory management)</li>
+                <li><strong>Empty spools</strong> shown at the bottom</li>
+            </ul>
+            
+            <h3>Automatic Updates:</h3>
+            <p>The app automatically updates:</p>
             <ul>
                 <li>The remaining weight for that spool</li>
                 <li>The total remaining weight for the filament</li>
                 <li>Status indicators (OK → Low → Critical)</li>
                 <li>Progress bars and percentages</li>
+                <li>The "Next to use" indicator if the spool is emptied</li>
             </ul>
             
             <h3>Adding More Spools (Restocking):</h3>
@@ -365,13 +394,91 @@
             <ol>
                 <li>Click on the existing filament in your Inventory</li>
                 <li>Click the "➕ Add New Spool" button in the detail view</li>
-                <li>Enter the new spool's details</li>
+                <li>Enter the new spool's details (weight, type, material)</li>
+                <li><strong>Optional:</strong> Enter the purchase price per kg (used for cost calculator)</li>
                 <li>The new spool will be added to the same grouped filament</li>
             </ol>
             
             <p>
                 <em>Pro tip: After each print, weigh your spool and calculate the difference, 
-                or use your slicer's estimated filament usage.</em>
+                or use your slicer's estimated filament usage. The visual "Next to use" indicator 
+                helps you follow FIFO inventory practices automatically!</em>
+            </p>
+        </div>
+    </div>
+
+    <div class="formCard">
+        <h2 style="margin-top: 0;">💰 Weighted Average Pricing</h2>
+        <div style="color: var(--muted); line-height: 1.8;">
+            <p>
+                The app now features <strong>intelligent weighted average pricing</strong> for accurate cost calculations 
+                that reflect your actual purchase prices over time.
+            </p>
+            
+            <h3>How It Works:</h3>
+            <p>Each spool can have its own purchase price per kilogram:</p>
+            <ul>
+                <li><strong>When adding new filament:</strong> Enter the "Purchase Price Per Kg" field (optional)</li>
+                <li><strong>When adding new spools:</strong> Each spool can have a different purchase price</li>
+                <li><strong>In the calculator:</strong> The app uses the weighted average of all spool prices</li>
+            </ul>
+            
+            <h3>Example Scenario:</h3>
+            <p>You have PLA Matte Black with 4 spools purchased at different times:</p>
+            <ul>
+                <li>Spool 1: Purchased at 120 DKK/kg</li>
+                <li>Spool 2: Purchased at 120 DKK/kg</li>
+                <li>Spool 3: Purchased at 180 DKK/kg (premium batch)</li>
+                <li>Spool 4: Purchased at 200 DKK/kg (sale price)</li>
+            </ul>
+            <p><strong>Calculated Average:</strong> (120 + 120 + 180 + 200) / 4 = <strong>155 DKK/kg</strong></p>
+            <p>This average is automatically used in the Print Cost Calculator!</p>
+            
+            <h3>Adding Prices to Existing Filaments:</h3>
+            <ol>
+                <li>Click on any filament in Inventory</li>
+                <li>Select a spool from the list</li>
+                <li>In the "Edit Spool Details" section, find "Purchase Price Per Kg"</li>
+                <li>Enter the price and click "Save All Changes"</li>
+                <li>The calculated average updates <strong>immediately</strong></li>
+            </ol>
+            
+            <h3>Price Display:</h3>
+            <p>In the filament detail modal, you'll see:</p>
+            <ul>
+                <li><strong>💰 Calculated Average Price</strong> - The weighted average from all spools</li>
+                <li><strong>Source indicator</strong> - Shows how the price is calculated:
+                    <ul>
+                        <li>"Average from X spool(s) with prices" - Using spool prices</li>
+                        <li>"Using manual override price" - If you set a fixed price</li>
+                        <li>"Default price" - Fallback if no prices are set (149 DKK/kg)</li>
+                    </ul>
+                </li>
+                <li><strong>Manual Price Override</strong> - Option to set a fixed price that ignores spool averages</li>
+            </ul>
+            
+            <h3>Calculator Integration:</h3>
+            <p>When using the Print Cost Calculator:</p>
+            <ul>
+                <li>Select filament from your inventory in the material dropdown</li>
+                <li>The calculated average price <strong>auto-fills</strong> automatically</li>
+                <li>No need to look up prices - always accurate!</li>
+                <li>Reflects your actual costs including bulk discounts and price changes</li>
+            </ul>
+            
+            <h3>Benefits:</h3>
+            <ul>
+                <li>✅ <strong>Accurate costing</strong> - Uses real purchase prices</li>
+                <li>✅ <strong>Historical tracking</strong> - See what you paid for each batch</li>
+                <li>✅ <strong>Automatic averaging</strong> - No manual calculations needed</li>
+                <li>✅ <strong>Flexible</strong> - Can override with manual price if needed</li>
+                <li>✅ <strong>Backward compatible</strong> - Works without prices (uses default)</li>
+            </ul>
+            
+            <p>
+                <em>💡 Pro tip: When restocking, always enter the purchase price for new spools. 
+                Over time, this builds an accurate picture of your true filament costs, making 
+                your print cost estimates much more reliable!</em>
             </p>
         </div>
     </div>
@@ -386,6 +493,25 @@
                 <li><strong>Dark Mode</strong> (default) - Comfortable for extended use with dark backgrounds</li>
                 <li><strong>Light Mode</strong> - Bright theme for well-lit environments</li>
                 <li>Theme preference persists across sessions</li>
+            </ul>
+            
+            <h3>💱 Currency Selection</h3>
+            <p>Choose your preferred currency for the Print Cost Calculator:</p>
+            <ul>
+                <li><strong>24 major currencies supported</strong> including:
+                    <ul>
+                        <li>DKK (Danish Krone) - Default</li>
+                        <li>USD (US Dollar)</li>
+                        <li>EUR (Euro)</li>
+                        <li>GBP (British Pound)</li>
+                        <li>SEK (Swedish Krona)</li>
+                        <li>NOK (Norwegian Krone)</li>
+                        <li>And 18 more world currencies</li>
+                    </ul>
+                </li>
+                <li><strong>Automatic formatting</strong> - All prices in the calculator display in your selected currency</li>
+                <li><strong>Saved to database</strong> - Your preference persists across sessions</li>
+                <li><strong>Click "Save Currency"</strong> to apply changes</li>
             </ul>
             
             <h3>⚖️ Stock Thresholds (Customizable!)</h3>
@@ -569,33 +695,30 @@
         <h2 style="margin-top: 0;">❓ Troubleshooting & FAQ</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p><strong>Q: My filaments aren't showing up</strong></p>
-            <p>A: Check your filters and search. You might have:
+            <p>A: Check your filters and search. You might have:</p>
                 <ul>
                     <li>A search term active - clear the search box</li>
                     <li>A type filter active (e.g., showing only PLA) - select "All Types"</li>
                     <li>"Low Only" enabled - toggle it off to see all filaments</li>
                 </ul>
-            </p>
             
             <p><strong>Q: The colors don't match my actual filament</strong></p>
-            <p>A: Edit the filament and update the color code. You can:
+            <p>A: Edit the filament and update the color code. You can:</p>
                 <ul>
                     <li>Find hex codes online or use a color picker tool</li>
                     <li>Take a photo and use an online hex color picker</li>
                     <li>Check the manufacturer's website for official color codes</li>
                 </ul>
-            </p>
             
             <p><strong>Q: I accidentally deleted a filament</strong></p>
-            <p>A: Unfortunately, deletions are permanent. However:
+            <p>A: Unfortunately, deletions are permanent. However:</p>
                 <ul>
                     <li>If you have a CSV export backup, you can re-import it</li>
                     <li>Tip: Export your data regularly as a safety backup</li>
                 </ul>
-            </p>
             
             <p><strong>Q: Multiple spools aren't grouping together</strong></p>
-            <p>A: They only group if ALL these fields are EXACTLY the same:
+            <p>A: They only group if ALL these fields are EXACTLY the same:</p>
                 <ul>
                     <li>Brand (case-sensitive)</li>
                     <li>Type (PLA, PETG, etc.)</li>
@@ -604,17 +727,15 @@
                     <li>Color Code</li>
                 </ul>
                 <p>Check for typos, extra spaces, or different capitalization. To fix, edit one filament to match the other exactly.</p>
-            </p>
             
             <p><strong>Q: How do I change the warning thresholds?</strong></p>
-            <p>A: Go to Settings → Stock Thresholds section:
+            <p>A: Go to Settings → Stock Thresholds section:</p>
                 <ul>
                     <li>Enter your desired Low Threshold (yellow warning)</li>
                     <li>Enter your desired Critical Threshold (red alert)</li>
                     <li>Critical must be less than Low</li>
                     <li>Click "Save Thresholds" - changes apply immediately!</li>
                 </ul>
-            </p>
             
             <p><strong>Q: My brand doesn't appear in the dropdown</strong></p>
             <p>A: Select "➕ Other (Add Custom)" at the bottom of the Brand dropdown, then type your custom brand name. It will be saved automatically and appear in the dropdown for future use.</p>
@@ -629,13 +750,12 @@
             <p>A: The app analyzes the hex color code and calculates perceived brightness using the standard RGB formula (accounting for how human eyes perceive different colors). Dark→Light shows blacks first, Light→Dark shows whites first.</p>
             
             <p><strong>Q: Can I track filaments by weight other than grams?</strong></p>
-            <p>A: Currently the app only supports grams. If you have weights in other units:
+            <p>A: Currently the app only supports grams. If you have weights in other units:</p>
                 <ul>
                     <li>Ounces to grams: multiply by 28.35</li>
                     <li>Pounds to grams: multiply by 453.59</li>
                     <li>Kilograms to grams: multiply by 1000</li>
                 </ul>
-            </p>
             
             <p><strong>Q: Where is my data stored?</strong></p>
             <p>A: All data is stored in a local SQLite database file on your computer. Nothing is sent to the cloud unless you manually export a CSV file. Your data is completely private and offline.</p>

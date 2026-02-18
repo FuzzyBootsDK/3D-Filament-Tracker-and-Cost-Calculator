@@ -12,8 +12,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>bx7mav27wd</Fingerprint>
-      <Integrity>YSjQCMyPAcnS2ojKFTewSI1k8wnSzq4GyLQ0xsIAL6k=</Integrity>
+      <Fingerprint>rohq8zrlou</Fingerprint>
+      <Integrity>C0BGLPUUbYQu/X+wj1R8mVebkq3xKAq6/fvgfESPJ4Q=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\site.css'))</OriginalItemSpec>
@@ -30,8 +30,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>0ao1r3cijf</Fingerprint>
-      <Integrity>2KcGZWqmS/jXHyeI+BksVOJuwn45F4kD2zyl0VxjbCQ=</Integrity>
+      <Fingerprint>7vckx4u3i6</Fingerprint>
+      <Integrity>I29/MiGMqIc/y28U8vcldl7e3ouDAwVg+t11Zrga+8A=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\calculator-app.js'))</OriginalItemSpec>
@@ -48,8 +48,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>b2cfbs00in</Fingerprint>
-      <Integrity>LTqzyLQxMB3kbebsw7YzKZxOf2z/kt8EmlrFUhF6X/Q=</Integrity>
+      <Fingerprint>1guc5545ux</Fingerprint>
+      <Integrity>3wGMKmH4dkujUACcIZhN1go0A39NCb5+idzrcGPh+bs=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\calculator-gcode.js'))</OriginalItemSpec>
@@ -66,8 +66,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>rsh29p24q0</Fingerprint>
-      <Integrity>ZWyckgr2oKLZIkM82zyIKrkcmCTyirlaLARz4PCMk7M=</Integrity>
+      <Fingerprint>f8mk2n16cw</Fingerprint>
+      <Integrity>ccTI/U0Z/SC4r31nP/cnSmXo0J6uF9n/vcgfPtrQotQ=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\calculator-pdf.js'))</OriginalItemSpec>

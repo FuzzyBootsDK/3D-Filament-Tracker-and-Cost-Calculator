@@ -1,6 +1,6 @@
 // Lightweight "PDF" export using print dialog.
 // Opens a new window with a printable offer layout.
-// User can then "Gem som PDF" in browser.
+// User can then "Save as PDF" in browser.
 
 function buildOfferHtml(state) {
   const {
@@ -25,10 +25,10 @@ function buildOfferHtml(state) {
     .join("");
 
   return `
-  <html lang="da">
+  <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Tilbud – ${partName || "3D‑print"}</title>
+    <title>Quote – ${partName || "3D Print"}</title>
     <style>
       body { font-family: system-ui, -apple-system, sans-serif; padding: 24px; color: #111827; }
       h1 { font-size: 20px; margin-bottom: 4px; }
@@ -41,48 +41,48 @@ function buildOfferHtml(state) {
     </style>
   </head>
   <body>
-    <h1>Tilbud på 3D‑print</h1>
-    <p class="muted">Genereret fra din omkostningsberegner</p>
+    <h1>3D Print Quote</h1>
+    <p class="muted">Generated from your cost calculator</p>
 
-    <h2>Projekt</h2>
-    <p><strong>Delnavn:</strong> ${partName || "Ikke angivet"}</p>
-    <p><strong>Batch størrelse:</strong> ${batchSize} stk</p>
+    <h2>Project</h2>
+    <p><strong>Part Name:</strong> ${partName || "Not specified"}</p>
+    <p><strong>Batch Size:</strong> ${batchSize} pcs</p>
 
-    <h2>Prissætning</h2>
+    <h2>Pricing</h2>
     <div class="summary">
       <div class="summary-row">
-        <span>Enhedsomkostning (eks. moms)</span>
+        <span>Unit Cost (excl. VAT)</span>
         <span>${unitCost}</span>
       </div>
       <div class="summary-row">
-        <span>Valgt pris (inkl. moms)</span>
+        <span>Selected Price (incl. VAT)</span>
         <span>${selectedPrice}</span>
       </div>
       <div class="summary-row">
-        <span>Valgt margin</span>
+        <span>Selected Margin</span>
         <span>${selectedMargin}</span>
       </div>
     </div>
 
-    <h2>Omkostningsfordeling (pr. enhed)</h2>
+    <h2>Cost Breakdown (per unit)</h2>
     <table>
       <tbody>
-        <tr><td>Materiale</td><td>${costBreakdown.material}</td></tr>
-        <tr><td>Arbejdsløn</td><td>${costBreakdown.labor}</td></tr>
-        <tr><td>Maskine</td><td>${costBreakdown.machine}</td></tr>
+        <tr><td>Material</td><td>${costBreakdown.material}</td></tr>
+        <tr><td>Labor</td><td>${costBreakdown.labor}</td></tr>
+        <tr><td>Machine</td><td>${costBreakdown.machine}</td></tr>
         <tr><td>Hardware</td><td>${costBreakdown.hardware}</td></tr>
-        <tr><td>Emballage</td><td>${costBreakdown.packaging}</td></tr>
+        <tr><td>Packaging</td><td>${costBreakdown.packaging}</td></tr>
         <tr><td><strong>Total</strong></td><td><strong>${costBreakdown.total}</strong></td></tr>
       </tbody>
     </table>
 
-    <h2>Batch‑optimering</h2>
+    <h2>Batch Optimization</h2>
     <table>
       <thead>
         <tr>
-          <th>Antal</th>
-          <th>Enhedsomkostning</th>
-          <th>Pris (40% margin)</th>
+          <th>Quantity</th>
+          <th>Unit Cost</th>
+          <th>Price (40% margin)</th>
         </tr>
       </thead>
       <tbody>

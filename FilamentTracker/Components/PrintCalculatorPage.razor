@@ -1,28 +1,30 @@
 @using Microsoft.JSInterop
+@using FilamentTracker.Services
 @inject IJSRuntime JS
+@inject FilamentService FilamentService
 
 <section class="calculator-root">
     <div class="pageHeader">
-        <h1>Omkostningsberegner til 3D-print</h1>
-        <div class="sub">Beregn omkostninger • Prissætning • PDF eksport</div>
+        <h1>3D Print Cost Calculator</h1>
+        <div class="sub">Calculate costs • Pricing • PDF export</div>
     </div>
 
     <div class="calculator-layout">
         <!-- LEFT COLUMN -->
         <section class="calculator-card">
-            <h2 class="calculator-card-title">Projektdetaljer</h2>
-            <p class="calculator-card-sub">Grunddata for dit print og materialer</p>
+            <h2 class="calculator-card-title">Project Details</h2>
+            <p class="calculator-card-sub">Basic data for your print and materials</p>
 
             <div class="calculator-grid-2 calculator-gap-md calculator-mt-md">
                 <div class="calculator-field">
-                    <label for="partName">Delnavn</label>
-                    <input id="partName" type="text" placeholder="f.eks. Beslag til hylde" />
+                    <label for="partName">Part Name</label>
+                    <input id="partName" type="text" placeholder="e.g. Shelf bracket" />
                 </div>
 
                 <div class="calculator-field">
-                    <label for="printerProfile">Printerprofil</label>
+                    <label for="printerProfile">Printer Profile</label>
                     <select id="printerProfile">
-                        <option value="">Vælg en printer...</option>
+                        <option value="">Select a printer...</option>
                         <option value="Bambu X1C">Bambu X1C</option>
                         <option value="Bambu P1S">Bambu P1S</option>
                         <option value="Bambu A1">Bambu A1</option>
@@ -35,117 +37,117 @@
 
                 <!-- PRINT TIME -->
                 <div class="calculator-field">
-                    <label>Printtid</label>
+                    <label>Print Time</label>
                     <div class="calculator-grid-2 calculator-gap-md">
-                        <input id="printHours" type="number" step="1" value="0" placeholder="Timer" />
-                        <input id="printMinutes" type="number" step="1" value="0" placeholder="Minutter" />
+                        <input id="printHours" type="number" step="1" value="0" placeholder="Hours" />
+                        <input id="printMinutes" type="number" step="1" value="0" placeholder="Minutes" />
                     </div>
                 </div>
 
                 <!-- HANDLING TIME -->
                 <div class="calculator-field">
-                    <label>Håndteringstid</label>
+                    <label>Handling Time</label>
                     <div class="calculator-grid-2 calculator-gap-md">
-                        <input id="laborHours" type="number" step="1" value="0" placeholder="Timer" />
-                        <input id="laborMinutes" type="number" step="1" value="0" placeholder="Minutter" />
+                        <input id="laborHours" type="number" step="1" value="0" placeholder="Hours" />
+                        <input id="laborMinutes" type="number" step="1" value="0" placeholder="Minutes" />
                     </div>
                 </div>
 
                 <div class="calculator-field">
-                    <label for="hardwareCost">Hardwareomkostning (DKK)</label>
+                    <label for="hardwareCost">Hardware Cost</label>
                     <input id="hardwareCost" type="number" step="1" value="0" />
                 </div>
 
                 <div class="calculator-field">
-                    <label for="packagingCost">Emballageomkostning (DKK)</label>
+                    <label for="packagingCost">Packaging Cost</label>
                     <input id="packagingCost" type="number" step="1" value="0" />
                 </div>
 
                 <div class="calculator-field">
-                    <label for="vatRate">Momssats (%)</label>
+                    <label for="vatRate">VAT Rate (%)</label>
                     <input id="vatRate" type="number" step="1" value="25" />
                 </div>
 
                 <div class="calculator-field">
-                    <label for="batchSize">Batch størrelse (stk)</label>
+                    <label for="batchSize">Batch Size (pcs)</label>
                     <input id="batchSize" type="number" step="1" value="1" min="1" />
                 </div>
             </div>
 
             <hr class="calculator-divider" />
 
-            <h3 class="calculator-section-title">Materialer (multimateriale)</h3>
-            <p class="calculator-card-sub">Tilføj et eller flere filamenter til projektet</p>
+            <h3 class="calculator-section-title">Materials (multi-material)</h3>
+            <p class="calculator-card-sub">Select from inventory or enter manually</p>
 
             <div class="calculator-materials-header">
-                <span>Navn</span>
-                <span>Pris/kg</span>
-                <span>Vægt (g)</span>
+                <span>Filament</span>
+                <span>Price/kg</span>
+                <span>Weight (g)</span>
                 <span></span>
             </div>
             <div id="materialsBody"></div>
 
-            <button id="addMaterialBtn" class="calculator-btn-secondary calculator-mt-sm">+ Tilføj materiale</button>
+            <button id="addMaterialBtn" class="calculator-btn-secondary calculator-mt-sm">+ Add Material</button>
 
             <hr class="calculator-divider" />
 
-            <h3 class="calculator-section-title">G‑code import</h3>
-            <p class="calculator-card-sub">Importer G‑code for automatisk at udfylde printtid og vægt</p>
+            <h3 class="calculator-section-title">G-code Import</h3>
+            <p class="calculator-card-sub">Import G-code to automatically fill print time and weight</p>
 
             <div class="calculator-gcode-row">
                 <input type="file" id="gcodeFile" accept=".gcode" />
-                <button id="gcodeImportBtn" class="calculator-btn-secondary">Indlæs G‑code</button>
+                <button id="gcodeImportBtn" class="calculator-btn-secondary">Load G-code</button>
             </div>
             <p id="gcodeStatus" class="calculator-hint"></p>
 
             <hr class="calculator-divider" />
 
-            <h3 class="calculator-section-title">Avancerede indstillinger</h3>
-            <p class="calculator-card-sub">Maskinomkostning, el, afskrivning og buffer</p>
+            <h3 class="calculator-section-title">Advanced Settings</h3>
+            <p class="calculator-card-sub">Machine cost, electricity, depreciation and buffer</p>
 
             <div class="calculator-grid-2 calculator-gap-md calculator-mt-sm">
                 <div class="calculator-field">
-                    <label for="hourlyRate">Timeløn (DKK/hr)</label>
+                    <label for="hourlyRate">Hourly Rate</label>
                     <input id="hourlyRate" type="number" value="200" />
                 </div>
 
                 <div class="calculator-field">
-                    <label for="materialFactor">Materialefaktor</label>
+                    <label for="materialFactor">Material Factor</label>
                     <input id="materialFactor" type="number" step="0.05" value="1.1" />
                 </div>
 
                 <div class="calculator-field">
-                    <label for="printerPrice">Printerpris (DKK)</label>
+                    <label for="printerPrice">Printer Price</label>
                     <input id="printerPrice" type="number" value="5599" />
                 </div>
 
                 <div class="calculator-field">
-                    <label for="printerLifetimeYears">Estimeret levetid (år)</label>
+                    <label for="printerLifetimeYears">Estimated Lifetime (years)</label>
                     <input id="printerLifetimeYears" type="number" step="0.5" value="3" />
                 </div>
 
                 <div class="calculator-field">
-                    <label for="uptimePercent">Oppetidsprocent (%)</label>
+                    <label for="uptimePercent">Uptime Percentage (%)</label>
                     <input id="uptimePercent" type="number" step="1" value="50" />
                 </div>
 
                 <div class="calculator-field">
-                    <label for="maintenanceYearly">Årligt vedligehold (DKK)</label>
+                    <label for="maintenanceYearly">Yearly Maintenance</label>
                     <input id="maintenanceYearly" type="number" value="549" />
                 </div>
 
                 <div class="calculator-field">
-                    <label for="powerWatt">Strømforbrug (W)</label>
+                    <label for="powerWatt">Power Consumption (W)</label>
                     <input id="powerWatt" type="number" value="150" />
                 </div>
 
                 <div class="calculator-field">
-                    <label for="electricityPrice">Elpris (DKK/kWh)</label>
+                    <label for="electricityPrice">Electricity Price (per kWh)</label>
                     <input id="electricityPrice" type="number" step="0.01" value="0.2" />
                 </div>
 
                 <div class="calculator-field">
-                    <label for="bufferFactor">Bufferfaktor</label>
+                    <label for="bufferFactor">Buffer Factor</label>
                     <input id="bufferFactor" type="number" step="0.05" value="1.3" />
                 </div>
             </div>
@@ -153,18 +155,18 @@
 
         <!-- RIGHT COLUMN -->
         <section class="calculator-card">
-            <h2 class="calculator-card-title">Prissætning</h2>
-            <p class="calculator-card-sub">Baseret på beregnet enhedsomkostning</p>
+            <h2 class="calculator-card-title">Pricing</h2>
+            <p class="calculator-card-sub">Based on calculated unit cost</p>
 
             <div class="calculator-pill-row calculator-mt-sm">
-                <span class="calculator-pill-soft">Enhedsomkostning: <span id="unitCostLabel">0,00 kr.</span></span>
-                <span class="calculator-pill-soft">Batch: <span id="batchLabel">1 stk</span></span>
+                <span class="calculator-pill-soft">Unit Cost: <span id="unitCostLabel">0.00</span></span>
+                <span class="calculator-pill-soft">Batch: <span id="batchLabel">1 pcs</span></span>
             </div>
 
             <div id="pricingList" class="calculator-pricing-list calculator-mt-md"></div>
 
             <div class="calculator-field calculator-mt-md">
-                <label for="customMargin">Tilpasset vinstmargin</label>
+                <label for="customMargin">Custom Profit Margin</label>
                 <div class="calculator-range-row">
                     <input id="customMargin" type="range" min="10" max="150" value="50" />
                     <span id="customMarginLabel">50%</span>
@@ -173,30 +175,30 @@
 
             <div class="calculator-summary calculator-mt-md">
                 <div class="calculator-summary-row">
-                    <span>Valgt pris inkl. moms</span>
-                    <span id="selectedPrice">0,00 kr.</span>
+                    <span>Selected price incl. VAT</span>
+                    <span id="selectedPrice">0.00</span>
                 </div>
                 <div class="calculator-summary-row muted">
-                    <span>Valgt margin</span>
+                    <span>Selected margin</span>
                     <span id="selectedMargin">40%</span>
                 </div>
             </div>
 
             <div class="calculator-actions calculator-mt-md">
-                <button id="exportPdfBtn" class="calculator-btn-primary">Eksportér tilbud som PDF</button>
+                <button id="exportPdfBtn" class="calculator-btn-primary">Export Quote as PDF</button>
             </div>
 
             <hr class="calculator-divider" />
 
-            <h3 class="calculator-section-title">Batch‑optimering</h3>
-            <p class="calculator-card-sub">Se hvordan enhedsprisen ændrer sig med antal</p>
+            <h3 class="calculator-section-title">Batch Optimization</h3>
+            <p class="calculator-card-sub">See how unit price changes with quantity</p>
 
             <table class="calculator-table calculator-mt-sm">
                 <thead>
                     <tr>
-                        <th>Antal</th>
-                        <th>Enhedsomkostning</th>
-                        <th>Pris (40% margin)</th>
+                        <th>Quantity</th>
+                        <th>Unit Cost</th>
+                        <th>Price (40% margin)</th>
                     </tr>
                 </thead>
                 <tbody id="batchTableBody"></tbody>
@@ -204,35 +206,35 @@
 
             <hr class="calculator-divider" />
 
-            <h3 class="calculator-section-title">Omkostningsfordeling (pr. enhed)</h3>
+            <h3 class="calculator-section-title">Cost Breakdown (per unit)</h3>
 
             <div class="calculator-cost-grid calculator-mt-sm">
                 <div class="calculator-cost-row">
-                    <span>Materiale</span>
-                    <span id="costMaterial">0,00 kr.</span>
+                    <span>Material</span>
+                    <span id="costMaterial">0.00</span>
                 </div>
                 <div class="calculator-cost-row">
-                    <span>Arbejdsløn</span>
-                    <span id="costLabor">0,00 kr.</span>
+                    <span>Labor</span>
+                    <span id="costLabor">0.00</span>
                 </div>
                 <div class="calculator-cost-row">
-                    <span>Maskine</span>
-                    <span id="costMachine">0,00 kr.</span>
+                    <span>Machine</span>
+                    <span id="costMachine">0.00</span>
                 </div>
                 <div class="calculator-cost-row">
                     <span>Hardware</span>
-                    <span id="costHardware">0,00 kr.</span>
+                    <span id="costHardware">0.00</span>
                 </div>
                 <div class="calculator-cost-row">
-                    <span>Emballage</span>
-                    <span id="costPackaging">0,00 kr.</span>
+                    <span>Packaging</span>
+                    <span id="costPackaging">0.00</span>
                 </div>
             </div>
 
             <div class="calculator-summary calculator-mt-sm">
                 <div class="calculator-summary-row">
-                    <span>Total landet omkostning</span>
-                    <span id="costTotal">0,00 kr.</span>
+                    <span>Total landed cost</span>
+                    <span id="costTotal">0.00</span>
                 </div>
             </div>
         </section>
@@ -244,25 +246,65 @@
     {
         if (firstRender)
         {
-            // Load the calculator JavaScript files
-            await JS.InvokeVoidAsync("eval", @"
-                if (!document.getElementById('calculator-gcode-script')) {
-                    const gcodeScript = document.createElement('script');
-                    gcodeScript.id = 'calculator-gcode-script';
-                    gcodeScript.src = 'js/calculator-gcode.js';
-                    document.body.appendChild(gcodeScript);
+            // Load the calculator JavaScript files with cache busting
+            var version = DateTime.Now.Ticks; // Cache buster
+            await JS.InvokeVoidAsync("eval", $@"
+                (function() {{
+                    // Only load if not already loaded
+                    if (!document.getElementById('calculator-gcode-script')) {{
+                        const gcodeScript = document.createElement('script');
+                        gcodeScript.id = 'calculator-gcode-script';
+                        gcodeScript.src = 'js/calculator-gcode.js?v={version}';
+                        document.body.appendChild(gcodeScript);
 
-                    const pdfScript = document.createElement('script');
-                    pdfScript.id = 'calculator-pdf-script';
-                    pdfScript.src = 'js/calculator-pdf.js';
-                    document.body.appendChild(pdfScript);
+                        const pdfScript = document.createElement('script');
+                        pdfScript.id = 'calculator-pdf-script';
+                        pdfScript.src = 'js/calculator-pdf.js?v={version}';
+                        document.body.appendChild(pdfScript);
 
-                    const appScript = document.createElement('script');
-                    appScript.id = 'calculator-app-script';
-                    appScript.src = 'js/calculator-app.js';
-                    document.body.appendChild(appScript);
-                }
+                        const appScript = document.createElement('script');
+                        appScript.id = 'calculator-app-script';
+                        appScript.src = 'js/calculator-app.js?v={version}';
+                        document.body.appendChild(appScript);
+                    }}
+                }})();
             ");
+            
+            // Wait for scripts to load
+            await Task.Delay(500);
+            
+            // Load currency and inventory
+            var settings = await FilamentService.GetSettingsAsync();
+            var filaments = await FilamentService.GetAllFilamentsAsync();
+            
+            // Prepare inventory data for JavaScript
+            var inventoryData = filaments.Select(f => new
+            {
+                id = f.Id,
+                name = $"{f.Brand} {f.Type} - {f.ColorName}",
+                pricePerKg = f.CalculatedPricePerKg
+            }).ToArray();
+            
+            // Pass data to JavaScript
+            try
+            {
+                await JS.InvokeVoidAsync("initCalculatorWithInventory", new
+                {
+                    currency = settings.Currency,
+                    inventory = inventoryData
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error initializing calculator: {ex.Message}");
+                // Retry after a longer delay
+                await Task.Delay(1000);
+                await JS.InvokeVoidAsync("initCalculatorWithInventory", new
+                {
+                    currency = settings.Currency,
+                    inventory = inventoryData
+                });
+            }
         }
     }
 }

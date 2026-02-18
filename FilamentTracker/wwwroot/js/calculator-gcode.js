@@ -27,7 +27,7 @@ function attachGcodeHandlers() {
   btn.addEventListener("click", () => {
     const file = fileInput.files?.[0];
     if (!file) {
-      statusEl.textContent = "Vælg en G‑code fil først.";
+      statusEl.textContent = "Select a G-code file first.";
       return;
     }
 
@@ -46,15 +46,18 @@ function attachGcodeHandlers() {
         document.getElementById("printMinutes").value = minutes;
       }
 
-      // MATERIAL → first material row
+      // MATERIAL → update first material weight
       if (parsed.grams != null) {
         const firstWeight = document.querySelector(
           ".material-row input[data-role='weight']"
         );
-        if (firstWeight) firstWeight.value = parsed.grams.toFixed(1);
+        if (firstWeight) {
+          firstWeight.value = parsed.grams.toFixed(1);
+          firstWeight.dispatchEvent(new Event('input', { bubbles: true }));
+        }
       }
 
-      statusEl.textContent = "G‑code indlæst – printtid og vægt opdateret.";
+      statusEl.textContent = "G-code loaded – print time and weight updated.";
       if (typeof updateUI === "function") updateUI();
     };
 

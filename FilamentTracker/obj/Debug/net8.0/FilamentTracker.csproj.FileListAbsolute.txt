@@ -125,3 +125,4 @@
 /Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/obj/Debug/net8.0/FilamentTracker.pdb
 /Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/obj/Debug/net8.0/FilamentTracker.genruntimeconfig.cache
 /Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/obj/Debug/net8.0/ref/FilamentTracker.dll
+/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/obj/Debug/net8.0/FilamentTracker.sourcelink.json

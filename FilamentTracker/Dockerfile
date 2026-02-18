@@ -28,11 +28,11 @@ COPY --from=publish /app/publish .
 RUN mkdir -p /app/data && chmod 777 /app/data
 
 # Set environment variables
-ENV ASPNETCORE_URLS=http://+:5000
+ENV ASPNETCORE_URLS=http://+:5500
 ENV ASPNETCORE_ENVIRONMENT=Production
 
 # Expose port
-EXPOSE 5000
+EXPOSE 5500
 
 # Run the application
 ENTRYPOINT ["dotnet", "FilamentTracker.dll"]

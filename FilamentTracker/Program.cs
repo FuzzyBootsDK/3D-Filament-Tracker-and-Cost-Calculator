@@ -47,8 +47,36 @@ using (var scope = app.Services.CreateScope())
             CREATE TABLE IF NOT EXISTS AppSettings (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 LowThreshold REAL NOT NULL,
-                CriticalThreshold REAL NOT NULL
+                CriticalThreshold REAL NOT NULL,
+                Currency TEXT NOT NULL DEFAULT 'DKK'
             )");
+        
+        // Add Currency column if it doesn't exist (for existing databases)
+        try
+        {
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE AppSettings ADD COLUMN Currency TEXT NOT NULL DEFAULT 'DKK'
+            ");
+        }
+        catch { /* Column already exists */ }
+        
+        // Add PricePerKg column to Filaments if it doesn't exist (for existing databases)
+        try
+        {
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE Filaments ADD COLUMN PricePerKg REAL
+            ");
+        }
+        catch { /* Column already exists */ }
+        
+        // Add PurchasePricePerKg column to Spools if it doesn't exist
+        try
+        {
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE Spools ADD COLUMN PurchasePricePerKg REAL
+            ");
+        }
+        catch { /* Column already exists */ }
         
         // Ensure default settings exist
         if (!await context.AppSettings.AnyAsync())
