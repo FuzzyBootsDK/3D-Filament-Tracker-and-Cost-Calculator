@@ -6,7 +6,24 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddServerSideBlazor(options =>
+{
+    // How long a disconnected circuit is kept alive on the server (default: 3 min)
+    // Set to 60 min so the page recovers after network blips on the NAS
+    options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(60);
+    // Give the client longer to reconnect before the circuit is torn down
+    options.DisconnectedCircuitMaxRetained = 100;
+    // Detailed errors in production — turn off if you prefer (false hides stack traces)
+    options.DetailedErrors = false;
+})
+.AddHubOptions(options =>
+{
+    // Keep-alive: ping every 15 s, wait 60 s before declaring the connection dead
+    options.KeepAliveInterval       = TimeSpan.FromSeconds(15);
+    options.ClientTimeoutInterval   = TimeSpan.FromSeconds(60);
+    // Allow larger messages (useful for CSV imports)
+    options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10 MB
+});
 
 // Determine database path (Docker-friendly)
 var dbPath = builder.Configuration.GetConnectionString("DefaultConnection") 

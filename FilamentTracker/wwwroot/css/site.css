@@ -1056,6 +1056,30 @@ label {
     top: 0.5rem;
 }
 
+/* Reconnecting banner */
+#blazor-reconnect-ui {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.92);
+    color: #e6edf7;
+    border: 1px solid rgba(59, 130, 246, .40);
+    border-radius: 999px;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    box-shadow: 0 4px 20px rgba(0,0,0,.4);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.6; }
+}
+
 /* ============================================================
    PRINT CALCULATOR STYLES
    ============================================================ */

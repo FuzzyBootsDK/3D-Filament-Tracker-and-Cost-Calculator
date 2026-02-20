@@ -18,12 +18,31 @@
     <component type="typeof(App)" render-mode="ServerPrerendered" />
 
     <div id="blazor-error-ui">
+        <div id="blazor-reconnect-ui" style="display:none;">
+            🔄 Connection lost — reconnecting…
+        </div>
         An unhandled error has occurred.
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
 
-    <script src="_framework/blazor.server.js"></script>
+    <script src="_framework/blazor.server.js" autostart="false"></script>
+    <script>
+        Blazor.start({
+            reconnectionOptions: {
+                maxRetries: 30,           // try for a long time before giving up
+                retryIntervalMilliseconds: 2000   // retry every 2 s
+            },
+            reconnectionHandler: {
+                onConnectionDown: () => {
+                    document.getElementById('blazor-reconnect-ui').style.display = 'block';
+                },
+                onConnectionUp: () => {
+                    document.getElementById('blazor-reconnect-ui').style.display = 'none';
+                }
+            }
+        });
+    </script>
     <script src="js/site.js"></script>
 </body>
 </html>
