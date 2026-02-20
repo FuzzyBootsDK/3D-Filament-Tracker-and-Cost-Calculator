@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "kSB0+wsJOGN9F2/VCM4EEzC6Cqth6VrkuHeYKBpWpyY=",
+  "Hash": "Yz16YUE6UFowCWW9LhpRsSwxhDEfiQ/wQRpvETtB+kU=",
   "Source": "FilamentTracker",
   "BasePath": "_content/FilamentTracker",
   "Mode": "Default",
@@ -31,8 +31,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "rohq8zrlou",
-      "Integrity": "C0BGLPUUbYQu/X+wj1R8mVebkq3xKAq6/fvgfESPJ4Q=",
+      "Fingerprint": "0emiremkzp",
+      "Integrity": "2JR181KQbZtbB1bHFFGOImDMVmWAGpLIWkW4Q4rDSRA=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/css/site.css"
@@ -124,6 +124,51 @@
   ],
   "Endpoints": [
     {
+      "Route": "css/site.0emiremkzp.css",
+      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/css/site.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "27755"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"2JR181KQbZtbB1bHFFGOImDMVmWAGpLIWkW4Q4rDSRA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 20 Feb 2026 10:10:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "0emiremkzp"
+        },
+        {
+          "Name": "label",
+          "Value": "css/site.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-2JR181KQbZtbB1bHFFGOImDMVmWAGpLIWkW4Q4rDSRA="
+        }
+      ]
+    },
+    {
       "Route": "css/site.css",
       "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/css/site.css",
       "Selectors": [],
@@ -134,7 +179,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "24690"
+          "Value": "27755"
         },
         {
           "Name": "Content-Type",
@@ -142,11 +187,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"C0BGLPUUbYQu/X+wj1R8mVebkq3xKAq6/fvgfESPJ4Q=\""
+          "Value": "\"2JR181KQbZtbB1bHFFGOImDMVmWAGpLIWkW4Q4rDSRA=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 20 Feb 2026 06:45:43 GMT"
+          "Value": "Fri, 20 Feb 2026 10:10:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -156,52 +201,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-C0BGLPUUbYQu/X+wj1R8mVebkq3xKAq6/fvgfESPJ4Q="
-        }
-      ]
-    },
-    {
-      "Route": "css/site.rohq8zrlou.css",
-      "AssetFile": "/Users/lassesorensen/Library/CloudStorage/OneDrive-Personal/Projects/Filament Tracker v2/Tracker v2/FilamentTracker/wwwroot/css/site.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "24690"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"C0BGLPUUbYQu/X+wj1R8mVebkq3xKAq6/fvgfESPJ4Q=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Fri, 20 Feb 2026 06:45:43 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "rohq8zrlou"
-        },
-        {
-          "Name": "label",
-          "Value": "css/site.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-C0BGLPUUbYQu/X+wj1R8mVebkq3xKAq6/fvgfESPJ4Q="
+          "Value": "sha256-2JR181KQbZtbB1bHFFGOImDMVmWAGpLIWkW4Q4rDSRA="
         }
       ]
     },

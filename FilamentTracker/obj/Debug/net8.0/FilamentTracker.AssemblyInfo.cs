@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FilamentTracker")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+61ef6a3a5e257d3979fa8dd73d40fe856ed7f1db")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d8d2e71d61ce5e0fe1ed5f1605683b0bb349b20f")]
 [assembly: System.Reflection.AssemblyProductAttribute("FilamentTracker")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FilamentTracker")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
