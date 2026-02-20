@@ -2,9 +2,10 @@ version: '3.8'
 
 services:
   filament-tracker:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # ── Pull from Docker Hub (set DOCKERHUB_USERNAME in your shell or .env) ──
+    # Default image: fuzzybootsdk/filament-tracker:latest
+    # Override with:  DOCKERHUB_USERNAME=yourname docker compose up -d
+    image: ${DOCKERHUB_USERNAME:-fuzzybootsdk}/filament-tracker:${IMAGE_TAG:-latest}
     container_name: filament-tracker
     ports:
       - "5500:5000"

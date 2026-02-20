@@ -461,14 +461,128 @@ label {
     background: var(--panel2);
 }
 
+/* ── Filament type tags ─────────────────────────── */
 .tag.type {
-    border-color: var(--typeBorder, rgba(16, 185, 129, .35));
-    background: var(--typeBg, rgba(16, 185, 129, .12));
+    border-color: rgba(16, 185, 129, .35);
+    background:   rgba(16, 185, 129, .12);
+    color: #10b981;
+}
+.tag.type-PLA {
+    border-color: rgba(16, 185, 129, .40);
+    background:   rgba(16, 185, 129, .14);
+    color: #10b981;
+}
+.tag.type-PETG {
+    border-color: rgba(59, 130, 246, .40);
+    background:   rgba(59, 130, 246, .14);
+    color: #3b82f6;
+}
+.tag.type-ASA {
+    border-color: rgba(245, 158, 11, .40);
+    background:   rgba(245, 158, 11, .14);
+    color: #f59e0b;
+}
+.tag.type-ABS {
+    border-color: rgba(239, 68, 68, .40);
+    background:   rgba(239, 68, 68, .14);
+    color: #ef4444;
+}
+.tag.type-TPU {
+    border-color: rgba(168, 85, 247, .40);
+    background:   rgba(168, 85, 247, .14);
+    color: #a855f7;
+}
+.tag.type-NYLON {
+    border-color: rgba(236, 72, 153, .40);
+    background:   rgba(236, 72, 153, .14);
+    color: #ec4899;
+}
+.tag.type-PA {
+    border-color: rgba(236, 72, 153, .40);
+    background:   rgba(236, 72, 153, .14);
+    color: #ec4899;
+}
+.tag.type-PC {
+    border-color: rgba(20, 184, 166, .40);
+    background:   rgba(20, 184, 166, .14);
+    color: #14b8a6;
+}
+.tag.type-HIPS {
+    border-color: rgba(100, 116, 139, .40);
+    background:   rgba(100, 116, 139, .14);
+    color: #94a3b8;
+}
+.tag.type-PVA {
+    border-color: rgba(250, 204, 21, .40);
+    background:   rgba(250, 204, 21, .14);
+    color: #ca8a04;
 }
 
+/* ── Finish / subtype tags ──────────────────────── */
 .tag.finish {
-    border-color: var(--finishBorder, rgba(59, 130, 246, .35));
-    background: var(--finishBg, rgba(59, 130, 246, .12));
+    border-color: rgba(59, 130, 246, .35);
+    background:   rgba(59, 130, 246, .12);
+    color: #60a5fa;
+}
+.tag.finish-Matte {
+    border-color: rgba(148, 163, 184, .40);
+    background:   rgba(148, 163, 184, .14);
+    color: #94a3b8;
+}
+.tag.finish-Silk {
+    border-color: rgba(251, 191, 36, .40);
+    background:   rgba(251, 191, 36, .14);
+    color: #fbbf24;
+}
+.tag.finish-Glossy {
+    border-color: rgba(96, 165, 250, .40);
+    background:   rgba(96, 165, 250, .14);
+    color: #60a5fa;
+}
+.tag.finish-Transparent,
+.tag.finish-Clear {
+    border-color: rgba(165, 243, 252, .40);
+    background:   rgba(165, 243, 252, .10);
+    color: #67e8f9;
+}
+.tag.finish-Marble {
+    border-color: rgba(203, 213, 225, .40);
+    background:   rgba(203, 213, 225, .12);
+    color: #cbd5e1;
+}
+.tag.finish-Galaxy,
+.tag.finish-Glitter {
+    border-color: rgba(192, 132, 252, .45);
+    background:   rgba(192, 132, 252, .14);
+    color: #c084fc;
+}
+.tag.finish-Glow,
+.tag.finish-Luminous {
+    border-color: rgba(74, 222, 128, .45);
+    background:   rgba(74, 222, 128, .14);
+    color: #4ade80;
+}
+.tag.finish-Wood {
+    border-color: rgba(180, 120, 60, .45);
+    background:   rgba(180, 120, 60, .14);
+    color: #b47c3c;
+}
+.tag.finish-Metal,
+.tag.finish-Metallic {
+    border-color: rgba(156, 163, 175, .45);
+    background:   rgba(156, 163, 175, .14);
+    color: #d1d5db;
+}
+.tag.finish-Rainbow {
+    border-color: rgba(249, 115, 22, .40);
+    background: linear-gradient(90deg, rgba(239,68,68,.10), rgba(250,204,21,.10), rgba(16,185,129,.10), rgba(59,130,246,.10), rgba(168,85,247,.10));
+    color: #f97316;
+}
+.tag.finish-CF,
+.tag.finish-Carbon {
+    border-color: rgba(51, 65, 85, .60);
+    background:   rgba(51, 65, 85, .30);
+    color: #94a3b8;
 }
 
 .tag.ready {
