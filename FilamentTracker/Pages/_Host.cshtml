@@ -17,10 +17,12 @@
 <body>
     <component type="typeof(App)" render-mode="ServerPrerendered" />
 
+    <!-- Reconnecting toast (shown when SignalR drops) -->
+    <div id="blazor-reconnect-ui" style="display:none;">
+        🔄 Connection lost — reconnecting…
+    </div>
+
     <div id="blazor-error-ui">
-        <div id="blazor-reconnect-ui" style="display:none;">
-            🔄 Connection lost — reconnecting…
-        </div>
         An unhandled error has occurred.
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
@@ -30,8 +32,9 @@
     <script>
         Blazor.start({
             reconnectionOptions: {
-                maxRetries: 30,           // try for a long time before giving up
-                retryIntervalMilliseconds: 2000   // retry every 2 s
+                // Retry up to 60 times with 2 s gaps (~2 min total)
+                maxRetries: 60,
+                retryIntervalMilliseconds: 2000
             },
             reconnectionHandler: {
                 onConnectionDown: () => {
@@ -41,6 +44,24 @@
                     document.getElementById('blazor-reconnect-ui').style.display = 'none';
                 }
             }
+        });
+
+        // When the user switches back to this tab the browser may have
+        // throttled the WebSocket. Force Blazor to reconnect immediately.
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                // Small delay lets the network stack wake up first
+                setTimeout(() => {
+                    try { Blazor.reconnect(); } catch (_) { /* already connected */ }
+                }, 200);
+            }
+        });
+
+        // Also reconnect when the window regains focus (e.g. alt-tab)
+        window.addEventListener('focus', () => {
+            setTimeout(() => {
+                try { Blazor.reconnect(); } catch (_) { /* already connected */ }
+            }, 200);
         });
     </script>
     <script src="js/site.js"></script>
