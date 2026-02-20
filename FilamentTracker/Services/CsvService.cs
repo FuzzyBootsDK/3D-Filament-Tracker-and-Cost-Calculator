@@ -46,7 +46,10 @@ public class CsvService
                     Diameter = filament.Diameter,
                     Location = filament.Location ?? "",
                     Notes = filament.Notes ?? "",
-                    DateAdded = filament.DateAdded.ToString("MM/dd/yyyy")
+                    DateAdded = filament.DateAdded.ToString("MM/dd/yyyy"),
+                    PurchasePricePerKg = spool.PurchasePricePerKg.HasValue
+                        ? spool.PurchasePricePerKg.Value.ToString(CultureInfo.InvariantCulture)
+                        : (filament.PricePerKg.HasValue ? filament.PricePerKg.Value.ToString(CultureInfo.InvariantCulture) : "")
                 });
             }
         }
@@ -61,7 +64,15 @@ public class CsvService
     {
         using var context = await _contextFactory.CreateDbContextAsync();
         using var reader = new StringReader(csvContent);
-        using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture));
+        
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            // Don't throw if a column in the class is not in the CSV (e.g. old exports without price)
+            HeaderValidated = null,
+            MissingFieldFound = null,
+        };
+        
+        using var csv = new CsvReader(reader, config);
         
         var records = csv.GetRecords<CsvFilamentRecord>().ToList();
         
@@ -102,6 +113,9 @@ public class CsvService
                     IsRefill = record.SpoolType.ToLower() == "refill",
                     SpoolMaterial = string.IsNullOrWhiteSpace(record.SpoolMaterial) ? null : record.SpoolMaterial,
                     IsReusable = record.ReusableSpool.ToLower() == "yes",
+                    PurchasePricePerKg = decimal.TryParse(record.PurchasePricePerKg, NumberStyles.Any, CultureInfo.InvariantCulture, out var price) && price > 0
+                        ? price
+                        : 149m,
                     DateAdded = filament.DateAdded
                 });
             }
@@ -185,4 +199,7 @@ public class CsvFilamentRecord
     
     [CsvHelper.Configuration.Attributes.Name("Date Added")]
     public string DateAdded { get; set; } = "";
+    
+    [CsvHelper.Configuration.Attributes.Name("Purchase Price Per Kg")]
+    public string PurchasePricePerKg { get; set; } = "";
 }

@@ -30,8 +30,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>7vckx4u3i6</Fingerprint>
-      <Integrity>I29/MiGMqIc/y28U8vcldl7e3ouDAwVg+t11Zrga+8A=</Integrity>
+      <Fingerprint>h3annk5qi2</Fingerprint>
+      <Integrity>3amqnYzHAmVYwI9Qzhlei2jIaMYq1JkOUI91rFqpf9I=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\calculator-app.js'))</OriginalItemSpec>

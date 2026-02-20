@@ -93,7 +93,7 @@
                             <div style="margin-top: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: rgba(59, 130, 246, .08);">
                                 <div style="margin-bottom: 10px;">
                                     <label>Spool Type</label>
-                                    <select class="input" @bind="newSpoolIsRefill">
+                                    <select class="input" value="@(newSpoolIsRefill ? "true" : "false")" @onchange="OnNewSpoolTypeChanged">
                                         <option value="false">On Spool</option>
                                         <option value="true">Refill</option>
                                     </select>
@@ -180,7 +180,7 @@
                             <!-- Edit spool details -->
                             <div>
                                 <label>Spool Type</label>
-                                <select class="input" @bind="editIsRefill">
+                                <select class="input" value="@(editIsRefill ? "true" : "false")" @onchange="OnEditSpoolTypeChanged">
                                     <option value="false">On Spool</option>
                                     <option value="true">Refill</option>
                                 </select>
@@ -516,6 +516,16 @@
         return status == "critical" ? "Critical" : (status == "low" ? "Low" : "OK");
     }
     
+    private void OnNewSpoolTypeChanged(ChangeEventArgs e)
+    {
+        newSpoolIsRefill = e.Value?.ToString() == "true";
+    }
+
+    private void OnEditSpoolTypeChanged(ChangeEventArgs e)
+    {
+        editIsRefill = e.Value?.ToString() == "true";
+    }
+
     private void ToggleAddSpool()
     {
         showAddSpool = !showAddSpool;

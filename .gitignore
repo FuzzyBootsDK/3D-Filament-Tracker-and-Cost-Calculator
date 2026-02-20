@@ -1,0 +1,45 @@
+# ===========================
+# .NET / Blazor
+# ===========================
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.vscode/
+*.DotSettings.user
+
+# ===========================
+# Database — never commit
+# ===========================
+*.db
+*.db-shm
+*.db-wal
+
+# ===========================
+# OS / Editor
+# ===========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===========================
+# Rider / JetBrains
+# ===========================
+.idea/
+*.sln.iml
+
+# ===========================
+# Publish / Docker build artefacts
+# ===========================
+publish/
+*.tar.gz
+*.zip
+
+# ===========================
+# Secrets / local config
+# ===========================
+appsettings.Development.json
+*.pfx
+*.pem
+

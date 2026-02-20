@@ -133,7 +133,7 @@
         <div style="color: var(--muted); margin-bottom: 16px;">
             Upload a CSV file to import filament data. The CSV should have the following columns:
             Brand, Type, Finish, Color Name, Color Code, Total Weight (g), Weight Remaining (g), 
-            Quantity, Spool Type, Spool Material, Reusable Spool, Diameter (mm), Location, Notes, Date Added
+            Quantity, Spool Type, Spool Material, Reusable Spool, Diameter (mm), Location, Notes, Date Added, Purchase Price Per Kg
         </div>
         <div style="margin-bottom: 16px;">
             <button class="btn" @onclick="DownloadTemplate" disabled="@isProcessing">
@@ -394,8 +394,8 @@
     {
         try
         {
-            var template = "Brand,Type,Finish,Color Name,Color Code,Total Weight (g),Weight Remaining (g),Quantity,Spool Type,Spool Material,Reusable Spool,Diameter (mm),Location,Notes,Date Added\n" +
-                          "Bambu Lab,PLA,Matte,Example Color,#FF0000,1000,1000,1,spool,plastic,Yes,1.75,Shelf A,Example notes,02/18/2026";
+            var template = "Brand,Type,Finish,Color Name,Color Code,Total Weight (g),Weight Remaining (g),Quantity,Spool Type,Spool Material,Reusable Spool,Diameter (mm),Location,Notes,Date Added,Purchase Price Per Kg\n" +
+                          "Bambu Lab,PLA,Matte,Example Color,#FF0000,1000,1000,1,spool,plastic,Yes,1.75,Shelf A,Example notes,02/18/2026,149";
             
             var bytes = System.Text.Encoding.UTF8.GetBytes(template);
             var base64 = Convert.ToBase64String(bytes);

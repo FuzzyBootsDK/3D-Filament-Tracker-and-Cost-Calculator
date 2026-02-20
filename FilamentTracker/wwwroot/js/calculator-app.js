@@ -399,7 +399,15 @@ function updateBatchTable(costs) {
   const rows = [];
 
   tiers.forEach((qty) => {
-    const unitCost = costs.baseCostPerUnit * (costs.batchSize / qty);
+    // Recalculate total cost for this batch size
+    const totalMaterialCost = costs.materialPerUnit * qty;
+    const totalLaborCost = costs.laborPerUnit * qty;
+    const totalMachineCost = costs.machinePerUnit * qty;
+    const totalHardwareCost = costs.hardwarePerUnit * qty;
+    const totalPackagingCost = costs.packagingPerUnit * qty;
+    const bufferFactor = costs.bufferFactor || 1;
+    const totalCost = (totalMaterialCost + totalLaborCost + totalMachineCost + totalHardwareCost + totalPackagingCost) * bufferFactor;
+    const unitCost = totalCost / qty;
     const price = unitCost * 1.4; // 40% margin
 
     const tr = document.createElement("tr");
@@ -590,4 +598,3 @@ function initCalculator() {
 
   updateUI();
 }
-

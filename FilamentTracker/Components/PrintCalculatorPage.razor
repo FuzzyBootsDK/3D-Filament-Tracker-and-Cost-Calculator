@@ -91,17 +91,6 @@
 
             <hr class="calculator-divider" />
 
-            <h3 class="calculator-section-title">G-code Import</h3>
-            <p class="calculator-card-sub">Import G-code to automatically fill print time and weight</p>
-
-            <div class="calculator-gcode-row">
-                <input type="file" id="gcodeFile" accept=".gcode" />
-                <button id="gcodeImportBtn" class="calculator-btn-secondary">Load G-code</button>
-            </div>
-            <p id="gcodeStatus" class="calculator-hint"></p>
-
-            <hr class="calculator-divider" />
-
             <h3 class="calculator-section-title">Advanced Settings</h3>
             <p class="calculator-card-sub">Machine cost, electricity, depreciation and buffer</p>
 
@@ -150,6 +139,22 @@
                     <label for="bufferFactor">Buffer Factor</label>
                     <input id="bufferFactor" type="number" step="0.05" value="1.3" />
                 </div>
+            </div>
+
+            <!-- Explanation block below advanced settings -->
+            <div class="calculator-explanation-block calculator-mt-md">
+                <h4>Advanced Settings Explained</h4>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Hourly Rate:</b> Your labor cost per hour for handling and post-processing.</li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Material Factor:</b> Multiplier to account for waste, failed prints, or extra material (e.g., 1.1 = 10% extra).</li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Printer Price:</b> Purchase price of your 3D printer, used for depreciation calculations.</li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Estimated Lifetime (years):</b> How many years you expect the printer to last. A longer lifetime lowers the per-hour machine cost.</li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Uptime Percentage (%):</b> How much of the time the printer is actually running vs. sitting idle. Higher uptime spreads the fixed costs over more hours, reducing per-print cost.</li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Yearly Maintenance:</b> Estimated annual cost for spare parts, servicing, and consumables like nozzles and belts.</li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Power Consumption (W):</b> Average wattage drawn by the printer during a print job.</li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Electricity Price (per kWh):</b> Your local electricity rate. Used to calculate the electricity cost per print hour.</li>
+                    <li style="padding: 10px 0;"><b>Buffer Factor:</b> A safety multiplier applied to the total cost to cover unexpected expenses, reprints, or overhead (e.g., 1.3 = 30% buffer on top of all costs).</li>
+                </ul>
             </div>
         </section>
 
@@ -251,21 +256,15 @@
             await JS.InvokeVoidAsync("eval", $@"
                 (function() {{
                     // Only load if not already loaded
-                    if (!document.getElementById('calculator-gcode-script')) {{
-                        const gcodeScript = document.createElement('script');
-                        gcodeScript.id = 'calculator-gcode-script';
-                        gcodeScript.src = 'js/calculator-gcode.js?v={version}';
-                        document.body.appendChild(gcodeScript);
-
-                        const pdfScript = document.createElement('script');
-                        pdfScript.id = 'calculator-pdf-script';
-                        pdfScript.src = 'js/calculator-pdf.js?v={version}';
-                        document.body.appendChild(pdfScript);
-
+                    if (!document.getElementById('calculator-app-script')) {{
                         const appScript = document.createElement('script');
                         appScript.id = 'calculator-app-script';
                         appScript.src = 'js/calculator-app.js?v={version}';
                         document.body.appendChild(appScript);
+                        const pdfScript = document.createElement('script');
+                        pdfScript.id = 'calculator-pdf-script';
+                        pdfScript.src = 'js/calculator-pdf.js?v={version}';
+                        document.body.appendChild(pdfScript);
                     }}
                 }})();
             ");
