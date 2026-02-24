@@ -68,32 +68,58 @@ using (var scope = app.Services.CreateScope())
                 Currency TEXT NOT NULL DEFAULT 'DKK'
             )");
         
-        // Add Currency column if it doesn't exist (for existing databases)
-        try
+        // Add missing columns only when they do not already exist to avoid noisy errors
+        async Task<bool> ColumnExistsAsync(string tableName, string columnName)
         {
+            var conn = context.Database.GetDbConnection();
+            try
+            {
+                if (conn.State != System.Data.ConnectionState.Open)
+                    await conn.OpenAsync();
+
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = $"PRAGMA table_info('{tableName}');";
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    if (reader["name"] != null && reader["name"].ToString() == columnName)
+                        return true;
+                }
+            }
+            catch
+            {
+                // If something goes wrong querying PRAGMA, fall back to not attempting the alter
+                return true;
+            }
+            finally
+            {
+                try { await conn.CloseAsync(); } catch { }
+            }
+
+            return false;
+        }
+
+        if (!await ColumnExistsAsync("AppSettings", "Currency"))
+        {
+            // Adding without NOT NULL constraint here keeps the operation simple across SQLite versions
             await context.Database.ExecuteSqlRawAsync(@"
-                ALTER TABLE AppSettings ADD COLUMN Currency TEXT NOT NULL DEFAULT 'DKK'
+                ALTER TABLE AppSettings ADD COLUMN Currency TEXT DEFAULT 'DKK'
             ");
         }
-        catch { /* Column already exists */ }
-        
-        // Add PricePerKg column to Filaments if it doesn't exist (for existing databases)
-        try
+
+        if (!await ColumnExistsAsync("Filaments", "PricePerKg"))
         {
             await context.Database.ExecuteSqlRawAsync(@"
                 ALTER TABLE Filaments ADD COLUMN PricePerKg REAL
             ");
         }
-        catch { /* Column already exists */ }
-        
-        // Add PurchasePricePerKg column to Spools if it doesn't exist
-        try
+
+        if (!await ColumnExistsAsync("Spools", "PurchasePricePerKg"))
         {
             await context.Database.ExecuteSqlRawAsync(@"
                 ALTER TABLE Spools ADD COLUMN PurchasePricePerKg REAL
             ");
         }
-        catch { /* Column already exists */ }
         
         // Ensure default settings exist
         if (!await context.AppSettings.AnyAsync())
