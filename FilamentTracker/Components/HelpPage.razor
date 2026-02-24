@@ -1,10 +1,32 @@
 <section>
-    <div class="pageHeader">
-        <h1>Help & Documentation</h1>
-        <div class="sub">Learn how to use the Filament Tracker app</div>
-    </div>
+<div class="pageHeader">
+    <h1>Help & Documentation</h1>
+    <div class="sub">Learn how to use the Filament Tracker app</div>
+</div>
 
-    <div class="formCard" style="border-color: rgba(59,130,246,.40); background: rgba(59,130,246,.05);">
+<!-- Quick Navigation -->
+<div class="formCard" style="border-color: rgba(99,102,241,.40); background: rgba(99,102,241,.05); margin-top: 14px;">
+    <h2 style="margin-top: 0;">📑 Quick Navigation</h2>
+    <div style="color: var(--muted); line-height: 1.8;">
+        <p style="margin-bottom: 12px;">Jump directly to a section:</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 8px;">
+            <a href="#overview" class="helpNavLink">🚀 What Can This App Do?</a>
+            <a href="#inventory" class="helpNavLink">📦 Inventory Overview</a>
+            <a href="#adding" class="helpNavLink">➕ Adding New Filaments</a>
+            <a href="#spools" class="helpNavLink">🔁 Managing Reusable Spools</a>
+            <a href="#calculator" class="helpNavLink">🧮 Print Cost Calculator</a>
+            <a href="#usage" class="helpNavLink">📊 Recording Usage</a>
+            <a href="#pricing" class="helpNavLink">💰 Weighted Average Pricing</a>
+            <a href="#settings" class="helpNavLink">⚙️ Settings</a>
+            <a href="#tips" class="helpNavLink">💡 Tips & Best Practices</a>
+            <a href="#livetracker" class="helpNavLink">🖨️ BambuLab Live Tracking</a>
+            <a href="#quickactions" class="helpNavLink">⚡ Quick Actions & Workflows</a>
+            <a href="#faq" class="helpNavLink">❓ Troubleshooting & FAQ</a>
+        </div>
+    </div>
+</div>
+
+<div class="formCard" id="overview" style="border-color: rgba(59,130,246,.40); background: rgba(59,130,246,.05); scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">🚀 What Can This App Do?</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
@@ -50,8 +72,6 @@
                 <li><strong>Professional Cost Estimation</strong> - Calculate accurate 3D print costs including materials, labor, machine costs, and more</li>
                 <li><strong>Bambu Lab Printer Profiles</strong> - Pre-configured settings for popular Bambu Lab printers (X1C, P1S, A1, H2 series)</li>
                 <li><strong>Multi-Material Support</strong> - Track costs for prints using multiple filament types</li>
-                <li><strong>G-code Import</strong> - Automatically extract print time and filament weight from G-code files</li>
-                <li><strong>Batch Pricing</strong> - Calculate costs for different batch quantities with optimization table</li>
                 <li><strong>PDF Export</strong> - Generate professional quotes for clients with detailed cost breakdowns</li>
             </ul>
             
@@ -61,7 +81,7 @@
         </div>
     </div>
 
-    <div class="formCard">
+    <div class="formCard" id="inventory" style="scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">📦 Inventory Overview</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
@@ -104,7 +124,7 @@
         </div>
     </div>
 
-    <div class="formCard">
+    <div class="formCard" id="adding" style="scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">➕ Adding New Filaments</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
@@ -168,7 +188,7 @@
         </div>
     </div>
 
-    <div class="formCard">
+    <div class="formCard" id="spools" style="scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">🔁 Managing Reusable Spools</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
@@ -212,7 +232,7 @@
         </div>
     </div>
 
-    <div class="formCard">
+    <div class="formCard" id="calculator" style="scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">🧮 Print Cost Calculator</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
@@ -225,8 +245,6 @@
                 <li><strong>Comprehensive Cost Breakdown</strong> - Tracks materials, labor, machine depreciation, electricity, hardware, and packaging</li>
                 <li><strong>Printer Profiles</strong> - Pre-configured settings for Bambu Lab printers with accurate depreciation and power consumption</li>
                 <li><strong>Multi-Material Projects</strong> - Add multiple filaments with different colors and types</li>
-                <li><strong>G-code Import</strong> - Automatically extract print time and filament usage from your slicer output</li>
-                <li><strong>Batch Optimization</strong> - See how unit costs decrease with larger quantities</li>
                 <li><strong>Pricing Presets</strong> - Quick pricing with margins: Competitive (25%), Standard (40%), Premium (60%), Luxury (80%), or Custom</li>
                 <li><strong>PDF Export</strong> - Generate professional quotes to share with clients</li>
             </ul>
@@ -237,7 +255,7 @@
                     <ul>
                         <li><strong>Part Name</strong> - Name of the item you're printing</li>
                         <li><strong>Printer Profile</strong> - Select your Bambu printer to auto-fill settings</li>
-                        <li><strong>Print Time</strong> - Hours and minutes (or import from G-code)</li>
+                        <li><strong>Print Time</strong> - Hours and minutes from your slicer</li>
                         <li><strong>Handling Time</strong> - Time for post-processing, packaging, etc.</li>
                         <li><strong>Hardware Cost</strong> - Screws, inserts, or other components</li>
                         <li><strong>Packaging Cost</strong> - Boxes, bubble wrap, shipping materials</li>
@@ -268,14 +286,6 @@
                     </ul>
                 </li>
                 
-                <li><strong>G-code Import (Optional)</strong>
-                    <ul>
-                        <li>Select your .gcode file</li>
-                        <li>Click "Indlæs G-code"</li>
-                        <li>Print time and filament weight are automatically filled in</li>
-                        <li>Works with most slicers (Bambu Studio, PrusaSlicer, Cura, etc.)</li>
-                    </ul>
-                </li>
                 
                 <li><strong>Advanced Settings</strong>
                     <ul>
@@ -302,9 +312,6 @@
                 <li><strong>Tilpasset</strong> - Custom margin using the slider (10-150%)</li>
             </ul>
             <p>Click any pricing row to select it. The selected price will be used in your PDF export.</p>
-            
-            <h3>Batch Optimization Table:</h3>
-            <p>See how costs change with different quantities (1, 5, 10, 25, 50, 100 units). Useful for offering volume discounts.</p>
             
             <h3>Cost Breakdown:</h3>
             <p>View detailed per-unit costs for:</p>
@@ -341,17 +348,16 @@
                 <em>💡 Pro Tips:</em>
             </p>
             <ul>
-                <li>Use G-code import for the most accurate estimates</li>
+                <li>Get print time and filament weight from your slicer for accurate estimates</li>
                 <li>Include handling time for realistic labor costs</li>
                 <li>Adjust the material factor based on your failure rate</li>
                 <li>The buffer factor accounts for contingencies and business overhead</li>
-                <li>Higher batch sizes reduce per-unit costs due to shared setup time</li>
                 <li>Save quotes as PDFs to track pricing history</li>
             </ul>
         </div>
     </div>
 
-    <div class="formCard">
+    <div class="formCard" id="usage" style="scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">📊 Recording Usage</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>Track how much filament you've used with the improved usage recording system:</p>
@@ -407,7 +413,7 @@
         </div>
     </div>
 
-    <div class="formCard">
+    <div class="formCard" id="pricing" style="scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">💰 Weighted Average Pricing</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
@@ -483,7 +489,7 @@
         </div>
     </div>
 
-    <div class="formCard">
+    <div class="formCard" id="settings" style="scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">⚙️ Settings</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>The Settings page provides important maintenance and customization options:</p>
@@ -598,7 +604,7 @@
         </div>
     </div>
 
-    <div class="formCard">
+    <div class="formCard" id="tips" style="scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">💡 Tips & Best Practices</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <ul>
@@ -631,7 +637,177 @@
         </div>
     </div>
 
-    <div class="formCard">
+    <div class="formCard" id="livetracker" style="scroll-margin-top: 20px;">
+        <h2 style="margin-top: 0;">🖨️ BambuLab Live Tracking</h2>
+        <div style="color: var(--muted); line-height: 1.8;">
+            <p>
+                The <strong>Live Tracking</strong> widget in the navigation bar provides real-time monitoring of your BambuLab 3D printer status. 
+                See print progress, time remaining, and layer information at a glance without opening Bambu Studio!
+            </p>
+            
+            <h3>Features:</h3>
+            <ul>
+                <li><strong>Real-Time Updates</strong> - Direct MQTT connection to your printer for instant status updates</li>
+                <li><strong>Print Progress</strong> - Large percentage display with animated progress bar</li>
+                <li><strong>Time Tracking</strong> - See both time elapsed and time remaining</li>
+                <li><strong>Layer Counter</strong> - Current layer / Total layers display</li>
+                <li><strong>File Name</strong> - Shows the current G-code file being printed</li>
+                <li><strong>Connection Status</strong> - Visual indicator (green pulsing dot) when connected</li>
+                <li><strong>Idle Detection</strong> - Shows "Printer Idle" when connected but not printing</li>
+                <li><strong>Always Visible</strong> - Widget stays in the navigation bar on all pages</li>
+            </ul>
+            
+            <h3>Setting Up Live Tracking:</h3>
+            <ol>
+                <li><strong>Find Your Printer Information</strong>
+                    <ul>
+                        <li>On your BambuLab printer touchscreen, go to <strong>Settings → Network</strong></li>
+                        <li>Note your printer's <strong>IP Address</strong> (e.g., 192.168.1.100)</li>
+                        <li>Find your <strong>Access Code</strong> (8-digit code under Settings → Network → Access Code)</li>
+                        <li>Go to <strong>Settings → Device</strong> to find your <strong>Serial Number</strong> (starts with 01S00C or 01P00A)</li>
+                    </ul>
+                </li>
+                
+                <li><strong>Configure in Filament Tracker</strong>
+                    <ul>
+                        <li>Click the <strong>⚙️ Settings</strong> button in the navigation bar</li>
+                        <li>Scroll down to the <strong>"🖨️ BambuLab MQTT Live Tracking"</strong> section</li>
+                        <li>Check the <strong>"Enable BambuLab Live Tracking"</strong> checkbox</li>
+                        <li>Enter your printer's <strong>IP Address</strong></li>
+                        <li>Enter your printer's <strong>Access Code</strong></li>
+                        <li>Enter your printer's <strong>Serial Number</strong></li>
+                        <li>Click <strong>"🧪 Test Connection"</strong> to verify the connection works</li>
+                        <li>Click <strong>"💾 Save & Connect"</strong> to save settings and start tracking</li>
+                    </ul>
+                </li>
+                
+                <li><strong>Verify Connection</strong>
+                    <ul>
+                        <li>Look at the Live Tracking widget in the navigation bar</li>
+                        <li>You should see a green pulsing dot with "Connected" status</li>
+                        <li>If connected but not printing, it will show "Printer Idle" with a sleep emoji</li>
+                        <li>Start a print to see real-time progress updates!</li>
+                    </ul>
+                </li>
+            </ol>
+            
+            <h3>Understanding the Display:</h3>
+            <p><strong>When Connected and Idle:</strong></p>
+            <ul>
+                <li>Green pulsing dot + "Connected" text</li>
+                <li>💤 "Printer Idle" message</li>
+            </ul>
+            
+            <p><strong>When Printing:</strong></p>
+            <ul>
+                <li>Green pulsing dot + "Connected" text</li>
+                <li>Large progress percentage (e.g., "47%")</li>
+                <li>Animated blue progress bar showing completion</li>
+                <li><strong>⏱️ Time:</strong> Shows "1h 23m / 45m" (elapsed / remaining)</li>
+                <li><strong>📏 Layer:</strong> Shows "142 / 387" (current / total)</li>
+                <li><strong>📄 File:</strong> Shows the G-code filename (truncated if long)</li>
+            </ul>
+            
+            <p><strong>When Disconnected:</strong></p>
+            <ul>
+                <li>Gray dot + "Disconnected" text</li>
+                <li>"Configure in Settings" message</li>
+            </ul>
+            
+            <h3>Connection Requirements:</h3>
+            <ul>
+                <li><strong>Network Access</strong> - Your computer/server and printer must be on the same network</li>
+                <li><strong>Port 8883</strong> - MQTT over TLS port must not be blocked by firewall</li>
+                <li><strong>Local Mode</strong> - Printer must be accessible via local IP (LAN mode enabled)</li>
+                <li><strong>Access Code</strong> - Must be enabled on the printer (Settings → Network)</li>
+            </ul>
+            
+            <h3>Troubleshooting:</h3>
+            <p><strong>Problem: Connection fails with "BadUserNameOrPassword"</strong></p>
+            <ul>
+                <li>Double-check your Access Code - it must be exactly 8 characters</li>
+                <li>Verify Access Code is enabled on the printer</li>
+                <li>Try regenerating the Access Code on the printer and updating in settings</li>
+            </ul>
+            
+            <p><strong>Problem: Connection timeout or "Connection failed"</strong></p>
+            <ul>
+                <li>Verify printer IP address is correct (check printer network settings)</li>
+                <li>Ping the printer IP from your computer: <code>ping [printer-ip]</code></li>
+                <li>Ensure both devices are on the same network (not guest network)</li>
+                <li>Check if firewall is blocking port 8883</li>
+                <li>Try restarting the printer's network connection</li>
+            </ul>
+            
+            <p><strong>Problem: Wrong serial number</strong></p>
+            <ul>
+                <li>Serial number format should be 01S00C... (X1C) or 01P00A... (P1/A1 series)</li>
+                <li>Check Settings → Device on the printer touchscreen</li>
+                <li>Serial number is case-sensitive - copy it exactly</li>
+            </ul>
+            
+            <p><strong>Problem: Connection drops frequently</strong></p>
+            <ul>
+                <li>Check WiFi signal strength on printer</li>
+                <li>Consider switching printer to Ethernet connection</li>
+                <li>Router may be dropping idle connections - configure longer timeout</li>
+                <li>The app will auto-reconnect every 5 seconds after disconnect</li>
+            </ul>
+            
+            <h3>Technical Details:</h3>
+            <ul>
+                <li><strong>Protocol:</strong> MQTT over TLS (port 8883)</li>
+                <li><strong>Updates:</strong> Real-time as printer reports (typically every 1-2 seconds during print)</li>
+                <li><strong>Security:</strong> Encrypted connection with self-signed certificates (standard for BambuLab)</li>
+                <li><strong>Connection Type:</strong> Direct local connection (no cloud required)</li>
+                <li><strong>Auto-Reconnect:</strong> Attempts reconnection every 5 seconds if disconnected</li>
+                <li><strong>Persistence:</strong> Settings saved to database, auto-connects on app startup</li>
+            </ul>
+            
+            <h3>Supported Printers:</h3>
+            <p>The Live Tracking feature works with all BambuLab printers that support MQTT:</p>
+            <ul>
+                <li>✅ X1 Carbon</li>
+                <li>✅ X1</li>
+                <li>✅ P1S</li>
+                <li>✅ P1P</li>
+                <li>✅ A1 Series</li>
+                <li>✅ A1 Mini</li>
+            </ul>
+            
+            <h3>Privacy & Security:</h3>
+            <ul>
+                <li><strong>Local Connection Only</strong> - All communication stays on your local network</li>
+                <li><strong>No Cloud Services</strong> - Does not connect to BambuLab cloud or any external services</li>
+                <li><strong>Secure Storage</strong> - Access code encrypted in local SQLite database</li>
+                <li><strong>Read-Only</strong> - Cannot send commands or control your printer</li>
+                <li><strong>No Data Collection</strong> - Print data stays on your device</li>
+            </ul>
+            
+            <h3>Benefits:</h3>
+            <ul>
+                <li>✅ <strong>Monitor from anywhere</strong> - Check print status without going to the printer</li>
+                <li>✅ <strong>Multi-page tracking</strong> - Progress visible while browsing inventory or calculator</li>
+                <li>✅ <strong>No browser required</strong> - Better than opening Bambu Studio web interface</li>
+                <li>✅ <strong>Lightweight</strong> - Minimal network overhead</li>
+                <li>✅ <strong>Reliable</strong> - Direct MQTT connection, no polling delays</li>
+                <li>✅ <strong>Always up-to-date</strong> - Real-time updates as printer reports status</li>
+            </ul>
+            
+            <p>
+                <em>💡 Pro Tips:</em>
+            </p>
+            <ul>
+                <li>Set a static IP for your printer in your router settings to prevent IP changes</li>
+                <li>Keep the Access Code secure - it allows read access to printer status</li>
+                <li>Use the Test Connection button before saving to verify all details are correct</li>
+                <li>The connection persists across app restarts - no need to reconnect manually</li>
+                <li>Widget collapses on mobile screens to save space but remains accessible</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="formCard" id="quickactions" style="scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">⚡ Quick Actions & Workflows</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <h3>Common Tasks Made Easy:</h3>
@@ -691,7 +867,7 @@
         </div>
     </div>
 
-    <div class="formCard">
+    <div class="formCard" id="faq" style="scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">❓ Troubleshooting & FAQ</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p><strong>Q: My filaments aren't showing up</strong></p>

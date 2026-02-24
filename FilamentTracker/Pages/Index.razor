@@ -2,13 +2,17 @@
 @using FilamentTracker.Models
 @using FilamentTracker.Services
 @inject FilamentService FilamentService
+@inject BambuLabService BambuLabService
 @inject NavigationManager Navigation
+@implements IDisposable
 
 <PageTitle>Filament Inventory</PageTitle>
 
 <div class="wrap">
-    <!-- Top Nav -->
-    <div class="topnav">
+<!-- Top Nav -->
+<div class="topnav">
+    <!-- Navigation buttons container -->
+    <div class="navButtons">
         <!-- Row 1 -->
         <button class="navbtn @(currentPage == "inventory" ? "active" : "")" @onclick='() => SetPage("inventory")'>
             <span class="navicon">📦</span> Inventory
@@ -31,6 +35,69 @@
             <span class="navicon">⚙️</span> Settings
         </button>
     </div>
+
+    <!-- Live Tracking Widget -->
+    <div class="liveTracker">
+        <div class="liveTrackerHeader">
+            <span class="liveIcon">🖨️</span>
+            <span class="liveTitle">Live Tracking</span>
+        </div>
+        <div class="liveTrackerBody">
+                @if (isConnected)
+                {
+                    <div class="statusIndicator connected">
+                        <span class="statusDot"></span>
+                        <span>Connected</span>
+                    </div>
+                    @if (currentPrint != null && currentPrint.IsPrinting)
+                    {
+                        <div class="printInfo">
+                            <div class="printProgress">
+                                <div class="progressBar">
+                                    <div class="progressFill" style="width: @(currentPrint.Progress)%"></div>
+                                </div>
+                                <div class="progressText">@currentPrint.Progress%</div>
+                            </div>
+                            <div class="printDetails">
+                                <div class="printDetail">
+                                    <span class="detailLabel">⏱️ Time:</span>
+                                    <span class="detailValue">@currentPrint.TimeElapsed / @currentPrint.TimeRemaining</span>
+                                </div>
+                                <div class="printDetail">
+                                    <span class="detailLabel">📏 Layer:</span>
+                                    <span class="detailValue">@currentPrint.CurrentLayer / @currentPrint.TotalLayers</span>
+                                </div>
+                                @if (!string.IsNullOrEmpty(currentPrint.CurrentFile))
+                                {
+                                    <div class="printDetail">
+                                        <span class="detailLabel">📄 File:</span>
+                                        <span class="detailValue" title="@currentPrint.CurrentFile">@TruncateFileName(currentPrint.CurrentFile)</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="idleState">
+                            <div class="idleIcon">💤</div>
+                            <div class="idleText">Printer Idle</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="statusIndicator disconnected">
+                        <span class="statusDot"></span>
+                        <span>Disconnected</span>
+                    </div>
+                    <div class="disconnectedMessage">
+                        Configure in Settings
+                    </div>
+                }
+        </div>
+    </div>
+</div>
 
     @if (currentPage == "inventory")
     {
@@ -60,9 +127,48 @@
 
 @code {
     private string currentPage = "inventory";
+    private bool isConnected = false;
+    private PrintStatus? currentPrint = null;
+
+    protected override void OnInitialized()
+    {
+        // Subscribe to BambuLab status updates
+        BambuLabService.OnStatusUpdated += HandleStatusUpdate;
+        
+        // Get initial status
+        UpdateStatus(BambuLabService.GetCurrentStatus());
+    }
+
+    private void HandleStatusUpdate(PrintStatus status)
+    {
+        InvokeAsync(() =>
+        {
+            UpdateStatus(status);
+            StateHasChanged();
+        });
+    }
+
+    private void UpdateStatus(PrintStatus status)
+    {
+        isConnected = status.IsConnected;
+        currentPrint = status;
+    }
 
     private void SetPage(string page)
     {
         currentPage = page;
+    }
+
+    private string TruncateFileName(string fileName)
+    {
+        if (fileName.Length <= 20)
+            return fileName;
+        
+        return fileName.Substring(0, 17) + "...";
+    }
+
+    public void Dispose()
+    {
+        BambuLabService.OnStatusUpdated -= HandleStatusUpdate;
     }
 }
