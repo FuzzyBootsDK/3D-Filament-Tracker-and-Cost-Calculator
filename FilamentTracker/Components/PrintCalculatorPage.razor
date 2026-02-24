@@ -1,0 +1,266 @@
+@using Microsoft.JSInterop
+@using FilamentTracker.Services
+@inject IJSRuntime JS
+@inject FilamentService FilamentService
+
+<section class="calculator-root">
+    <div class="pageHeader">
+        <h1>3D Print Cost Calculator</h1>
+        <div class="sub">Calculate costs • Pricing • PDF export</div>
+    </div>
+
+    <div class="calculator-layout">
+        <!-- LEFT COLUMN -->
+        <section class="calculator-card">
+            <h2 class="calculator-card-title">Project Details</h2>
+            <p class="calculator-card-sub">Basic data for your print and materials</p>
+
+            <div class="calculator-grid-2 calculator-gap-md calculator-mt-md">
+                <div class="calculator-field">
+                    <label for="partName">Part Name</label>
+                    <input id="partName" type="text" placeholder="e.g. Shelf bracket" />
+                </div>
+
+                <div class="calculator-field">
+                    <label for="printerProfile">Printer Profile</label>
+                    <select id="printerProfile">
+                        <option value="">Select a printer...</option>
+                        <option value="Bambu X1C">Bambu X1C</option>
+                        <option value="Bambu P1S">Bambu P1S</option>
+                        <option value="Bambu A1">Bambu A1</option>
+                        <option value="Bambu A1 mini">Bambu A1 mini</option>
+                        <option value="Bambu H2S">Bambu H2S</option>
+                        <option value="Bambu H2D">Bambu H2D</option>
+                        <option value="Bambu H2C">Bambu H2C</option>
+                    </select>
+                </div>
+
+                <!-- PRINT TIME -->
+                <div class="calculator-field">
+                    <label>Print Time</label>
+                    <div class="calculator-grid-2 calculator-gap-md">
+                        <input id="printHours" type="number" step="1" value="0" placeholder="Hours" />
+                        <input id="printMinutes" type="number" step="1" value="0" placeholder="Minutes" />
+                    </div>
+                </div>
+
+                <!-- HANDLING TIME -->
+                <div class="calculator-field">
+                    <label>Handling Time</label>
+                    <div class="calculator-grid-2 calculator-gap-md">
+                        <input id="laborHours" type="number" step="1" value="0" placeholder="Hours" />
+                        <input id="laborMinutes" type="number" step="1" value="0" placeholder="Minutes" />
+                    </div>
+                </div>
+
+                <div class="calculator-field">
+                    <label for="hardwareCost">Hardware Cost</label>
+                    <input id="hardwareCost" type="number" step="1" value="0" />
+                </div>
+
+                <div class="calculator-field">
+                    <label for="packagingCost">Packaging Cost</label>
+                    <input id="packagingCost" type="number" step="1" value="0" />
+                </div>
+
+                <div class="calculator-field">
+                    <label for="vatRate">VAT Rate (%)</label>
+                    <input id="vatRate" type="number" step="1" value="25" />
+                </div>
+            </div>
+
+            <hr class="calculator-divider" />
+
+            <h3 class="calculator-section-title">Materials (multi-material)</h3>
+            <p class="calculator-card-sub">Select from inventory or enter manually</p>
+
+            <div class="calculator-materials-header">
+                <span>Filament</span>
+                <span>Price/kg</span>
+                <span>Weight (g)</span>
+                <span></span>
+            </div>
+            <div id="materialsBody"></div>
+
+            <button id="addMaterialBtn" class="calculator-btn-secondary calculator-mt-sm">+ Add Material</button>
+
+            <hr class="calculator-divider" />
+
+            <h3 class="calculator-section-title">Advanced Settings</h3>
+            <p class="calculator-card-sub">Machine cost, electricity, depreciation and buffer</p>
+
+            <div class="calculator-grid-2 calculator-gap-md calculator-mt-sm">
+                <div class="calculator-field">
+                    <label for="hourlyRate">Hourly Rate</label>
+                    <input id="hourlyRate" type="number" value="200" />
+                </div>
+
+                <div class="calculator-field">
+                    <label for="materialFactor">Material Factor</label>
+                    <input id="materialFactor" type="number" step="0.05" value="1.1" />
+                </div>
+
+                <div class="calculator-field">
+                    <label for="printerPrice">Printer Price</label>
+                    <input id="printerPrice" type="number" value="5599" />
+                </div>
+
+                <div class="calculator-field">
+                    <label for="printerLifetimeYears">Estimated Lifetime (years)</label>
+                    <input id="printerLifetimeYears" type="number" step="0.5" value="3" />
+                </div>
+
+                <div class="calculator-field">
+                    <label for="uptimePercent">Uptime Percentage (%)</label>
+                    <input id="uptimePercent" type="number" step="1" value="50" />
+                </div>
+
+                <div class="calculator-field">
+                    <label for="maintenanceYearly">Yearly Maintenance</label>
+                    <input id="maintenanceYearly" type="number" value="549" />
+                </div>
+
+                <div class="calculator-field">
+                    <label for="powerWatt">Power Consumption (W)</label>
+                    <input id="powerWatt" type="number" value="150" />
+                </div>
+
+                <div class="calculator-field">
+                    <label for="electricityPrice">Electricity Price (per kWh)</label>
+                    <input id="electricityPrice" type="number" step="0.01" value="0.2" />
+                </div>
+
+                <div class="calculator-field">
+                    <label for="bufferFactor">Buffer Factor</label>
+                    <input id="bufferFactor" type="number" step="0.05" value="1.3" />
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT COLUMN -->
+        <section class="calculator-card">
+            <h2 class="calculator-card-title">Pricing</h2>
+            <p class="calculator-card-sub">Based on calculated unit cost</p>
+
+            <div class="calculator-pill-row calculator-mt-sm">
+                <span class="calculator-pill-soft">Unit Cost: <span id="unitCostLabel">0.00</span></span>
+            </div>
+
+            <div id="pricingList" class="calculator-pricing-list calculator-mt-md"></div>
+
+            <div class="calculator-field calculator-mt-md">
+                <label for="customMargin">Custom Profit Margin</label>
+                <div class="calculator-range-row">
+                    <input id="customMargin" type="range" min="10" max="150" value="50" />
+                    <span id="customMarginLabel">50%</span>
+                </div>
+            </div>
+
+            <div class="calculator-summary calculator-mt-md">
+                <div class="calculator-summary-row">
+                    <span>Selected price incl. VAT</span>
+                    <span id="selectedPrice">0.00</span>
+                </div>
+                <div class="calculator-summary-row muted">
+                    <span>Selected margin</span>
+                    <span id="selectedMargin">40%</span>
+                </div>
+            </div>
+
+            <div class="calculator-actions calculator-mt-md">
+                <button id="exportPdfBtn" class="calculator-btn-primary">Export Quote as PDF</button>
+            </div>
+
+            <hr class="calculator-divider" />
+
+            <h3 class="calculator-section-title">Cost Breakdown (per unit)</h3>
+
+            <div class="calculator-cost-grid calculator-mt-sm">
+                <div class="calculator-cost-row">
+                    <span>Material</span>
+                    <span id="costMaterial">0.00</span>
+                </div>
+                <div class="calculator-cost-row">
+                    <span>Labor</span>
+                    <span id="costLabor">0.00</span>
+                </div>
+                <div class="calculator-cost-row">
+                    <span>Machine</span>
+                    <span id="costMachine">0.00</span>
+                </div>
+                <div class="calculator-cost-row">
+                    <span>Hardware</span>
+                    <span id="costHardware">0.00</span>
+                </div>
+                <div class="calculator-cost-row">
+                    <span>Packaging</span>
+                    <span id="costPackaging">0.00</span>
+                </div>
+            </div>
+
+            <div class="calculator-summary calculator-mt-sm">
+                <div class="calculator-summary-row">
+                    <span>Total landed cost</span>
+                    <span id="costTotal">0.00</span>
+                </div>
+            </div>
+
+            <hr class="calculator-divider" />
+
+            <!-- EXPLANATION BLOCK - NOW IN RIGHT COLUMN BELOW COST BREAKDOWN -->
+            <div class="calculator-explanation-block calculator-mt-md">
+                <h4>Advanced Settings Explained</h4>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Hourly Rate:</b> Your labor cost per hour for handling and post-processing.</li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Material Factor:</b> Multiplier to account for waste, failed prints, or extra material (e.g., 1.1 = 10% extra).</li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Printer Price:</b> Purchase price of your 3D printer, used for depreciation calculations.</li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Estimated Lifetime (years):</b> How many years you expect the printer to last. A longer lifetime lowers the per-hour machine cost.</li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Uptime Percentage (%):</b> How much of the time the printer is actually running vs. sitting idle. Higher uptime spreads the fixed costs over more hours, reducing per-print cost.</li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Yearly Maintenance:</b> Estimated annual cost for spare parts, servicing, and consumables like nozzles and belts.</li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Power Consumption (W):</b> Average wattage drawn by the printer during a print job.</li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);"><b>Electricity Price (per kWh):</b> Your local electricity rate. Used to calculate the electricity cost per print hour.</li>
+                    <li style="padding: 10px 0;"><b>Buffer Factor:</b> A safety multiplier applied to the total cost to cover unexpected expenses, reprints, or overhead (e.g., 1.3 = 30% buffer on top of all costs).</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+</section>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Don't inject scripts from the component (avoid double-loading).
+            // Scripts are loaded globally from _Host.cshtml. Use the safe queued
+            // initializer so JS can accept data even if the calculator script
+            // hasn't finished parsing yet.
+
+            // Load currency and inventory
+            var settings = await FilamentService.GetSettingsAsync();
+            var filaments = await FilamentService.GetAllFilamentsAsync();
+
+            // Prepare inventory data for JavaScript
+            var inventoryData = filaments.Select(f => new
+            {
+                id = f.Id,
+                name = $"{f.Brand} {f.Type} - {f.ColorName}",
+                pricePerKg = f.CalculatedPricePerKg
+            }).ToArray();
+
+            // Pass data to JavaScript using the queued initializer
+            try
+            {
+                await JS.InvokeVoidAsync("queueCalcInit", new
+                {
+                    currency = settings.Currency,
+                    inventory = inventoryData
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error queuing calculator init: {ex.Message}");
+            }
+        }
+    }
+}

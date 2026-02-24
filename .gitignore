@@ -1,0 +1,104 @@
+# ===========================
+# Visual Studio / .NET / Blazor
+# ===========================
+## Build output
+bin/
+obj/
+**/bin/
+**/obj/
+
+## User-specific files
+*.user
+*.suo
+*.userosscache
+*.DotSettings.user
+.vs/
+.vscode/
+
+# ===========================
+# Database — never commit
+# ===========================
+*.db
+*.db-shm
+*.db-wal
+
+# ===========================
+# OS / Editor
+# ===========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===========================
+# JetBrains Rider / IntelliJ
+# ===========================
+.idea/
+*.sln.iml
+
+# ===========================
+# Test results / coverage
+# ===========================
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+coverage*.xml
+
+# ===========================
+# Publish / Docker build artifacts
+# ===========================
+publish/
+*.tar.gz
+*.zip
+**/publish/
+
+# Docker/local env files
+# Do not ignore project-level docker-compose.yml unless you want it ignored
+.env
+.env.*
+docker-compose.override.yml
+
+# ===========================
+# Logs
+# ===========================
+*.log
+logs/
+
+# ===========================
+# Secrets / local config
+# ===========================
+appsettings.Development.json
+appsettings.*.Local.json
+secrets.json
+secrets.*
+*.pfx
+*.pem
+
+# ===========================
+# NuGet / packages
+# ===========================
+.packages/
+packages/
+project.lock.json
+project.fragment.lock.json
+
+# ===========================
+# Node / frontend
+# ===========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Misc
+# ===========================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.swp
+
+# Local Docker env files
+/.env
+/*.env
+FilamentTracker/.env
+

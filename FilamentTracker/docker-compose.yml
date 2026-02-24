@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  filament-tracker:
+    # Build locally (preferred for development) — requires a Dockerfile in the project root
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKERHUB_USERNAME:-fuzzybootsdk}/filament-tracker:${IMAGE_TAG:-latest}
+    container_name: filament-tracker
+    env_file:
+      - .env
+    ports:
+      - "${HOST_PORT:-5500}:5000"
+    volumes:
+      - filament-data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - ASPNETCORE_URLS=http://+:5000
+      # Use Production by default; override with .env for local development
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - filament-network
+
+volumes:
+  filament-data:
+    driver: local
+
+networks:
+  filament-network:
+    driver: bridge

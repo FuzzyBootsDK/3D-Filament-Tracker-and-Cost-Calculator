@@ -1,0 +1,73 @@
+╔════════════════════════════════════════════════════════╗
+║                                                        ║
+║      Filament Tracker v2.0 - Setup Instructions       ║
+║                                                        ║
+╚════════════════════════════════════════════════════════╝
+
+SUPER QUICK START (1-2 steps!)
+════════════════════════════════════════════════════════
+
+Step 1: Install Docker Desktop
+   Windows/Mac: https://www.docker.com/products/docker-desktop
+   (Just download and install - takes ~5 minutes)
+
+Step 2: Run ONE of these commands:
+   
+   Windows PowerShell:
+   .\deploy.ps1
+   
+   Windows Command Prompt:
+   deploy.bat
+   
+   Mac/Linux Terminal:
+   docker-compose up -d
+
+That's it! Your browser opens automatically to the app!
+
+════════════════════════════════════════════════════════
+
+WHAT YOU GET:
+   ✓ Full filament tracking app
+   ✓ Runs in web browser
+   ✓ Works on your computer and phone/tablet
+   ✓ All data saved automatically
+   ✓ No coding needed!
+
+ACCESSING THE APP:
+   On this computer:
+      http://localhost:5000
+   
+   From phone/tablet on same WiFi:
+      http://YOUR-COMPUTER-IP:5000
+      (Find IP: Run "ipconfig" on Windows)
+
+USEFUL COMMANDS:
+   View logs:     docker logs filament-tracker
+   Stop app:      docker stop filament-tracker
+   Start app:     docker start filament-tracker
+   Remove app:    docker rm -f filament-tracker
+
+BACKUP YOUR DATA:
+   1. Open the app
+   2. Click "Settings"
+   3. Click "Export to CSV"
+   4. Save the file somewhere safe!
+
+TROUBLESHOOTING:
+   Problem: Docker not found
+   Solution: Install Docker Desktop and restart PowerShell
+   
+   Problem: Port 5000 already in use
+   Solution: .\deploy.ps1 -Port 8080
+   
+   Problem: Can't access from phone
+   Solution: Check firewall, use computer's IP address
+
+NEED MORE HELP?
+   - Full guide: DOCKER-README.md
+   - Main docs: README.md
+   - In-app help: Click "Help" button in the app
+
+════════════════════════════════════════════════════════
+
+Made with ❤️ for 3D printing enthusiasts!

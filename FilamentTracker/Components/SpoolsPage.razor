@@ -1,0 +1,193 @@
+@using FilamentTracker.Models
+@using FilamentTracker.Services
+@inject FilamentService FilamentService
+
+<section>
+    <div class="pageHeader">
+        <h1>Reusable Spools</h1>
+        <div class="sub">Track reusable spools • Manage available and in-use spools</div>
+    </div>
+
+    <div class="kpis">
+        <div class="kpi">
+            <div class="label">Total Reusable Spools</div>
+            <div class="value">@reusableSpools.Count</div>
+        </div>
+        <div class="kpi">
+            <div class="label">Available</div>
+            <div class="value" style="color: var(--ok);">@reusableSpools.Count(s => !s.InUse)</div>
+        </div>
+        <div class="kpi">
+            <div class="label">In Use</div>
+            <div class="value" style="color: var(--accent);">@reusableSpools.Count(s => s.InUse)</div>
+        </div>
+    </div>
+
+    <div class="strip" style="margin-top: 14px; border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.12);">
+        <div style="color: var(--text); line-height: 1.6;">
+            <strong>ℹ️ Automatic Tracking:</strong> When you add a filament and check "Reusable Spool", 
+            it's automatically marked as "In Use" here. When the filament is used up (0g remaining), 
+            it becomes "Available" again. You can also manually add empty reusable spools to your inventory below.
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="strip" style="margin-top: 14px; border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.12);">
+            <div>@message</div>
+        </div>
+    }
+
+    <div class="controls">
+        <button class="btn primary" @onclick="ShowAddForm">➕ Add Reusable Spool</button>
+        <div class="spacer"></div>
+        <span class="pill">@reusableSpools.Count spools</span>
+    </div>
+
+    @if (showAddForm)
+    {
+        <div class="formCard">
+            <h2 style="margin-top: 0;">Add New Reusable Spool</h2>
+            <div class="formGrid">
+                <div class="colSpan2">
+                    <label class="req">Material</label>
+                    <select class="input" @bind="newSpoolMaterial">
+                        <option value="plastic">Plastic</option>
+                        <option value="reusable">Reusable (Bambu/3rd party)</option>
+                        <option value="cardboard">Cardboard</option>
+                    </select>
+                </div>
+                <div class="colSpan2">
+                    <label>Quantity to Add</label>
+                    <input type="number" class="input" @bind="quantityToAdd" min="1" step="1" />
+                </div>
+            </div>
+            <div class="formFooter">
+                <button class="btn primary" @onclick="AddReusableSpool">Add</button>
+                <button class="btn" @onclick="() => showAddForm = false">Cancel</button>
+            </div>
+        </div>
+    }
+
+    <div class="formCard">
+        <h2 style="margin-top: 0;">Reusable Spools List</h2>
+        
+        @if (reusableSpools.Any())
+        {
+            <div class="spoolList">
+                @foreach (var spool in reusableSpools.OrderBy(s => s.InUse).ThenByDescending(s => s.DateAdded))
+                {
+                    <div class="spoolRow">
+                        <div class="left">
+                            <div>
+                                <div class="title">@spool.Material.ToUpper() Spool</div>
+                                <div class="subline">Added @spool.DateAdded.ToString("MMM dd, yyyy")</div>
+                            </div>
+                        </div>
+                        <div class="right">
+                            @if (spool.InUse)
+                            {
+                                <span class="tag" style="background: rgba(59,130,246,.18); border-color: rgba(59,130,246,.40);">
+                                    In Use
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="tag" style="background: rgba(16,185,129,.14); border-color: rgba(16,185,129,.30);">
+                                    Available
+                                </span>
+                            }
+                            <button class="tinyBtn danger" @onclick="() => DeleteReusableSpool(spool.Id)">Delete</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p style="color: var(--muted); text-align: center; padding: 20px;">
+                No reusable spools tracked yet. Add your first one above!
+            </p>
+        }
+    </div>
+
+    <div class="formCard">
+        <h2 style="margin-top: 0;">About Reusable Spools</h2>
+        <div style="color: var(--muted); line-height: 1.6;">
+            <p>
+                Track your collection of reusable spools here. These are spools that can be reused 
+                with refill filaments, such as:
+            </p>
+            <ul>
+                <li><strong>Bambu Lab reusable spools</strong> - Official reusable spools from Bambu Lab</li>
+                <li><strong>Third-party reusable spools</strong> - Compatible reusable spools from other brands</li>
+                <li><strong>Empty plastic spools</strong> - Original spools that can be refilled</li>
+            </ul>
+            <p>
+                When you add a filament marked as "on a spool" with reusable material, 
+                it will automatically be tracked as "In Use". Empty spools become "Available" again.
+            </p>
+        </div>
+    </div>
+</section>
+
+@code {
+    private List<ReusableSpool> reusableSpools = new();
+    private bool showAddForm = false;
+    private string newSpoolMaterial = "plastic";
+    private int quantityToAdd = 1;
+    private string message = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        reusableSpools = await FilamentService.GetReusableSpoolsAsync();
+        StateHasChanged();
+    }
+
+    private void ShowAddForm()
+    {
+        showAddForm = true;
+    }
+
+    private async Task AddReusableSpool()
+    {
+        for (int i = 0; i < quantityToAdd; i++)
+        {
+            var spool = new ReusableSpool
+            {
+                Material = newSpoolMaterial,
+                InUse = false,
+                DateAdded = DateTime.Now
+            };
+            await FilamentService.AddReusableSpoolAsync(spool);
+        }
+        
+        message = $"Added {quantityToAdd} reusable spool(s)!";
+        showAddForm = false;
+        quantityToAdd = 1;
+        await RefreshData();
+        
+        _ = Task.Delay(3000).ContinueWith(_ =>
+        {
+            message = "";
+            InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private async Task DeleteReusableSpool(int id)
+    {
+        if (confirm("Are you sure you want to delete this reusable spool?"))
+        {
+            await FilamentService.DeleteReusableSpoolAsync(id);
+            await RefreshData();
+        }
+    }
+    
+    // Simple confirm implementation (you might want to use a modal in production)
+    private bool confirm(string message) => true;
+}
