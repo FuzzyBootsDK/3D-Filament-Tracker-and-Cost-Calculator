@@ -640,9 +640,8 @@ body.light,
 .topnav {
     display: flex;
     gap: 12px;
-    align-items: center;
+    align-items: stretch;
     padding: 12px;
-    flex-wrap: wrap; /* allow two rows */
     border: 1px solid var(--border);
     border-radius: 22px;
     background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
@@ -653,9 +652,19 @@ body.light,
     background: var(--panel);
 }
 
+/* Container for navigation buttons (allows wrapping into 2 rows) */
+.navButtons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    flex: 1;
+    align-content: flex-start;
+}
+
 .navbtn {
     /* Make nav buttons arrange into two rows of three by default */
     flex: 1 1 calc(33.333% - 12px);
+    font-size: 20px;
     display: flex;
     gap: 10px;
     align-items: center;
@@ -680,7 +689,212 @@ body.light,
     border-color: rgba(59, 130, 246, .40);
 }
 
+/* Live Tracker Widget */
+.liveTracker {
+    width: 280px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .04);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.light .liveTracker {
+    background: var(--panel2);
+}
+
+.liveTrackerHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255, 255, 255, .03);
+}
+
+.light .liveTrackerHeader {
+    background: rgba(0, 0, 0, .02);
+}
+
+.liveIcon {
+    font-size: 18px;
+}
+
+.liveTitle {
+    font-weight: 900;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.liveTrackerBody {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+
+.statusIndicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.statusDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.statusIndicator.connected {
+    color: rgb(34, 197, 94);
+}
+
+.statusIndicator.connected .statusDot {
+    background: rgb(34, 197, 94);
+    box-shadow: 0 0 8px rgba(34, 197, 94, .5);
+}
+
+.statusIndicator.disconnected {
+    color: rgb(148, 163, 184);
+}
+
+.statusIndicator.disconnected .statusDot {
+    background: rgb(148, 163, 184);
+    animation: none;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.printInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.printProgress {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.progressBar {
+    height: 8px;
+    background: rgba(255, 255, 255, .08);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.light .progressBar {
+    background: rgba(0, 0, 0, .06);
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, rgb(59, 130, 246), rgb(99, 102, 241));
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.progressText {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--text);
+    text-align: center;
+}
+
+.printDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.printDetail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, .04);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.light .printDetail {
+    background: rgba(0, 0, 0, .02);
+}
+
+.detailLabel {
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.detailValue {
+    font-weight: 900;
+    font-size: 13px;
+    color: var(--text);
+}
+
+.idleState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+    gap: 8px;
+}
+
+.idleIcon {
+    font-size: 40px;
+    opacity: 0.5;
+}
+
+.idleText {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--muted);
+    text-align: center;
+}
+
+.disconnectedMessage {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 12px;
+    background: rgba(255, 255, 255, .02);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.light .disconnectedMessage {
+    background: rgba(0, 0, 0, .02);
+}
+
 /* Make sure buttons maintain two-row layout on narrow screens */
+@media (max-width: 1200px) {
+  .topnav {
+    flex-direction: column;
+  }
+  
+  .liveTracker {
+    width: 100%;
+    order: -1; /* Show above nav buttons on mobile */
+  }
+}
+
 @media (max-width: 720px) {
   .navbtn { flex: 1 1 calc(50% - 12px); min-width: 0; }
 }
@@ -988,7 +1202,7 @@ label {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(255, 255, 255, .20), rgba(255, 255, 255, 0));
+    background: linear-gradient(180deg, rgba(255, 255, 255, .15), rgba(0, 0, 0, .4));
     pointer-events: none;
 }
 
@@ -1766,3 +1980,32 @@ label {
         border: 1px solid #ddd;
     }
 }
+
+/* Help Page Navigation Links */
+.helpNavLink {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, .04);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.light .helpNavLink {
+    background: var(--panel);
+}
+
+.helpNavLink:hover {
+    background: rgba(99, 102, 241, .15);
+    border-color: rgba(99, 102, 241, .40);
+    transform: translateX(4px);
+}
+
+.helpNavLink:active {
+    transform: translateX(2px);
+}
+

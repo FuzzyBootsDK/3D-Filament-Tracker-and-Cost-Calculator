@@ -4,6 +4,7 @@
 @inject FilamentService FilamentService
 @inject CsvService CsvService
 @inject ThresholdService ThresholdService
+@inject BambuLabService BambuLabService
 @inject IJSRuntime JS
 
 <section>
@@ -109,6 +110,76 @@
                 <text>💾 Save Thresholds</text>
             }
         </button>
+    </div>
+
+    <div class="formCard">
+        <h2 style="margin-top: 0;">🖨️ BambuLab MQTT Live Tracking</h2>
+        <div style="color: var(--muted); margin-bottom: 16px;">
+            Connect to your BambuLab printer to see live print status in the navigation bar.
+        </div>
+        
+        <div class="checkRow" style="margin-bottom: 16px;">
+            <input type="checkbox" @bind="bambuLabEnabled" id="bambuLabEnabled" />
+            <label for="bambuLabEnabled">Enable BambuLab Live Tracking</label>
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+            <label class="label">Printer IP Address</label>
+            <input type="text" class="input" @bind="bambuLabIpAddress" placeholder="192.168.1.100" />
+            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                Find this in your printer's network settings
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+            <label class="label">Access Code</label>
+            <input type="text" class="input" @bind="bambuLabAccessCode" placeholder="12345678" maxlength="8" />
+            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                Found in Settings → Network → Access Code on your printer
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+            <label class="label">Serial Number</label>
+            <input type="text" class="input" @bind="bambuLabSerialNumber" placeholder="01S00C..." />
+            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                Found in Settings → Device on your printer
+            </div>
+        </div>
+        
+        @if (bambuLabConnectionStatus != null)
+        {
+            <div class="strip" style="margin-bottom: 16px; @(bambuLabConnectionSuccess ? "border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.12);" : "border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12);")">
+                <div>@bambuLabConnectionStatus</div>
+            </div>
+        }
+        
+        <div class="row">
+            <button class="btn primary" @onclick="SaveBambuLabSettings" disabled="@isProcessing">
+                @if (isProcessing)
+                {
+                    <text>Saving...</text>
+                }
+                else
+                {
+                    <text>💾 Save & Connect</text>
+                }
+            </button>
+            
+            @if (bambuLabEnabled && BambuLabService.IsConnected)
+            {
+                <button class="btn" @onclick="DisconnectBambuLab" disabled="@isProcessing">
+                    🔌 Disconnect
+                </button>
+            }
+            
+            @if (bambuLabEnabled && !string.IsNullOrEmpty(bambuLabIpAddress))
+            {
+                <button class="btn" @onclick="TestBambuLabConnection" disabled="@isProcessing">
+                    🧪 Test Connection
+                </button>
+            }
+        </div>
     </div>
 
     <div class="formCard">
@@ -279,6 +350,14 @@
     private int lowThreshold = 500;
     private int criticalThreshold = 250;
     private string selectedCurrency = "DKK";
+    
+    // BambuLab settings
+    private bool bambuLabEnabled = false;
+    private string bambuLabIpAddress = "";
+    private string bambuLabAccessCode = "";
+    private string bambuLabSerialNumber = "";
+    private string? bambuLabConnectionStatus;
+    private bool bambuLabConnectionSuccess = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -293,6 +372,12 @@
         lowThreshold = (int)settings.LowThreshold;
         criticalThreshold = (int)settings.CriticalThreshold;
         selectedCurrency = settings.Currency;
+        
+        // Load BambuLab settings
+        bambuLabEnabled = settings.BambuLabEnabled;
+        bambuLabIpAddress = settings.BambuLabIpAddress ?? "";
+        bambuLabAccessCode = settings.BambuLabAccessCode ?? "";
+        bambuLabSerialNumber = settings.BambuLabSerialNumber ?? "";
     }
     
     private async Task SaveCurrency()
@@ -504,5 +589,127 @@
             message = "";
             InvokeAsync(StateHasChanged);
         });
+    }
+    
+    // BambuLab MQTT Methods
+    private async Task SaveBambuLabSettings()
+    {
+        try
+        {
+            isProcessing = true;
+            bambuLabConnectionStatus = null;
+            StateHasChanged();
+            
+            var settings = await FilamentService.GetSettingsAsync();
+            settings.BambuLabEnabled = bambuLabEnabled;
+            settings.BambuLabIpAddress = bambuLabIpAddress;
+            settings.BambuLabAccessCode = bambuLabAccessCode;
+            settings.BambuLabSerialNumber = bambuLabSerialNumber;
+            
+            await FilamentService.UpdateSettingsAsync(settings);
+            
+            // Connect if enabled
+            if (bambuLabEnabled && 
+                !string.IsNullOrEmpty(bambuLabIpAddress) && 
+                !string.IsNullOrEmpty(bambuLabAccessCode) && 
+                !string.IsNullOrEmpty(bambuLabSerialNumber))
+            {
+                try
+                {
+                    await BambuLabService.ConnectAsync(bambuLabIpAddress, bambuLabAccessCode, bambuLabSerialNumber);
+                    bambuLabConnectionStatus = "✅ Successfully connected to BambuLab printer!";
+                    bambuLabConnectionSuccess = true;
+                }
+                catch (Exception ex)
+                {
+                    bambuLabConnectionStatus = $"❌ Connection failed: {ex.Message}";
+                    bambuLabConnectionSuccess = false;
+                }
+            }
+            else if (!bambuLabEnabled)
+            {
+                await BambuLabService.DisconnectAsync();
+                bambuLabConnectionStatus = "Settings saved. BambuLab tracking disabled.";
+                bambuLabConnectionSuccess = true;
+            }
+            
+            ShowMessage("BambuLab settings saved!", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error saving BambuLab settings: {ex.Message}", true);
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+    
+    private async Task TestBambuLabConnection()
+    {
+        try
+        {
+            isProcessing = true;
+            bambuLabConnectionStatus = "Testing connection...";
+            StateHasChanged();
+            
+            if (string.IsNullOrEmpty(bambuLabIpAddress) || 
+                string.IsNullOrEmpty(bambuLabAccessCode) || 
+                string.IsNullOrEmpty(bambuLabSerialNumber))
+            {
+                bambuLabConnectionStatus = "❌ Please fill in all fields";
+                bambuLabConnectionSuccess = false;
+                return;
+            }
+            
+            await BambuLabService.ConnectAsync(bambuLabIpAddress, bambuLabAccessCode, bambuLabSerialNumber);
+            
+            // Wait a moment for connection to establish
+            await Task.Delay(2000);
+            
+            if (BambuLabService.IsConnected)
+            {
+                bambuLabConnectionStatus = "✅ Connection successful! Receiving data from printer.";
+                bambuLabConnectionSuccess = true;
+            }
+            else
+            {
+                bambuLabConnectionStatus = "❌ Connection failed. Check your settings and network.";
+                bambuLabConnectionSuccess = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            bambuLabConnectionStatus = $"❌ Connection failed: {ex.Message}";
+            bambuLabConnectionSuccess = false;
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+    
+    private async Task DisconnectBambuLab()
+    {
+        try
+        {
+            isProcessing = true;
+            StateHasChanged();
+            
+            await BambuLabService.DisconnectAsync();
+            
+            bambuLabConnectionStatus = "Disconnected from printer";
+            bambuLabConnectionSuccess = true;
+            
+            ShowMessage("Disconnected from BambuLab printer", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error disconnecting: {ex.Message}", true);
+        }
+        finally
+        {
+            isProcessing = false;
+        }
     }
 }

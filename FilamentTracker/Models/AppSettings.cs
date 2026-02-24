@@ -15,4 +15,16 @@ public class AppSettings
     [Required]
     [MaxLength(10)]
     public string Currency { get; set; } = "DKK";
+    
+    // BambuLab MQTT Settings
+    [MaxLength(200)]
+    public string? BambuLabIpAddress { get; set; }
+    
+    [MaxLength(20)]
+    public string? BambuLabAccessCode { get; set; }
+    
+    [MaxLength(100)]
+    public string? BambuLabSerialNumber { get; set; }
+    
+    public bool BambuLabEnabled { get; set; } = false;
 }

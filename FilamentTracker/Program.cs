@@ -38,6 +38,7 @@ builder.Services.AddScoped<FilamentService>();
 builder.Services.AddScoped<CsvService>();
 builder.Services.AddSingleton<ThemeService>();
 builder.Services.AddSingleton<ThresholdService>();
+builder.Services.AddSingleton<BambuLabService>();
 
 var app = builder.Build();
 
@@ -121,6 +122,35 @@ using (var scope = app.Services.CreateScope())
             ");
         }
         
+        // Add BambuLab MQTT columns
+        if (!await ColumnExistsAsync("AppSettings", "BambuLabIpAddress"))
+        {
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE AppSettings ADD COLUMN BambuLabIpAddress TEXT
+            ");
+        }
+        
+        if (!await ColumnExistsAsync("AppSettings", "BambuLabAccessCode"))
+        {
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE AppSettings ADD COLUMN BambuLabAccessCode TEXT
+            ");
+        }
+        
+        if (!await ColumnExistsAsync("AppSettings", "BambuLabSerialNumber"))
+        {
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE AppSettings ADD COLUMN BambuLabSerialNumber TEXT
+            ");
+        }
+        
+        if (!await ColumnExistsAsync("AppSettings", "BambuLabEnabled"))
+        {
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE AppSettings ADD COLUMN BambuLabEnabled INTEGER NOT NULL DEFAULT 0
+            ");
+        }
+        
         // Ensure default settings exist
         if (!await context.AppSettings.AnyAsync())
         {
@@ -138,6 +168,32 @@ using (var scope = app.Services.CreateScope())
         {
             var thresholdService = scope.ServiceProvider.GetRequiredService<ThresholdService>();
             thresholdService.SetThresholds(settings.LowThreshold, settings.CriticalThreshold);
+            
+            // Initialize BambuLab connection if enabled
+            if (settings.BambuLabEnabled && 
+                !string.IsNullOrEmpty(settings.BambuLabIpAddress) && 
+                !string.IsNullOrEmpty(settings.BambuLabAccessCode) && 
+                !string.IsNullOrEmpty(settings.BambuLabSerialNumber))
+            {
+                var bambuLabService = scope.ServiceProvider.GetRequiredService<BambuLabService>();
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await bambuLabService.ConnectAsync(
+                            settings.BambuLabIpAddress,
+                            settings.BambuLabAccessCode,
+                            settings.BambuLabSerialNumber
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>()
+                            .CreateLogger("BambuLabInit");
+                        logger.LogError(ex, "Failed to connect to BambuLab printer on startup");
+                    }
+                });
+            }
         }
     }
     catch { }
