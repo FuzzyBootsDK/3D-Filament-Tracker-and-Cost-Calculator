@@ -977,11 +977,18 @@ body.light,
 
 .input, select, textarea {
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, .03);
+    /* Use themed panel background so selects and inputs follow dark/light mode */
+    background: var(--panel);
     color: var(--text);
     padding: 11px 12px;
     border-radius: 12px;
     width: 100%;
+}
+
+/* Ensure native option lists also use theme colors where supported */
+select option {
+    background: var(--panel);
+    color: var(--text);
 }
 
 .light .input,
@@ -1440,7 +1447,7 @@ label {
 .badge {
     position: absolute;
     top: 8px;
-    right: 2px;
+    right: 8px;
     padding: 5px 10px;
     border-radius: 999px;
     font-size: 11px;

@@ -17,6 +17,8 @@ public class BambuLabService : IAsyncDisposable
     private string? _serialNumber;
 
     public event Action<PrintStatus>? OnStatusUpdated;
+    // AMS updates event
+    public event Action<List<FilamentTracker.Models.PrinterAmsDevice>>? OnAmsUpdated;
 
     public BambuLabService(ILogger<BambuLabService> logger)
     {
@@ -177,6 +179,75 @@ public class BambuLabService : IAsyncDisposable
             // Parse BambuLab JSON status
             var json = JsonDocument.Parse(payload);
             var root = json.RootElement;
+
+            // Parse AMS information if present
+            try
+            {
+                if (root.TryGetProperty("ams", out var amsProp) && amsProp.ValueKind == JsonValueKind.Array)
+                {
+                    var devices = new List<FilamentTracker.Models.PrinterAmsDevice>();
+                    foreach (var devElem in amsProp.EnumerateArray())
+                    {
+                        try
+                        {
+                            var dev = new FilamentTracker.Models.PrinterAmsDevice();
+                            if (devElem.TryGetProperty("id", out var idProp) && idProp.ValueKind == JsonValueKind.Number)
+                                dev.Id = idProp.GetInt32();
+                            if (devElem.TryGetProperty("active_slot", out var activeProp) && activeProp.ValueKind == JsonValueKind.Number)
+                                dev.ActiveSlot = activeProp.GetInt32();
+
+                            if (devElem.TryGetProperty("slots", out var slotsProp) && slotsProp.ValueKind == JsonValueKind.Array)
+                            {
+                                foreach (var slotElem in slotsProp.EnumerateArray())
+                                {
+                                    var slot = new FilamentTracker.Models.PrinterAmsSlot();
+                                    if (slotElem.TryGetProperty("slot", out var slotNum) && slotNum.ValueKind == JsonValueKind.Number)
+                                        slot.Slot = slotNum.GetInt32();
+                                    if (slotElem.TryGetProperty("material", out var mat) && mat.ValueKind == JsonValueKind.String)
+                                        slot.Material = mat.GetString();
+                                    if (slotElem.TryGetProperty("brand", out var brand) && brand.ValueKind == JsonValueKind.String)
+                                        slot.Brand = brand.GetString();
+                                    if (slotElem.TryGetProperty("type", out var type) && type.ValueKind == JsonValueKind.String)
+                                        slot.Type = type.GetString();
+                                    if (slotElem.TryGetProperty("color", out var color) && color.ValueKind == JsonValueKind.String)
+                                        slot.Color = color.GetString();
+                                    if (slotElem.TryGetProperty("humidity", out var hum) && hum.ValueKind == JsonValueKind.Number)
+                                        slot.Humidity = hum.GetInt32();
+                                    if (slotElem.TryGetProperty("temp", out var temp) && temp.ValueKind == JsonValueKind.Number)
+                                        slot.Temp = temp.GetInt32();
+                                    // printer-provided id for the spool
+                                    if (slotElem.TryGetProperty("id", out var extId) && extId.ValueKind == JsonValueKind.String)
+                                        slot.ExternalId = extId.GetString();
+
+                                    dev.Slots.Add(slot);
+                                }
+                            }
+
+                            devices.Add(dev);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogDebug(ex, "Failed parsing one AMS device element");
+                        }
+                    }
+
+                    if (devices.Count > 0)
+                    {
+                        try
+                        {
+                            OnAmsUpdated?.Invoke(devices);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Error delivering AMS update event");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogDebug(ex, "Error parsing AMS payload");
+            }
 
             if (root.TryGetProperty("print", out var print))
             {

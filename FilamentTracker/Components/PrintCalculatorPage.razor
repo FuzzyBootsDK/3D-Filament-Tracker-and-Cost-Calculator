@@ -2,8 +2,15 @@
 @using FilamentTracker.Services
 @inject IJSRuntime JS
 @inject FilamentService FilamentService
+@inject Microsoft.Extensions.Logging.ILogger<PrintCalculatorPage> Logger
 
 <section class="calculator-root">
+    @if (!string.IsNullOrEmpty(loadError))
+    {
+        <div style="color: var(--danger); font-weight:800; margin-bottom:12px;">
+            Error loading calculator: @loadError
+        </div>
+    }
     <div class="pageHeader">
         <h1>3D Print Cost Calculator</h1>
         <div class="sub">Calculate costs • Pricing • PDF export</div>
@@ -227,6 +234,8 @@
 </section>
 
 @code {
+    private string? loadError = string.Empty;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -251,7 +260,7 @@
             // Pass data to JavaScript using the queued initializer
             try
             {
-                await JS.InvokeVoidAsync("queueCalcInit", new
+                await JS.InvokeVoidAsync("initCalculatorWithInventory", new
                 {
                     currency = settings.Currency,
                     inventory = inventoryData

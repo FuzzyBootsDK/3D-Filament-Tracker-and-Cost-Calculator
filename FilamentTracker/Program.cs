@@ -13,8 +13,9 @@ builder.Services.AddServerSideBlazor(options =>
     options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(60);
     // Give the client longer to reconnect before the circuit is torn down
     options.DisconnectedCircuitMaxRetained = 100;
-    // Detailed errors in production — turn off if you prefer (false hides stack traces)
-    options.DetailedErrors = false;
+    // Detailed errors — enable temporarily to surface server-side exceptions in the browser
+    // IMPORTANT: set back to false before deploying to production to avoid leaking stack traces
+    options.DetailedErrors = true;
 })
 .AddHubOptions(options =>
 {

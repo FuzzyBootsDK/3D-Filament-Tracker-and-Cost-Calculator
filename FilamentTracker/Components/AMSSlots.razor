@@ -1,0 +1,305 @@
+@page "/ams"
+@implements IDisposable
+@using System.Text.Json
+@using FilamentTracker.Models
+@using FilamentTracker.Services
+@inject FilamentService FilamentService
+@inject BambuLabService BambuLabService
+
+<section class="wrap">
+    <div class="pageHeader">
+        <h1>AMS Slots (Mockup)</h1>
+        <div class="sub">Displays AMS devices and their slots based on printer response</div>
+    </div>
+
+    <div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+        <button class="btn" @onclick="LoadSample">Load sample AMS response</button>
+        <button class="btn" @onclick="AutoMatch">Auto-match by brand/type/color</button>
+        @if (!string.IsNullOrEmpty(StatusMessage))
+        {
+            <div style="color:var(--muted); font-weight:800;">@StatusMessage</div>
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="strip" style="margin-top:12px;">
+            <div class="left">⚠️</div>
+            <div style="flex:1">@ErrorMessage</div>
+        </div>
+    }
+
+    <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;">
+        @foreach (var dev in Devices)
+        {
+            <div class="panel">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                    <div>
+                        <div class="panelTitle">AMS Device @dev.Id — @dev.Slots.Count slots</div>
+                        <div class="help">Visual representation of slots in this AMS unit</div>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <button class="tinyBtn" @onclick="() => ExpandDevice(dev)">Toggle view</button>
+                    </div>
+                </div>
+
+                @if (dev.Expanded)
+                {
+                    <div style="margin-top:12px; display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:12px;">
+                        @foreach (var slot in dev.Slots)
+                        {
+                            <div class="spoolRow" style="flex-direction:column; align-items:flex-start;">
+                                <div style="width:100%; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                                    @{
+                                        Filament? assignedFil = null;
+                                        if (slot.AssignedFilamentId.HasValue)
+                                        {
+                                            assignedFil = Filaments.FirstOrDefault(f => f.Id == slot.AssignedFilamentId.Value);
+                                        }
+                                    }
+                                    <div style="display:flex; gap:8px; align-items:center; min-width:0;">
+                                        <div class="miniSwatch" style="background: linear-gradient(135deg, #111, #333);"></div>
+                                        <div style="min-width:0;">
+                                            <div class="title">Slot @slot.Slot@if (assignedFil != null) { <text> — @assignedFil.Type</text> }</div>
+                                            <div class="subline">Humidity: @slot.Humidity% </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="display:flex; gap:8px; align-items:center;">
+                                        @if (assignedFil != null)
+                                        {
+                                            <div title="@assignedFil.Brand @assignedFil.Type" style="width:28px; height:28px; border-radius:50%; border:1px solid var(--border); background:@assignedFil.ColorCode;"></div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div style="width:100%; margin-top:8px;">
+                                    <select class="input" @onchange="(e) => OnSelectFilament(dev, slot, e)">
+                                        <option value="">-- assign filament --</option>
+                                        @foreach (var f in Filaments)
+                                        {
+                                            <option value="@f.Id">@f.Brand @f.Type - @f.ColorName</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div style="width:100%; margin-top:8px; display:flex; gap:8px; align-items:center; justify-content:space-between;">
+                                    <div class="help">Assigned: @(slot.AssignedFilamentName ?? "(none)")</div>
+                                    <div style="display:flex; gap:8px;">
+                                        <button class="tinyBtn" @onclick="() => SaveAssignment(dev, slot)">Save</button>
+                                        <button class="tinyBtn" @onclick="() => ClearAssignment(slot)">Unassign</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    private string ErrorMessage = "";
+    private string StatusMessage = "";
+    private List<AmsDevice> Devices { get; set; } = new();
+    private List<Filament> Filaments { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Filaments = (await FilamentService.GetAllFilamentsAsync()).ToList();
+            // Subscribe to live AMS updates from BambuLabService
+            BambuLabService.OnAmsUpdated += HandleAmsUpdated;
+        }
+        catch
+        {
+            Filaments = new List<Filament>();
+        }
+    }
+
+    public void Dispose()
+    {
+        try { BambuLabService.OnAmsUpdated -= HandleAmsUpdated; } catch { }
+    }
+
+    private void HandleAmsUpdated(List<FilamentTracker.Models.PrinterAmsDevice> devices)
+    {
+        // Map incoming printer model to UI model on the UI thread
+        InvokeAsync(() =>
+        {
+            Devices.Clear();
+            foreach (var d in devices)
+            {
+                var uiDev = new AmsDevice { Id = d.Id, Expanded = true, Slots = new List<AmsSlot>() };
+                foreach (var s in d.Slots)
+                {
+                    var uiSlot = new AmsSlot
+                    {
+                        Slot = s.Slot,
+                        Material = s.Material ?? string.Empty,
+                        Humidity = s.Humidity ?? 0,
+                        AssignedFilamentId = null,
+                        AssignedFilamentName = null
+                    };
+                    // Try to auto-assign by external id if present
+                    // Try to auto-assign by brand/type/color or external id when available
+                    Filament? match = null;
+                    if (!string.IsNullOrEmpty(s.ExternalId))
+                    {
+                        // Prefer matching external id to any spool/filament external identifier if you store it later
+                        match = Filaments.FirstOrDefault(f => string.Equals(f.ColorCode, s.ExternalId, StringComparison.OrdinalIgnoreCase));
+                    }
+
+                    if (match == null)
+                    {
+                        match = Filaments.FirstOrDefault(f => (
+                            (!string.IsNullOrEmpty(s.Brand) && string.Equals(f.Brand, s.Brand, StringComparison.OrdinalIgnoreCase)) ||
+                            (!string.IsNullOrEmpty(s.Type) && (f.Type ?? string.Empty).IndexOf(s.Type ?? string.Empty, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                            (!string.IsNullOrEmpty(s.Color) && string.Equals(f.ColorName, s.Color, StringComparison.OrdinalIgnoreCase))
+                        ));
+                    }
+
+                    if (match != null)
+                    {
+                        uiSlot.AssignedFilamentId = match.Id;
+                        uiSlot.AssignedFilamentName = $"{match.Brand} {match.Type} - {match.ColorName}";
+                    }
+
+                    uiDev.Slots.Add(uiSlot);
+                }
+                Devices.Add(uiDev);
+            }
+
+            StatusMessage = $"AMS updated: {Devices.Sum(x => x.Slots.Count)} slots across {Devices.Count} device(s)";
+            StateHasChanged();
+        });
+    }
+
+    private void ExpandDevice(AmsDevice dev)
+    {
+        dev.Expanded = !dev.Expanded;
+    }
+
+    private async Task LoadSample()
+    {
+        ErrorMessage = string.Empty;
+        StatusMessage = "Parsing sample response...";
+
+        var sampleJson = @"{ ""ams"": [ { ""id"": 0, ""slots"": [ { ""slot"": 0, ""material"": ""PLA"", ""humidity"": 12 }, { ""slot"": 1, ""material"": ""PLA"", ""humidity"": 12 }, { ""slot"": 2, ""material"": ""PLA"", ""humidity"": 12 }, { ""slot"": 3, ""material"": ""PLA"", ""humidity"": 12 } ] }, { ""id"": 1, ""slots"": [ { ""slot"": 0, ""material"": ""ABS"", ""humidity"": 10 } ] } ] }";
+
+        try
+        {
+            Devices.Clear();
+            using var doc = JsonDocument.Parse(sampleJson);
+            if (doc.RootElement.TryGetProperty("ams", out var ams))
+            {
+                foreach (var devElem in ams.EnumerateArray())
+                {
+                    var device = new AmsDevice { Id = devElem.GetProperty("id").GetInt32(), Slots = new List<AmsSlot>(), Expanded = true };
+                    foreach (var slotElem in devElem.GetProperty("slots").EnumerateArray())
+                    {
+                        var slot = new AmsSlot
+                        {
+                            Slot = slotElem.GetProperty("slot").GetInt32(),
+                            Material = slotElem.GetProperty("material").GetString() ?? string.Empty,
+                            Humidity = slotElem.GetProperty("humidity").GetInt32()
+                        };
+                        device.Slots.Add(slot);
+                    }
+                    Devices.Add(device);
+                }
+            }
+
+            StatusMessage = $"Loaded {Devices.Count} AMS device(s)";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            StatusMessage = string.Empty;
+        }
+    }
+
+    private void OnSelectFilament(AmsDevice dev, AmsSlot slot, ChangeEventArgs e)
+    {
+        var val = e?.Value?.ToString();
+        if (int.TryParse(val, out var id))
+        {
+            var f = Filaments.FirstOrDefault(x => x.Id == id);
+            if (f != null)
+            {
+                slot.AssignedFilamentId = id;
+                slot.AssignedFilamentName = $"{f.Brand} {f.Type} - {f.ColorName}";
+            }
+        }
+        else
+        {
+            slot.AssignedFilamentId = null;
+            slot.AssignedFilamentName = null;
+        }
+    }
+
+    private void SaveAssignment(AmsDevice dev, AmsSlot slot)
+    {
+        // Persisting to database is outside this mockup. For now just show a message.
+        if (slot.AssignedFilamentId.HasValue)
+        {
+            StatusMessage = $"Assigned filament {slot.AssignedFilamentName} to AMS {dev.Id} slot {slot.Slot}";
+        }
+        else
+        {
+            StatusMessage = $"Cleared assignment for AMS {dev.Id} slot {slot.Slot}";
+        }
+    }
+
+    private void ClearAssignment(AmsSlot slot)
+    {
+        slot.AssignedFilamentId = null;
+        slot.AssignedFilamentName = null;
+        StatusMessage = "Assignment cleared";
+    }
+
+    private void AutoMatch()
+    {
+        // Very small heuristic: match by Material -> Filament.Type or Filament.Brand contains material
+        var matches = 0;
+        foreach (var dev in Devices)
+        {
+            foreach (var slot in dev.Slots)
+            {
+                var candidate = Filaments.FirstOrDefault(f => (
+                    (f.Type ?? string.Empty).IndexOf(slot.Material, StringComparison.OrdinalIgnoreCase) >= 0
+                    || (f.Brand ?? string.Empty).IndexOf(slot.Material, StringComparison.OrdinalIgnoreCase) >= 0
+                ));
+
+                if (candidate != null)
+                {
+                    slot.AssignedFilamentId = candidate.Id;
+                    slot.AssignedFilamentName = $"{candidate.Brand} {candidate.Type} - {candidate.ColorName}";
+                    matches++;
+                }
+            }
+        }
+
+        StatusMessage = $"Auto-matched {matches} slot(s)";
+    }
+
+    private class AmsDevice
+    {
+        public int Id { get; set; }
+        public List<AmsSlot> Slots { get; set; } = new();
+        public bool Expanded { get; set; }
+    }
+
+    private class AmsSlot
+    {
+        public int Slot { get; set; }
+        public string Material { get; set; } = string.Empty;
+        public int Humidity { get; set; }
+
+        // UI mapping
+        public int? AssignedFilamentId { get; set; }
+        public string? AssignedFilamentName { get; set; }
+    }
+}

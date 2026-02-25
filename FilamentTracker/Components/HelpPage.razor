@@ -5,7 +5,7 @@
 </div>
 
 <!-- Quick Navigation -->
-<div class="formCard" style="border-color: rgba(99,102,241,.40); background: rgba(99,102,241,.05); margin-top: 14px;">
+<div id="toc" class="formCard" style="border-color: rgba(99,102,241,.40); background: rgba(99,102,241,.05); margin-top: 14px;">
     <h2 style="margin-top: 0;">📑 Quick Navigation</h2>
     <div style="color: var(--muted); line-height: 1.8;">
         <p style="margin-bottom: 12px;">Jump directly to a section:</p>
@@ -21,7 +21,54 @@
             <a href="#tips" class="helpNavLink">💡 Tips & Best Practices</a>
             <a href="#livetracker" class="helpNavLink">🖨️ BambuLab Live Tracking</a>
             <a href="#quickactions" class="helpNavLink">⚡ Quick Actions & Workflows</a>
+            <a href="#ams" class="helpNavLink">🔗 AMS Slots (Printer Mapping)</a>
             <a href="#faq" class="helpNavLink">❓ Troubleshooting & FAQ</a>
+        </div>
+        <div style="margin-top:12px; text-align:right;">
+            <a href="#" class="helpNavLink" style="display:inline-block; width:auto;">📥 Download full guide (PDF)</a>
+        </div>
+        <div style="margin-top:12px; text-align:right;">
+            <a href="#toc" class="helpNavLink" style="display:inline-block; width:auto;">⬆ Back to Table of Contents</a>
+        </div>
+        <div style="margin-top:12px; text-align:right;">
+            <a href="#toc" class="helpNavLink" style="display:inline-block; width:auto;">⬆ Back to Table of Contents</a>
+        </div>
+        <div style="margin-top:12px; text-align:right;">
+            <a href="#toc" class="helpNavLink" style="display:inline-block; width:auto;">⬆ Back to Table of Contents</a>
+        </div>
+    </div>
+    
+    <div class="formCard" id="ams" style="scroll-margin-top: 20px;">
+        <h2 style="margin-top: 0;">🔗 AMS Slots (Printer Mapping)</h2>
+        <div style="color: var(--muted); line-height: 1.8;">
+            <p>
+                The <strong>AMS</strong> page displays Automatic Material System (AMS) devices and their slots reported by your BambuLab printer.
+                Use this page to map physical AMS slots to filaments in your inventory so the app can show which spool is loaded where.
+            </p>
+
+            <h3>How it works:</h3>
+            <ul>
+                <li>The app listens for AMS data from your printer via MQTT and shows each AMS unit and its slots.</li>
+                <li>Each slot shows material, humidity and temperature when available.</li>
+                <li>Use the dropdown on each slot to assign an inventory filament (or create a new one).</li>
+                <li>When assigned, the filament's color preview and type appear next to the slot.</li>
+                <li>You can optionally persist printer spool IDs to your spools (coming feature) so assignments survive spool swaps.</li>
+            </ul>
+
+            <h3>Best practices:</h3>
+            <ul>
+                <li>Auto-match attempts to match by brand/type/color. Review matches before saving.</li>
+                <li>If your printer provides a stable spool External ID, store it on the spool for reliable mapping.</li>
+                <li>Use the AMS page to quickly identify which physical slot a filament is loaded into when changing spools.</li>
+            </ul>
+
+            <p>
+                <em>Tip: Open the AMS page after connecting to the printer. AMS devices update automatically as the printer reports them.</em>
+            </p>
+
+            <div style="margin-top:12px; text-align:right;">
+                <a href="#toc" class="helpNavLink" style="display:inline-block; width:auto;">⬆ Back to Table of Contents</a>
+            </div>
         </div>
     </div>
 </div>
@@ -78,6 +125,9 @@
             <p style="margin-top: 16px;">
                 <em>💡 New to the app? Start by reading the "Adding New Filaments" section below, then explore the other features!</em>
             </p>
+            <div style="margin-top:12px; text-align:right;">
+                <a href="#toc" class="helpNavLink" style="display:inline-block; width:auto;">⬆ Back to Table of Contents</a>
+            </div>
         </div>
     </div>
 
@@ -99,6 +149,7 @@
                         <li>💡 <em>You can customize these thresholds in Settings!</em></li>
                     </ul>
                 </li>
+                
                 <li><strong>Search & Filter</strong> - Use the search box to find filaments by brand, color, type, or finish. Toggle "Low Only" to show just low and critical stock</li>
                 <li><strong>Sort options</strong> - Multiple sorting choices:
                     <ul>
@@ -121,6 +172,9 @@
                     </ul>
                 </li>
             </ul>
+            <div style="margin-top:12px; text-align:right;">
+                <a href="#toc" class="helpNavLink" style="display:inline-block; width:auto;">⬆ Back to Table of Contents</a>
+            </div>
         </div>
     </div>
 
@@ -185,6 +239,9 @@
                 always add it through the detail modal to keep everything grouped together. This way 
                 you can track multiple spools of the same filament and see your total remaining stock.</em>
             </p>
+            <div style="margin-top:12px; text-align:right;">
+                <a href="#toc" class="helpNavLink" style="display:inline-block; width:auto;">⬆ Back to Table of Contents</a>
+            </div>
         </div>
     </div>
 
@@ -229,6 +286,9 @@
                 needing to empty a spool or buy more reusable spools. The app handles the "In Use" status 
                 automatically based on your filament inventory.</em>
             </p>
+            <div style="margin-top:12px; text-align:right;">
+                <a href="#toc" class="helpNavLink" style="display:inline-block; width:auto;">⬆ Back to Table of Contents</a>
+            </div>
         </div>
     </div>
 
@@ -354,6 +414,9 @@
                 <li>The buffer factor accounts for contingencies and business overhead</li>
                 <li>Save quotes as PDFs to track pricing history</li>
             </ul>
+            <div style="margin-top:12px; text-align:right;">
+                <a href="#toc" class="helpNavLink" style="display:inline-block; width:auto;">⬆ Back to Table of Contents</a>
+            </div>
         </div>
     </div>
 
@@ -410,6 +473,9 @@
                 or use your slicer's estimated filament usage. The visual "Next to use" indicator 
                 helps you follow FIFO inventory practices automatically!</em>
             </p>
+            <div style="margin-top:12px; text-align:right;">
+                <a href="#toc" class="helpNavLink" style="display:inline-block; width:auto;">⬆ Back to Table of Contents</a>
+            </div>
         </div>
     </div>
 
@@ -486,6 +552,9 @@
                 Over time, this builds an accurate picture of your true filament costs, making 
                 your print cost estimates much more reliable!</em>
             </p>
+            <div style="margin-top:12px; text-align:right;">
+                <a href="#toc" class="helpNavLink" style="display:inline-block; width:auto;">⬆ Back to Table of Contents</a>
+            </div>
         </div>
     </div>
 
@@ -804,6 +873,9 @@
                 <li>The connection persists across app restarts - no need to reconnect manually</li>
                 <li>Widget collapses on mobile screens to save space but remains accessible</li>
             </ul>
+            <div style="margin-top:12px; text-align:right;">
+                <a href="#toc" class="helpNavLink" style="display:inline-block; width:auto;">⬆ Back to Table of Contents</a>
+            </div>
         </div>
     </div>
 
