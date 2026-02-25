@@ -433,11 +433,19 @@
 
     private void OnNewMqttMessage(MqttLogEntry entry)
     {
-        InvokeAsync(() =>
+        try
         {
-            mqttLogEntries = BambuLabService.GetMqttLog().ToList();
-            StateHasChanged();
-        });
+            InvokeAsync(() =>
+            {
+                try
+                {
+                    mqttLogEntries = BambuLabService.GetMqttLog().ToList();
+                    StateHasChanged();
+                }
+                catch { /* component may have been disposed */ }
+            });
+        }
+        catch { /* swallow to protect MQTT background thread */ }
     }
 
     private void RefreshMqttLog()

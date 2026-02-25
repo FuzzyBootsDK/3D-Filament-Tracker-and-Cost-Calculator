@@ -944,6 +944,61 @@ body.light,
     color: #f59e0b;
 }
 
+/* WiFi signal bars */
+.wifiBars {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 14px;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+.connWifi {
+    margin-right: 6px;
+    opacity: 0.85;
+}
+
+.wifiBar {
+    display: inline-block;
+    width: 4px;
+    border-radius: 1px 1px 0 0;
+    background: rgba(255,255,255,.18);
+    transition: background .3s;
+}
+
+.wifiBar:nth-child(1) { height: 4px; }
+.wifiBar:nth-child(2) { height: 6px; }
+.wifiBar:nth-child(3) { height: 8px; }
+.wifiBar:nth-child(4) { height: 11px; }
+.wifiBar:nth-child(5) { height: 14px; }
+
+/* Bar 1-2 active → red/weak, 3 → yellow/ok, 4-5 → green/strong */
+.wifiBar:nth-child(1).active,
+.wifiBar:nth-child(2).active { background: #ef4444; }
+
+.wifiBar:nth-child(3).active { background: #f59e0b; }
+
+.wifiBar:nth-child(4).active,
+.wifiBar:nth-child(5).active { background: #22c55e; }
+
+.wifiDbm {
+    font-size: 11px;
+    color: var(--muted);
+    vertical-align: middle;
+}
+
+.idleWifi {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.light .wifiBar {
+    background: rgba(0,0,0,.12);
+}
+
 .disconnectedMessage {
     text-align: center;
     font-size: 13px;

@@ -84,14 +84,16 @@ public class BambuLabService : IAsyncDisposable
                 _logger.LogInformation("MQTT connected successfully to {IpAddress}", ipAddress);
                 _currentStatus.IsConnected = true;
                 _currentStatus.PrinterName = $"BambuLab ({serialNumber})";
-                OnStatusUpdated?.Invoke(_currentStatus);
+                try { OnStatusUpdated?.Invoke(_currentStatus); }
+                catch (Exception ex) { _logger.LogWarning(ex, "A subscriber threw in OnStatusUpdated (connected)"); }
             };
 
             _mqttClient.DisconnectedAsync += async e =>
             {
                 _logger.LogWarning("MQTT disconnected: {Reason}", e.Reason);
                 _currentStatus.IsConnected = false;
-                OnStatusUpdated?.Invoke(_currentStatus);
+                try { OnStatusUpdated?.Invoke(_currentStatus); }
+                catch (Exception ex) { _logger.LogWarning(ex, "A subscriber threw in OnStatusUpdated (disconnected)"); }
 
                 // Auto-reconnect after 5 seconds if not manually disconnected
                 if (e.Reason != MqttClientDisconnectReason.NormalDisconnection)
@@ -190,7 +192,8 @@ public class BambuLabService : IAsyncDisposable
                 while (_mqttLog.Count > MaxLogEntries)
                     _mqttLog.Dequeue();
             }
-            OnMqttMessageLogged?.Invoke(entry);
+            try { OnMqttMessageLogged?.Invoke(entry); }
+            catch (Exception ex) { _logger.LogWarning(ex, "A subscriber threw in OnMqttMessageLogged"); }
 
             // Parse BambuLab JSON status
             var json = JsonDocument.Parse(payload);
@@ -341,10 +344,19 @@ public class BambuLabService : IAsyncDisposable
                 {
                     _currentStatus.NozzleTemperature = (int)nozzleTemp.GetDouble();
                 }
+
+                // WiFi signal (e.g. "-59dBm")
+                if (print.TryGetProperty("wifi_signal", out var wifiSignal))
+                {
+                    var sig = GetStringSafe(wifiSignal);
+                    if (!string.IsNullOrEmpty(sig))
+                        _currentStatus.WifiSignal = sig;
+                }
             }
 
             // Notify subscribers
-            OnStatusUpdated?.Invoke(_currentStatus);
+            try { OnStatusUpdated?.Invoke(_currentStatus); }
+            catch (Exception ex) { _logger.LogWarning(ex, "A subscriber threw in OnStatusUpdated"); }
         }
         catch (Exception ex)
         {

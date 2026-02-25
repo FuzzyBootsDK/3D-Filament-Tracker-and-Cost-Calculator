@@ -53,6 +53,17 @@
                     <div class="statusIndicator connected">
                         <span class="statusDot"></span>
                         <span>Connected</span>
+                        @if (currentPrint != null && !string.IsNullOrEmpty(currentPrint.WifiSignal))
+                        {
+                            var connBars = GetWifiBars(currentPrint.WifiSignal);
+                            <span class="wifiBars connWifi" title="@currentPrint.WifiSignal">
+                                <span class="wifiBar @(connBars >= 1 ? "active" : "")"></span>
+                                <span class="wifiBar @(connBars >= 2 ? "active" : "")"></span>
+                                <span class="wifiBar @(connBars >= 3 ? "active" : "")"></span>
+                                <span class="wifiBar @(connBars >= 4 ? "active" : "")"></span>
+                                <span class="wifiBar @(connBars >= 5 ? "active" : "")"></span>
+                            </span>
+                        }
                     </div>
                     @if (currentPrint != null && currentPrint.IsPrinting)
                     {
@@ -87,6 +98,7 @@
                                     <span class="detailLabel">🛏️ Bed:</span>
                                     <span class="detailValue tempValue">@currentPrint.BedTemperature°C</span>
                                 </div>
+
                             </div>
                         </div>
                     }
@@ -102,6 +114,7 @@
                                     <span class="idleTempItem">🛏️ @currentPrint.BedTemperature°C</span>
                                 </div>
                             }
+
                         </div>
                     }
                 }
@@ -165,11 +178,19 @@
 
     private void HandleStatusUpdate(PrintStatus status)
     {
-        InvokeAsync(() =>
+        try
         {
-            UpdateStatus(status);
-            StateHasChanged();
-        });
+            InvokeAsync(() =>
+            {
+                try
+                {
+                    UpdateStatus(status);
+                    StateHasChanged();
+                }
+                catch { /* component may have been disposed */ }
+            });
+        }
+        catch { /* swallow to protect MQTT background thread */ }
     }
 
     private void UpdateStatus(PrintStatus status)
@@ -189,6 +210,23 @@
             return fileName;
         
         return fileName.Substring(0, 17) + "...";
+    }
+
+    /// <summary>
+    /// Converts a wifi signal string like "-59dBm" to a bar count 0-5.
+    /// ≥ -50 → 5, -51..-60 → 4, -61..-70 → 3, -71..-80 → 2, -81..-90 → 1, &lt; -90 → 0
+    /// </summary>
+    private static int GetWifiBars(string? signal)
+    {
+        if (string.IsNullOrEmpty(signal)) return 0;
+        var numStr = signal.Replace("dBm", "").Trim();
+        if (!int.TryParse(numStr, out var dbm)) return 0;
+        if (dbm >= -50) return 5;
+        if (dbm >= -60) return 4;
+        if (dbm >= -70) return 3;
+        if (dbm >= -80) return 2;
+        if (dbm >= -90) return 1;
+        return 0;
     }
 
     public void Dispose()

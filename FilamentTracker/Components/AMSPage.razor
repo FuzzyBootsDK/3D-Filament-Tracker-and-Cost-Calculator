@@ -17,8 +17,16 @@
 
     private void HandleStatusUpdated(PrintStatus status)
     {
-        RefreshFromStatus(status);
-        InvokeAsync(StateHasChanged);
+        try
+        {
+            RefreshFromStatus(status);
+            InvokeAsync(() =>
+            {
+                try { StateHasChanged(); }
+                catch { /* component may have been disposed */ }
+            });
+        }
+        catch { /* swallow to protect MQTT background thread */ }
     }
 
     private void RefreshFromStatus(PrintStatus status)
