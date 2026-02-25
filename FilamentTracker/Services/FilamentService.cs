@@ -24,6 +24,13 @@ public class FilamentService
             .ToListAsync();
     }
     
+    public List<Filament> GetAllFilaments()
+    {
+        using var context = _contextFactory.CreateDbContext();
+        // Return all filaments from the database or in-memory list
+        return context.Filaments.ToList();
+    }
+    
     public async Task<Filament?> GetFilamentByIdAsync(int id)
     {
         using var context = await _contextFactory.CreateDbContextAsync();

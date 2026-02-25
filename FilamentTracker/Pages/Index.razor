@@ -25,12 +25,17 @@
         </button>
 
         <!-- Row 2 -->
+        <button class="navbtn @(currentPage == "ams" ? "active" : "")" @onclick='() => SetPage("ams")'>
+            <span class="navicon">🗄️</span> AMS
+        </button>
         <button class="navbtn @(currentPage == "calculator" ? "active" : "")" @onclick='() => SetPage("calculator")'>
             <span class="navicon">🧮</span> Calculator
         </button>
         <button class="navbtn @(currentPage == "help" ? "active" : "")" @onclick='() => SetPage("help")'>
             <span class="navicon">❓</span> Help
         </button>
+
+        <!-- Row 3 -->
         <button class="navbtn @(currentPage == "settings" ? "active" : "")" @onclick='() => SetPage("settings")'>
             <span class="navicon">⚙️</span> Settings
         </button>
@@ -122,6 +127,10 @@
     else if (currentPage == "settings")
     {
         <SettingsPage />
+    }
+    else if (currentPage == "ams")
+    {
+        <AMSPage />
     }
 </div>
 

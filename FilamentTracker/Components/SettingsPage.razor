@@ -6,6 +6,7 @@
 @inject ThresholdService ThresholdService
 @inject BambuLabService BambuLabService
 @inject IJSRuntime JS
+@implements IDisposable
 
 <section>
     <div class="pageHeader">
@@ -179,6 +180,60 @@
                     🧪 Test Connection
                 </button>
             }
+        </div>
+    </div>
+
+    <div class="formCard">
+        <h2 style="margin-top: 0;">📡 MQTT Message Log</h2>
+        <div style="color: var(--muted); margin-bottom: 16px;">
+            Live feed of the last 50 incoming MQTT messages from your BambuLab printer.
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center;">
+            <button class="btn" @onclick="RefreshMqttLog">🔄 Refresh</button>
+            <button class="btn" @onclick="ClearMqttDisplay">🗑️ Clear Display</button>
+            @if (BambuLabService.IsConnected)
+            {
+                <span style="font-size: 12px; color: #10b981;">● Connected</span>
+            }
+            else
+            {
+                <span style="font-size: 12px; color: var(--muted);">○ Not connected</span>
+            }
+        </div>
+
+        <div id="mqttTerminal" style="
+            background: #0d1117;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 14px 16px;
+            height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #e6edf3;
+        ">
+            @if (!mqttLogEntries.Any())
+            {
+                <div style="color: #6e7681; text-align: center; padding-top: 160px;">
+                    No messages yet. Connect to your printer to see live data.
+                </div>
+            }
+            else
+            {
+                @foreach (var entry in mqttLogEntries.AsEnumerable().Reverse())
+                {
+                    <div style="margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 6px;">
+                        <span style="color: #58a6ff; user-select: none;">[@entry.Timestamp.ToString("HH:mm:ss")]</span>
+                        <span style="color: #3fb950; user-select: none;"> device/report </span>
+                        <span style="color: #e6edf3; word-break: break-all;">@entry.Payload</span>
+                    </div>
+                }
+            }
+        </div>
+        <div style="font-size: 11px; color: var(--muted); margin-top: 8px;">
+            Showing last @mqttLogEntries.Count message(s) — auto-updates when connected.
         </div>
     </div>
 
@@ -359,11 +414,42 @@
     private string? bambuLabConnectionStatus;
     private bool bambuLabConnectionSuccess = false;
 
+    // MQTT log terminal
+    private List<MqttLogEntry> mqttLogEntries = new();
+
     protected override async Task OnInitializedAsync()
     {
         await UpdateCounts();
         await LoadBrands();
         await LoadThresholds();
+        RefreshMqttLog();
+        BambuLabService.OnMqttMessageLogged += OnNewMqttMessage;
+    }
+
+    public void Dispose()
+    {
+        BambuLabService.OnMqttMessageLogged -= OnNewMqttMessage;
+    }
+
+    private void OnNewMqttMessage(MqttLogEntry entry)
+    {
+        InvokeAsync(() =>
+        {
+            mqttLogEntries = BambuLabService.GetMqttLog().ToList();
+            StateHasChanged();
+        });
+    }
+
+    private void RefreshMqttLog()
+    {
+        mqttLogEntries = BambuLabService.GetMqttLog().ToList();
+        StateHasChanged();
+    }
+
+    private void ClearMqttDisplay()
+    {
+        mqttLogEntries = new List<MqttLogEntry>();
+        StateHasChanged();
     }
     
     private async Task LoadThresholds()

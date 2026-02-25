@@ -69,4 +69,6 @@ public class Filament
             return "ok";
         }
     }
+
+    public string ColorHex { get; set; } = "#64748b";
 }

@@ -1,0 +1,210 @@
+@using FilamentTracker.Models
+@inject FilamentService FilamentService
+@inject BambuLabService BambuLabService
+@implements IDisposable
+
+@code {
+    private List<Filament> _inventory = new();
+    private bool _amsAttached = false;
+    private List<AMSUnit> _amsUnits = new();
+
+    protected override void OnInitialized()
+    {
+        RefreshFromStatus(BambuLabService.GetCurrentStatus());
+        _inventory = FilamentService.GetAllFilaments();
+        BambuLabService.OnStatusUpdated += HandleStatusUpdated;
+    }
+
+    private void HandleStatusUpdated(PrintStatus status)
+    {
+        RefreshFromStatus(status);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void RefreshFromStatus(PrintStatus status)
+    {
+        _amsAttached = status.AMSUnits != null && status.AMSUnits.Count > 0;
+        _amsUnits = status.AMSUnits ?? new List<AMSUnit>();
+    }
+
+    public void Dispose()
+    {
+        BambuLabService.OnStatusUpdated -= HandleStatusUpdated;
+    }
+
+    private string FormatSlotType(string? trayType, string? traySubBrands)
+    {
+        var type = (trayType ?? "").Trim();
+        var sub = (traySubBrands ?? "").Trim();
+
+        if (string.IsNullOrEmpty(type) && string.IsNullOrEmpty(sub)) return "";
+        if (string.IsNullOrEmpty(sub)) return type;
+        if (string.IsNullOrEmpty(type)) return sub;
+
+        // If identical (case-insensitive), show only one
+        if (sub.Equals(type, StringComparison.OrdinalIgnoreCase))
+            return type;
+
+        // If sub already starts with the type (e.g. "PLA Matte" starts with "PLA"), just show sub
+        if (sub.StartsWith(type, StringComparison.OrdinalIgnoreCase))
+            return sub;
+
+        // If type already starts with sub, just show type
+        if (type.StartsWith(sub, StringComparison.OrdinalIgnoreCase))
+            return type;
+
+        return $"{type} · {sub}";
+    }
+
+    private string FormatFilamentOption(Filament f)
+    {
+        var parts = new System.Text.StringBuilder();
+        parts.Append(f.Brand);
+        parts.Append(" · ");
+        parts.Append(f.Type);
+        if (!string.IsNullOrWhiteSpace(f.Finish))
+        {
+            parts.Append(' ');
+            parts.Append(f.Finish);
+        }
+        parts.Append(" · ");
+        parts.Append(f.ColorName);
+        return parts.ToString();
+    }
+}
+
+@if (!_amsAttached)
+{
+    <div class="strip">No AMS attached. Connect your printer to use AMS features.</div>
+}
+else
+{
+    @foreach (var ams in _amsUnits)
+    {
+        <div class="panel amsPanel">
+            <div class="amsHeader">
+                <span class="amsId">AMS ID: @ams.AMSId</span>
+                @if (ams.Temperature.HasValue && ams.Humidity.HasValue)
+                {
+                    <span class="amsEnv">Temp: @ams.Temperature.Value.ToString("F1")°C, Humidity: @ams.Humidity.Value% </span>
+                }
+            </div>
+            <div class="amsSlotsGrid">
+                @foreach (var slot in ams.Slots)
+                {
+                    var slotTypeLabel = FormatSlotType(slot.TrayType, slot.TraySubBrands);
+                    <div class="amsSlot">
+                        <div class="amsSlotCircle" style="background: @(slot.ColorHex ?? ("#" + slot.TrayColor))"></div>
+                        <div class="amsSlotLabel">Slot @slot.Index</div>
+                        @if (!string.IsNullOrEmpty(slotTypeLabel))
+                        {
+                            <div class="amsSlotType">
+                                <span class="amsSlotTypePill">@slotTypeLabel</span>
+                            </div>
+                        }
+                        <div class="amsSlotRemain">Remaining: @(slot.Remain.HasValue ? $"{slot.Remain}%" : "—")</div>
+                        <div class="amsSlotSelect">
+                            <select class="input">
+                                <option value="">— Link to inventory —</option>
+                                @foreach (var filament in _inventory)
+                                {
+                                    <option value="@filament.Id">@FormatFilamentOption(filament)</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+}
+
+<style>
+.amsPanel {
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: 18px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+}
+.amsHeader {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 10px;
+    font-weight: 900;
+    color: var(--text);
+}
+.amsEnv {
+    font-size: 15px;
+    color: var(--muted);
+}
+.amsSlotsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin-top: 10px;
+}
+.amsSlot {
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 14px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.08);
+}
+.light .amsSlot {
+    background: var(--panel2);
+}
+.amsSlotCircle {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.18);
+    box-shadow: 0 0 0 1px rgba(0,0,0,.12);
+    margin-bottom: 6px;
+}
+.amsSlotLabel {
+    font-weight: 900;
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+.amsSlotType {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 2px;
+    text-align: center;
+}
+.amsSlotTypePill {
+    display: inline-block;
+    background: rgba(99,102,241,.15);
+    border: 1px solid rgba(99,102,241,.30);
+    border-radius: 8px;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.03em;
+}
+.amsSlotRemain {
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+.amsSlotSelect {
+    width: 100%;
+}
+.amsSlotSelect select {
+    width: 100%;
+    font-size: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    padding: 10px 12px;
+}
+</style>

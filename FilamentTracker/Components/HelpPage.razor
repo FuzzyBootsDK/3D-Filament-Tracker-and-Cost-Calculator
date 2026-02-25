@@ -20,6 +20,8 @@
             <a href="#settings" class="helpNavLink">⚙️ Settings</a>
             <a href="#tips" class="helpNavLink">💡 Tips & Best Practices</a>
             <a href="#livetracker" class="helpNavLink">🖨️ BambuLab Live Tracking</a>
+            <a href="#ams" class="helpNavLink">🎞️ AMS Slot Management</a>
+            <a href="#mqttterminal" class="helpNavLink">📡 MQTT Message Log</a>
             <a href="#quickactions" class="helpNavLink">⚡ Quick Actions & Workflows</a>
             <a href="#faq" class="helpNavLink">❓ Troubleshooting & FAQ</a>
         </div>
@@ -73,6 +75,14 @@
                 <li><strong>Bambu Lab Printer Profiles</strong> - Pre-configured settings for popular Bambu Lab printers (X1C, P1S, A1, H2 series)</li>
                 <li><strong>Multi-Material Support</strong> - Track costs for prints using multiple filament types</li>
                 <li><strong>PDF Export</strong> - Generate professional quotes for clients with detailed cost breakdowns</li>
+            </ul>
+            
+            <h3>🖨️ BambuLab Live Integration:</h3>
+            <ul>
+                <li><strong>Real-Time Print Monitoring</strong> - Live progress, layer count, time remaining via direct MQTT connection</li>
+                <li><strong>AMS Slot Tracking</strong> - See all AMS slots with color, filament type, and sub-brand at a glance</li>
+                <li><strong>MQTT Message Log</strong> - Built-in terminal showing the last 50 incoming raw MQTT messages for diagnostics</li>
+                <li><strong>Inventory Linking</strong> - Match AMS slots to your tracked inventory filaments</li>
             </ul>
             
             <p style="margin-top: 16px;">
@@ -245,6 +255,7 @@
                 <li><strong>Comprehensive Cost Breakdown</strong> - Tracks materials, labor, machine depreciation, electricity, hardware, and packaging</li>
                 <li><strong>Printer Profiles</strong> - Pre-configured settings for Bambu Lab printers with accurate depreciation and power consumption</li>
                 <li><strong>Multi-Material Projects</strong> - Add multiple filaments with different colors and types</li>
+                <li><strong>Inventory Integration</strong> - The filament dropdown shows <strong>Brand · Type · Sub-Brand · Color</strong> so you can identify exactly which spool you're costing</li>
                 <li><strong>Pricing Presets</strong> - Quick pricing with margins: Competitive (25%), Standard (40%), Premium (60%), Luxury (80%), or Custom</li>
                 <li><strong>PDF Export</strong> - Generate professional quotes to share with clients</li>
             </ul>
@@ -268,7 +279,7 @@
                     <ul>
                         <li><strong>Inventory Integration:</strong> Select filaments directly from your inventory
                             <ul>
-                                <li>Dropdown shows all your filaments: "Brand Type - Color Name"</li>
+                                <li>Dropdown shows: <strong>"Brand · Type · Sub-Brand - Color Name"</strong> (e.g., "Bambu Lab · PLA · Matte - Charcoal")</li>
                                 <li>Prices auto-fill from your purchase history (weighted average)</li>
                                 <li>If no price is set, defaults to 149 per kg (editable)</li>
                             </ul>
@@ -590,6 +601,19 @@
             </ul>
             
             <p><em>💡 Tip: Keep your brand list clean by deleting brands you no longer use. This makes the dropdown easier to navigate.</em></p>
+
+            <h3>🖨️ BambuLab MQTT Live Tracking</h3>
+            <p>See the <a href="#livetracker">BambuLab Live Tracking section</a> below for full setup instructions. Within Settings you can:</p>
+            <ul>
+                <li>Enable / disable live tracking</li>
+                <li>Enter your printer IP, Access Code, and Serial Number</li>
+                <li>Test the connection before saving</li>
+                <li>Save &amp; connect with one click</li>
+                <li>Disconnect at any time</li>
+            </ul>
+
+            <h3>📡 MQTT Message Log</h3>
+            <p>A built-in diagnostic terminal displays the last 50 raw MQTT messages received from your printer in real time. See the <a href="#mqttterminal">MQTT Message Log section</a> for details.</p>
             
             <h3>Database Management</h3>
             <ul>
@@ -652,6 +676,7 @@
                 <li><strong>Time Tracking</strong> - See both time elapsed and time remaining</li>
                 <li><strong>Layer Counter</strong> - Current layer / Total layers display</li>
                 <li><strong>File Name</strong> - Shows the current G-code file being printed</li>
+                <li><strong>AMS Overview</strong> - All AMS slots shown with color swatch, filament type, and sub-brand (e.g. "PLA · Matte")</li>
                 <li><strong>Connection Status</strong> - Visual indicator (green pulsing dot) when connected</li>
                 <li><strong>Idle Detection</strong> - Shows "Printer Idle" when connected but not printing</li>
                 <li><strong>Always Visible</strong> - Widget stays in the navigation bar on all pages</li>
@@ -807,6 +832,101 @@
         </div>
     </div>
 
+    <div class="formCard" id="ams" style="scroll-margin-top: 20px;">
+        <h2 style="margin-top: 0;">🎞️ AMS Slot Management</h2>
+        <div style="color: var(--muted); line-height: 1.8;">
+            <p>
+                When your printer is connected via MQTT, the app automatically reads the state of all 
+                <strong>AMS (Automatic Material System)</strong> slots and displays them in the Live Tracking widget.
+            </p>
+
+            <h3>What is Shown per AMS Slot:</h3>
+            <ul>
+                <li><strong>Color Swatch</strong> - A live color preview pulled directly from the printer's reported RRGGBB value</li>
+                <li><strong>Filament Type</strong> - The material type reported by the spool tag (e.g., PLA, PETG, ABS, TPU)</li>
+                <li><strong>Sub-Brand / Variant</strong> - The filament sub-brand or finish reported by the tag (e.g., Matte, Silk, CF, Basic)</li>
+                <li><strong>Remaining %</strong> - Approximate percentage of filament left on the spool</li>
+            </ul>
+
+            <h3>How the Type / Sub-Brand is Displayed:</h3>
+            <p>
+                Each slot shows the type and sub-brand on separate lines so you can immediately see exactly what is loaded — 
+                for example <em>"PLA"</em> on the first line and <em>"Matte"</em> on the second, rather than the 
+                previously incorrect "PLA PLA" display.
+            </p>
+            <ul>
+                <li>If the sub-brand is empty or identical to the type, only the type is shown</li>
+                <li>An empty slot shows "Empty" in muted text</li>
+            </ul>
+
+            <h3>Matching AMS Slots to Your Inventory:</h3>
+            <p>
+                You can use the AMS color and type information to quickly identify which spool in your inventory 
+                is currently loaded. The dropdown in AMS-aware views shows 
+                <strong>"Brand · Type · Sub-Brand - Color Name"</strong> so you can match it precisely to what the 
+                printer reports.
+            </p>
+
+            <h3>Multiple AMS Units:</h3>
+            <ul>
+                <li>If you have more than one AMS attached, each unit is shown separately</li>
+                <li>Each unit displays its AMS ID, temperature, and humidity alongside the four slot cards</li>
+            </ul>
+
+            <h3>Tips for AMS Use:</h3>
+            <ul>
+                <li>Always use NFC-tagged Bambu Lab spools or properly tag refill spools for accurate type/sub-brand reporting</li>
+                <li>Non-tagged spools may show empty type/sub-brand fields</li>
+                <li>The remaining % is an estimate from the spool tag — weigh spools manually for precision</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="formCard" id="mqttterminal" style="scroll-margin-top: 20px;">
+        <h2 style="margin-top: 0;">📡 MQTT Message Log</h2>
+        <div style="color: var(--muted); line-height: 1.8;">
+            <p>
+                The <strong>MQTT Message Log</strong> in Settings is a built-in diagnostic terminal that 
+                shows the last 50 raw JSON messages received from your BambuLab printer in real time.
+            </p>
+
+            <h3>How to Access It:</h3>
+            <ol>
+                <li>Go to <strong>Settings</strong></li>
+                <li>Scroll down to the <strong>"📡 MQTT Message Log"</strong> card</li>
+                <li>The terminal is visible whenever the printer is connected</li>
+            </ol>
+
+            <h3>What You See:</h3>
+            <ul>
+                <li><strong>Timestamp</strong> - Time each message was received (HH:mm:ss), shown in blue</li>
+                <li><strong>Topic</strong> - The MQTT topic (<code>device/report</code>), shown in green</li>
+                <li><strong>Payload</strong> - The full raw JSON from the printer, shown in white</li>
+                <li>Messages scroll automatically — newest message always at the bottom</li>
+                <li>A maximum of <strong>50 messages</strong> are retained; older ones are removed automatically</li>
+            </ul>
+
+            <h3>Controls:</h3>
+            <ul>
+                <li><strong>🔄 Refresh</strong> - Manually fetch the latest messages from the service</li>
+                <li><strong>🗑️ Clear Display</strong> - Clears the on-screen list (does not clear the service buffer)</li>
+                <li><strong>● Connected / ○ Not connected</strong> - Real-time connection status badge</li>
+            </ul>
+
+            <h3>Use Cases:</h3>
+            <ul>
+                <li><strong>Debugging AMS data</strong> - Verify that tray color, type, and sub-brand are being reported correctly by the printer</li>
+                <li><strong>Confirming connectivity</strong> - See messages flowing in real time to confirm the MQTT link is live</li>
+                <li><strong>Understanding printer state</strong> - Inspect raw gcode_state, temperatures, and layer info</li>
+                <li><strong>Troubleshooting</strong> - If something looks wrong in the UI, check the raw messages to see what the printer is actually sending</li>
+            </ul>
+
+            <p>
+                <em>💡 Tip: The log auto-scrolls to the bottom on every new message. If you want to read older messages without them scrolling away, use the 🗑️ Clear Display button to freeze the view, then re-enable with 🔄 Refresh when you're done.</em>
+            </p>
+        </div>
+    </div>
+
     <div class="formCard" id="quickactions" style="scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">⚡ Quick Actions & Workflows</h2>
         <div style="color: var(--muted); line-height: 1.8;">
@@ -863,6 +983,14 @@
                 <li>Enter your preferred Low and Critical weights</li>
                 <li>Click "Save Thresholds"</li>
                 <li>Watch your inventory update colors in real-time!</li>
+            </ol>
+
+            <p><strong>🔌 Diagnose a BambuLab MQTT connection issue:</strong></p>
+            <ol>
+                <li>Go to Settings → MQTT Message Log</li>
+                <li>Check whether messages are arriving</li>
+                <li>Inspect the raw JSON to see what the printer is reporting</li>
+                <li>Use the Refresh button if no messages appear yet</li>
             </ol>
         </div>
     </div>
@@ -935,6 +1063,15 @@
             
             <p><strong>Q: Where is my data stored?</strong></p>
             <p>A: All data is stored in a local SQLite database file on your computer. Nothing is sent to the cloud unless you manually export a CSV file. Your data is completely private and offline.</p>
+
+            <p><strong>Q: The AMS slots show "PLA PLA" or repeat the type twice</strong></p>
+            <p>A: This was a display issue in earlier versions where the type and sub-brand fields were concatenated incorrectly. The app now shows them on separate lines — type on one line and sub-brand/variant on the next — so each value is clear and distinct.</p>
+
+            <p><strong>Q: The AMS slot dropdown only shows Brand and Color — where is the type?</strong></p>
+            <p>A: The filament selection dropdown now includes the full <strong>Brand · Type · Sub-Brand - Color Name</strong> format so you can always identify exactly which filament variant is loaded in each slot.</p>
+
+            <p><strong>Q: The MQTT log is empty even though I'm connected</strong></p>
+            <p>A: The log only fills once the printer sends a message. Try clicking 🔄 Refresh after a few seconds. If the printer is idle it may only send occasional heartbeat messages. Start a print to see continuous updates.</p>
         </div>
     </div>
 </section>

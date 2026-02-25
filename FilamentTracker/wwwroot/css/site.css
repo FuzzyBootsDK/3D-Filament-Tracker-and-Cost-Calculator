@@ -636,6 +636,60 @@ body.light,
 }
 
 
+/* --- ENSURE NAVBAR BUTTONS IN TWO ROWS, LIVE ACTIVITY SPANS BOTH --- */
+.topnav {
+    display: grid;
+    grid-template-columns: 1fr 500px;
+    grid-template-rows: repeat(2, auto);
+    gap: 12px;
+    align-items: stretch;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
+    box-shadow: var(--shadow);
+    min-width: 0;
+}
+
+.navButtons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 12px;
+    grid-row: 1 / span 2;
+    grid-column: 1 / 2;
+    min-width: 0;
+    min-height: 0;
+}
+
+.navbtn {
+    width: 100%;
+    font-size: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 14px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, .03);
+    cursor: pointer;
+    font-weight: 800;
+    color: var(--text);
+    user-select: none;
+}
+
+.light .navbtn {
+    background: var(--panel2);
+}
+
+.navbtn.active {
+    background: rgba(59, 130, 246, .22);
+    border-color: rgba(59, 130, 246, .40);
+}
+
+/* Remove all flexbox rules for navButtons and navbtn below */
+
 /* Top nav */
 .topnav {
     display: flex;
@@ -677,7 +731,6 @@ body.light,
     font-weight: 800;
     color: var(--text);
     user-select: none;
-    min-width: 160px; /* avoid becoming too small */
 }
 
 .light .navbtn {
@@ -691,8 +744,11 @@ body.light,
 
 /* Live Tracker Widget */
 .liveTracker {
-    width: 280px;
-    flex-shrink: 0;
+    grid-row: 1 / span 2;
+    grid-column: 2 / 3;
+    width: 500px;
+    min-width: 0;
+    min-height: 0;
     border: 1px solid var(--border);
     border-radius: 18px;
     background: rgba(255, 255, 255, .04);
@@ -1440,7 +1496,7 @@ label {
 .badge {
     position: absolute;
     top: 8px;
-    right: 2px;
+    right: 8px;
     padding: 5px 10px;
     border-radius: 999px;
     font-size: 11px;
@@ -1604,7 +1660,6 @@ label {
     gap: 8px;
     align-items: center;
     color: var(--muted);  /* Back to muted grey! */
-    font-size: 12px;
 }
 
 /* Responsive */
@@ -2009,3 +2064,7 @@ label {
     transform: translateX(2px);
 }
 
+/* Force liveTracker width to 500px (override all) */
+.liveTracker {
+    width: 500px !important;
+}

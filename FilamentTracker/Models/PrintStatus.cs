@@ -14,4 +14,30 @@ public class PrintStatus
     public int BedTemperature { get; set; }
     public int NozzleTemperature { get; set; }
     public string Status { get; set; } = "idle"; // idle, printing, paused, finished
+
+    // AMS info
+    public List<AMSUnit>? AMSUnits { get; set; } = new();
+}
+
+public class AMSUnit
+{
+    public string AMSId { get; set; } = string.Empty;
+    public string ChipId { get; set; } = string.Empty;
+    public int? Humidity { get; set; }
+    public double? Temperature { get; set; }
+    public List<AMSSlot> Slots { get; set; } = new();
+}
+
+public class AMSSlot
+{
+    public int Id { get; set; }
+    public int? State { get; set; }
+    public int? Remain { get; set; }
+    public string? TrayType { get; set; }
+    public string? TrayColor { get; set; }
+    public string? TrayIdName { get; set; }
+    public string? TraySubBrands { get; set; }
+    // Added properties for AMS integration
+    public int? Index { get; set; }
+    public string? ColorHex { get; set; }
 }

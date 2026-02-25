@@ -240,11 +240,12 @@
             var settings = await FilamentService.GetSettingsAsync();
             var filaments = await FilamentService.GetAllFilamentsAsync();
 
-            // Prepare inventory data for JavaScript
             var inventoryData = filaments.Select(f => new
             {
                 id = f.Id,
-                name = $"{f.Brand} {f.Type} - {f.ColorName}",
+                name = string.IsNullOrEmpty(f.Finish)
+                    ? $"{f.Brand} {f.Type} - {f.ColorName}"
+                    : $"{f.Brand} {f.Type} {f.Finish} - {f.ColorName}",
                 pricePerKg = f.CalculatedPricePerKg
             }).ToArray();
 

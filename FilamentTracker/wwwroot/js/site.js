@@ -5,3 +5,11 @@ window.downloadFile = function (filename, base64Content) {
     downloadLink.download = filename;
     downloadLink.click();
 };
+
+window.scrollMqttTerminalToBottom = function () {
+    const el = document.getElementById("mqttTerminal");
+    if (el) {
+        el.scrollTop = el.scrollHeight;
+    }
+};
+
