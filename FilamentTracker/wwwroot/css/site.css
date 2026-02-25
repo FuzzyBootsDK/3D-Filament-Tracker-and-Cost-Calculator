@@ -924,6 +924,26 @@ body.light,
     text-align: center;
 }
 
+.idleTemps {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.idleTempItem {
+    background: rgba(99, 102, 241, .12);
+    border: 1px solid rgba(99, 102, 241, .25);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.tempValue {
+    color: #f59e0b;
+}
+
 .disconnectedMessage {
     text-align: center;
     font-size: 13px;

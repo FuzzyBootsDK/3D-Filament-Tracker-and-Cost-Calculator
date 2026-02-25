@@ -79,6 +79,14 @@
                                         <span class="detailValue" title="@currentPrint.CurrentFile">@TruncateFileName(currentPrint.CurrentFile)</span>
                                     </div>
                                 }
+                                <div class="printDetail">
+                                    <span class="detailLabel">🌡️ Nozzle:</span>
+                                    <span class="detailValue tempValue">@currentPrint.NozzleTemperature°C</span>
+                                </div>
+                                <div class="printDetail">
+                                    <span class="detailLabel">🛏️ Bed:</span>
+                                    <span class="detailValue tempValue">@currentPrint.BedTemperature°C</span>
+                                </div>
                             </div>
                         </div>
                     }
@@ -87,6 +95,13 @@
                         <div class="idleState">
                             <div class="idleIcon">💤</div>
                             <div class="idleText">Printer Idle</div>
+                            @if (currentPrint != null && (currentPrint.NozzleTemperature > 0 || currentPrint.BedTemperature > 0))
+                            {
+                                <div class="idleTemps">
+                                    <span class="idleTempItem">🌡️ @currentPrint.NozzleTemperature°C</span>
+                                    <span class="idleTempItem">🛏️ @currentPrint.BedTemperature°C</span>
+                                </div>
+                            }
                         </div>
                     }
                 }
