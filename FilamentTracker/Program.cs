@@ -115,6 +115,14 @@ using (var scope = app.Services.CreateScope())
             ");
         }
 
+        // Ensure Filaments.ColorHex exists (added in recent migration); add defensively for older DBs
+        if (!await ColumnExistsAsync("Filaments", "ColorHex"))
+        {
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE Filaments ADD COLUMN ColorHex TEXT DEFAULT ''
+            ");
+        }
+
         if (!await ColumnExistsAsync("Spools", "PurchasePricePerKg"))
         {
             await context.Database.ExecuteSqlRawAsync(@"
