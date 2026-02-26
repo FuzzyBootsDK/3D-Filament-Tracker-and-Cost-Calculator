@@ -166,9 +166,37 @@ using (var scope = app.Services.CreateScope())
         var settings = await context.AppSettings.FirstOrDefaultAsync();
         if (settings != null)
         {
+            // Environment-variable overrides (container-friendly)
+            try
+            {
+                var envBambuEnabled = Environment.GetEnvironmentVariable("BAMBULAB_ENABLED");
+                var envBambuIp = Environment.GetEnvironmentVariable("BAMBULAB_IP");
+                var envBambuCode = Environment.GetEnvironmentVariable("BAMBULAB_CODE");
+                var envBambuSerial = Environment.GetEnvironmentVariable("BAMBULAB_SERIAL");
+
+                if (!string.IsNullOrEmpty(envBambuEnabled) && 
+                    (envBambuEnabled == "1" || envBambuEnabled.Equals("true", StringComparison.OrdinalIgnoreCase)))
+                {
+                    settings.BambuLabEnabled = true;
+                }
+
+                if (!string.IsNullOrEmpty(envBambuIp))
+                    settings.BambuLabIpAddress = envBambuIp;
+
+                if (!string.IsNullOrEmpty(envBambuCode))
+                    settings.BambuLabAccessCode = envBambuCode;
+
+                if (!string.IsNullOrEmpty(envBambuSerial))
+                    settings.BambuLabSerialNumber = envBambuSerial;
+            }
+            catch
+            {
+                // Swallow errors here — environment lookups should not break startup
+            }
+
             var thresholdService = scope.ServiceProvider.GetRequiredService<ThresholdService>();
             thresholdService.SetThresholds(settings.LowThreshold, settings.CriticalThreshold);
-            
+
             // Initialize BambuLab connection if enabled
             if (settings.BambuLabEnabled && 
                 !string.IsNullOrEmpty(settings.BambuLabIpAddress) && 
