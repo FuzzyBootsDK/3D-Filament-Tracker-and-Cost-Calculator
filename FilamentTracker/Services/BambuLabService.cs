@@ -209,12 +209,13 @@ public class BambuLabService : IAsyncDisposable
                         var amsInfoDto = new AMSInfoDto();
                         foreach (var amsObj in amsArray.EnumerateArray())
                         {
-                            var amsDto = new AMSDto
-                            {
-                                ams_id = amsObj.TryGetProperty("ams_id", out var amsIdProp) ? GetStringSafe(amsIdProp) : "",
-                                temp = amsObj.TryGetProperty("temp", out var tempProp) ? GetStringSafe(tempProp) : "",
-                                humidity = amsObj.TryGetProperty("humidity", out var humProp) ? GetStringSafe(humProp) : "",
-                            };
+                        var amsDto = new AMSDto
+                        {
+                            ams_id = amsObj.TryGetProperty("ams_id", out var amsIdProp) ? GetStringSafe(amsIdProp) : "",
+                            temp = amsObj.TryGetProperty("temp", out var tempProp) ? GetStringSafe(tempProp) : "",
+                            humidity = amsObj.TryGetProperty("humidity", out var humProp) ? GetStringSafe(humProp) : "",
+                            humidity_raw = amsObj.TryGetProperty("humidity_raw", out var humRawProp) ? GetStringSafe(humRawProp) : "",
+                        };
                             if (amsObj.TryGetProperty("tray", out var trayArray))
                             {
                                 foreach (var trayObj in trayArray.EnumerateArray())
@@ -240,13 +241,20 @@ public class BambuLabService : IAsyncDisposable
                         {
                             double.TryParse(amsDto.temp, System.Globalization.NumberStyles.Float,
                                 System.Globalization.CultureInfo.InvariantCulture, out var tempVal);
+
+                            // Parse both raw and processed humidity if available. Some firmware reports both
+                            // a processed "humidity" value and a separate "humidity_raw" sensor value.
                             int.TryParse(amsDto.humidity, out var humVal);
+                            int.TryParse(amsDto.humidity_raw, out var humRawVal);
+
+                            // Prefer raw sensor value when present, otherwise fall back to processed humidity
+                            var displayHum = humRawVal > 0 ? humRawVal : humVal;
 
                             var unit = new AMSUnit
                             {
                                 AMSId = amsDto.ams_id,
                                 Temperature = tempVal > 0 ? tempVal : null,
-                                Humidity = humVal > 0 ? humVal : null,
+                                Humidity = displayHum > 0 ? displayHum : null,
                             };
                             foreach (var trayDto in amsDto.tray)
                             {
@@ -344,6 +352,8 @@ public class BambuLabService : IAsyncDisposable
                 {
                     _currentStatus.NozzleTemperature = (int)nozzleTemp.GetDouble();
                 }
+
+                // (Fan speeds not parsed — not present in MQTT payloads by default)
 
                 // WiFi signal (e.g. "-59dBm")
                 if (print.TryGetProperty("wifi_signal", out var wifiSignal))
@@ -462,6 +472,8 @@ public class BambuLabService : IAsyncDisposable
             return val;
         return 0;
     }
+
+    // No helper for fan parsing — fan speeds are not parsed because MQTT payloads don't reliably include them.
 }
 
 // DTOs for AMS info
@@ -474,6 +486,7 @@ public class AMSDto
     public string ams_id { get; set; }
     public string temp { get; set; }
     public string humidity { get; set; }
+    public string humidity_raw { get; set; }
     public List<AMSTrayDto> tray { get; set; } = new();
 }
 public class AMSTrayDto

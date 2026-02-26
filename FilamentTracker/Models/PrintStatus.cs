@@ -13,6 +13,7 @@ public class PrintStatus
     public string? CurrentFile { get; set; }
     public int BedTemperature { get; set; }
     public int NozzleTemperature { get; set; }
+    
     public string Status { get; set; } = "idle"; // idle, printing, paused, finished
     public string? WifiSignal { get; set; } // e.g. "-59dBm"
 

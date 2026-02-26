@@ -332,7 +332,14 @@
     {
         if (Filament != null)
         {
-            selectedSpool = Filament.Spools.FirstOrDefault();
+            // Auto-select the spool that should be used next: partially used spools first,
+            // then oldest added. Fall back to first spool when none match.
+            selectedSpool = Filament.Spools
+                .Where(s => s.WeightRemaining > 0 && !s.DateEmptied.HasValue)
+                .OrderBy(s => s.PercentRemaining == 100 ? 1 : 0)
+                .ThenBy(s => s.DateAdded)
+                .FirstOrDefault()
+                ?? Filament.Spools.FirstOrDefault();
             LoadSpoolForEditing();
             LoadFilamentForEditing();
         }
