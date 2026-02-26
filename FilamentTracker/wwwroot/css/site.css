@@ -1128,6 +1128,14 @@ textarea:focus {
     box-shadow: var(--focus);
 }
 
+/* Ensure select controls follow theme variables across browsers */
+select.input, select, .input select {
+    /* Use panel variable so it adapts to light/dark via CSS variables */
+    background: var(--panel) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
 textarea {
     min-height: 110px;
     resize: vertical;

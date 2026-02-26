@@ -587,6 +587,7 @@ function initCalculator() {
     }
   });
 
+
   // PDF export
   window.collectExportState = collectExportState;
 

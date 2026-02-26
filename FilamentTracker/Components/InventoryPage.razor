@@ -56,7 +56,7 @@
 
     <div class="controls">
         <input class="input" placeholder="Search (brand, color, type, finish)..." @bind="searchText" @bind:event="oninput" @bind:after="FilterFilaments" />
-        <select @bind="typeFilter" @bind:after="FilterFilaments">
+        <select class="input" @bind="typeFilter" @bind:after="FilterFilaments">
             <option value="all">All Types</option>
             <option value="PLA">PLA</option>
             <option value="PETG">PETG</option>
@@ -65,7 +65,7 @@
             <option value="TPU">TPU</option>
             <option value="NYLON">NYLON</option>
         </select>
-        <select @bind="sortOption" @bind:after="FilterFilaments">
+        <select class="input" @bind="sortOption" @bind:after="FilterFilaments">
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
             <option value="remainingAsc">Lowest Remaining</option>

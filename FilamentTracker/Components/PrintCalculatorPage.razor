@@ -249,10 +249,10 @@
                 pricePerKg = f.CalculatedPricePerKg
             }).ToArray();
 
-            // Pass data to JavaScript using the queued initializer
+            // Pass data to JavaScript initializer
             try
             {
-                await JS.InvokeVoidAsync("queueCalcInit", new
+                await JS.InvokeVoidAsync("initCalculatorWithInventory", new
                 {
                     currency = settings.Currency,
                     inventory = inventoryData
@@ -260,7 +260,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error queuing calculator init: {ex.Message}");
+                Console.WriteLine($"Error initializing calculator: {ex.Message}");
             }
         }
     }
