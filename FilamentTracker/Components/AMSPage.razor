@@ -134,7 +134,7 @@
         if (!_slotSpoolMap.TryGetValue(key, out var spoolId) || spoolId == 0)
             return null;
         foreach (var f in _inventory)
-        foreach (var s in f.Spools ?? new List<Spool>())
+        foreach (var s in f.Spools)
             if (s.Id == spoolId)
                 return $"{f.Brand} · {f.Type}{(string.IsNullOrWhiteSpace(f.Finish) ? "" : " " + f.Finish)} · {f.ColorName}";
         return null;
@@ -146,7 +146,7 @@
         if (!_slotSpoolMap.TryGetValue(key, out var spoolId) || spoolId == 0)
             return null;
         foreach (var f in _inventory)
-        foreach (var s in f.Spools ?? new List<Spool>())
+        foreach (var s in f.Spools)
             if (s.Id == spoolId)
                 return s.WeightRemaining;
         return null;
@@ -277,7 +277,7 @@ else
                                 <option value="0">— Link to inventory spool —</option>
                                 @foreach (var filament in _inventory)
                                 {
-                                    @foreach (var spool in filament.Spools ?? new List<Spool>())
+                                    @foreach (var spool in filament.Spools)
                                     {
                                         <option value="@spool.Id">
                                             @FormatFilamentOption(filament) (@spool.WeightRemaining g left)

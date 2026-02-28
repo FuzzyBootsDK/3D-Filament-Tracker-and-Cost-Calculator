@@ -1,4 +1,4 @@
-@inject IJSRuntime JS
+@inject IJSRuntime Js
 @inject FilamentService FilamentService
 
 <section class="calculator-root">
@@ -274,7 +274,7 @@
             // Pass data to JavaScript initializer
             try
             {
-                await JS.InvokeVoidAsync("initCalculatorWithInventory", new
+                await Js.InvokeVoidAsync("initCalculatorWithInventory", new
                 {
                     currency = settings.Currency,
                     inventory = inventoryData

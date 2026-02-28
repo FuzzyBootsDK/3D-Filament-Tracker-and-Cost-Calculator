@@ -1,6 +1,5 @@
 using FilamentTracker.Data;
 using FilamentTracker.Models;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace FilamentTracker.Services;
@@ -312,11 +311,13 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
         {
             // Insert defaults
             await using var insertCmd = conn.CreateCommand();
-            insertCmd.CommandText = @"
-                INSERT INTO AppSettings
-                    (LowThreshold, CriticalThreshold, Currency, BambuLabEnabled,
-                     AmsAutoUpdateWeight, AmsAutoUpdateOnlyDecrease)
-                VALUES (500, 250, 'DKK', 0, 0, 1)";
+            insertCmd.CommandText = """
+
+                                                    INSERT INTO AppSettings
+                                                        (LowThreshold, CriticalThreshold, Currency, BambuLabEnabled,
+                                                         AmsAutoUpdateWeight, AmsAutoUpdateOnlyDecrease)
+                                                    VALUES (500, 250, 'DKK', 0, 0, 1)
+                                    """;
             await insertCmd.ExecuteNonQueryAsync();
         }
 

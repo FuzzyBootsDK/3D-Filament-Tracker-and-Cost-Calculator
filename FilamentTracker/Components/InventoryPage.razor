@@ -13,24 +13,24 @@
     <section class="kpis">
         <div class="kpi">
             <div class="label">Total Filaments</div>
-            <div class="value">@statistics.GetValueOrDefault("Total", 0)</div>
+            <div class="value">@_statistics.GetValueOrDefault("Total", 0)</div>
         </div>
         <div class="kpi">
             <div class="label">Low Stock</div>
-            <div class="value" style="color: var(--warn);">@statistics.GetValueOrDefault("Low", 0)</div>
+            <div class="value" style="color: var(--warn);">@_statistics.GetValueOrDefault("Low", 0)</div>
         </div>
         <div class="kpi">
             <div class="label">Critical</div>
-            <div class="value" style="color: var(--danger);">@statistics.GetValueOrDefault("Critical", 0)</div>
+            <div class="value" style="color: var(--danger);">@_statistics.GetValueOrDefault("Critical", 0)</div>
         </div>
     </section>
 
-    @if (lowStockCount > 0)
+    @if (LowStockCount > 0)
     {
         <section class="strip">
             <div class="left">
-                <span class="pill @(criticalCount > 0 ? "danger" : "warn")">
-                    @if (criticalCount > 0)
+                <span class="pill @(CriticalCount > 0 ? "danger" : "warn")">
+                    @if (CriticalCount > 0)
                     {
                         <text>Critical Stock</text>
                     }
@@ -40,25 +40,25 @@
                     }
                 </span>
                 <div style="color:var(--text);font-weight:900;">
-                    @lowStockCount filament@(lowStockCount != 1 ? "s" : "") running low
-                    @if (criticalCount > 0)
+                    @LowStockCount filament@(LowStockCount != 1 ? "s" : "") running low
+                    @if (CriticalCount > 0)
                     {
-                        <text> (@criticalCount critical)</text>
+                        <text> (@CriticalCount critical)</text>
                     }
                 </div>
             </div>
             <div class="row">
                 <button class="btn" @onclick="ToggleLowFilter">
-                    @(filterLowOnly ? "Show All" : "Show Low")
+                    @(_filterLowOnly ? "Show All" : "Show Low")
                 </button>
             </div>
         </section>
     }
 
     <div class="controls">
-        <input class="input" placeholder="Search (brand, color, type, finish)..." @bind="searchText"
+        <input class="input" placeholder="Search (brand, color, type, finish)..." @bind="_searchText"
                @bind:event="oninput" @bind:after="FilterFilaments"/>
-        <select class="input" @bind="typeFilter" @bind:after="FilterFilaments">
+        <select class="input" @bind="_typeFilter" @bind:after="FilterFilaments">
             <option value="all">All Types</option>
             <option value="PLA">PLA</option>
             <option value="PETG">PETG</option>
@@ -67,7 +67,7 @@
             <option value="TPU">TPU</option>
             <option value="NYLON">NYLON</option>
         </select>
-        <select class="input" @bind="sortOption" @bind:after="FilterFilaments">
+        <select class="input" @bind="_sortOption" @bind:after="FilterFilaments">
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
             <option value="remainingAsc">Lowest Remaining</option>
@@ -78,11 +78,11 @@
             <option value="colorLight">Color: Lightest First</option>
         </select>
         <div class="spacer"></div>
-        <span class="pill">@filteredFilaments.Count items</span>
+        <span class="pill">@_filteredFilaments.Count items</span>
     </div>
 
     <section class="grid">
-        @foreach (var filament in filteredFilaments)
+        @foreach (var filament in _filteredFilaments)
         {
             <div class="tile @GetFilamentStatus(filament) @(filament.SpoolCount > 1 ? "stacked" : "")"
                  tabindex="0"
@@ -141,7 +141,7 @@
             </div>
         }
 
-        @if (filteredFilaments.Count == 0)
+        @if (_filteredFilaments.Count == 0)
         {
             <div class="colSpan4" style="text-align: center; padding: 40px; color: var(--muted);">
                 No filaments found. Try adjusting your filters or add a new filament.
@@ -150,27 +150,27 @@
     </section>
 </section>
 
-@if (selectedFilament != null)
+@if (_selectedFilament != null)
 {
-    <FilamentDetailModal Filament="selectedFilament" OnClose="CloseDetail" OnUpdate="RefreshData"/>
+    <FilamentDetailModal Filament="_selectedFilament" OnClose="CloseDetail" OnUpdate="RefreshData"/>
 }
 
 @code {
-    private List<Filament> allFilaments = new();
-    private List<Filament> filteredFilaments = new();
-    private Dictionary<string, int> statistics = new();
-    private Filament? selectedFilament;
+    private List<Filament> _allFilaments = new();
+    private List<Filament> _filteredFilaments = new();
+    private Dictionary<string, int> _statistics = new();
+    private Filament? _selectedFilament;
 
-    private string searchText = "";
-    private string typeFilter = "all";
-    private string sortOption = "newest";
-    private bool filterLowOnly;
+    private string _searchText = "";
+    private string _typeFilter = "all";
+    private string _sortOption = "newest";
+    private bool _filterLowOnly;
 
     // spoolId → AMS-reported remain % (from live MQTT)
     private Dictionary<int, int> _amsRemainBySpoolId = new();
 
-    private int lowStockCount => statistics.GetValueOrDefault("Low", 0) + statistics.GetValueOrDefault("Critical", 0);
-    private int criticalCount => statistics.GetValueOrDefault("Critical", 0);
+    private int LowStockCount => _statistics.GetValueOrDefault("Low", 0) + _statistics.GetValueOrDefault("Critical", 0);
+    private int CriticalCount => _statistics.GetValueOrDefault("Critical", 0);
 
     protected override async Task OnInitializedAsync()
     {
@@ -206,7 +206,10 @@
             RebuildAmsMap(status);
             InvokeAsync(StateHasChanged);
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
     }
 
     /// Build a lookup of spoolId → AMS remain% using the saved RFID ids on each spool.
@@ -225,7 +228,7 @@
             var hasTag  = !string.IsNullOrEmpty(slot.TagUid)  && slot.TagUid.Replace("0", "").Length > 0;
             if (!hasUuid && !hasTag) continue;
 
-            foreach (var filament in allFilaments)
+            foreach (var filament in _allFilaments)
             foreach (var spool in filament.Spools ?? new List<Spool>())
             {
                 if ((hasUuid && spool.AmsTrayUuid == slot.TrayUuid) ||
@@ -262,8 +265,8 @@
 
     private async Task RefreshData()
     {
-        allFilaments = await FilamentService.GetAllFilamentsAsync();
-        statistics = await FilamentService.GetStatisticsAsync();
+        _allFilaments = await FilamentService.GetAllFilamentsAsync();
+        _statistics = await FilamentService.GetStatisticsAsync();
         RebuildAmsMap(BambuLabService.GetCurrentStatus());
         FilterFilaments();
         StateHasChanged();
@@ -276,34 +279,34 @@
 
     private void FilterFilaments()
     {
-        filteredFilaments = allFilaments
+        _filteredFilaments = _allFilaments
             .Where(f =>
             {
-                if (!string.IsNullOrWhiteSpace(searchText))
+                if (!string.IsNullOrWhiteSpace(_searchText))
                 {
-                    var search = searchText.ToLower();
+                    var search = _searchText.ToLower();
                     if (!f.Brand.ToLower().Contains(search) &&
                         !f.ColorName.ToLower().Contains(search) &&
                         !f.Type.ToLower().Contains(search) &&
                         !(f.Finish?.ToLower().Contains(search) ?? false))
                         return false;
                 }
-                if (typeFilter != "all" && f.Type != typeFilter) return false;
-                if (filterLowOnly && GetFilamentStatus(f) == "ok") return false;
+                if (_typeFilter != "all" && f.Type != _typeFilter) return false;
+                if (_filterLowOnly && GetFilamentStatus(f) == "ok") return false;
                 return true;
             })
             .ToList();
 
-        filteredFilaments = sortOption switch
+        _filteredFilaments = _sortOption switch
         {
-            "oldest"        => filteredFilaments.OrderBy(f => f.DateAdded).ToList(),
-            "remainingAsc"  => filteredFilaments.OrderBy(f => f.WeightRemaining).ToList(),
-            "remainingDesc" => filteredFilaments.OrderByDescending(f => f.WeightRemaining).ToList(),
-            "nameAsc"       => filteredFilaments.OrderBy(f => f.ColorName).ToList(),
-            "nameDesc"      => filteredFilaments.OrderByDescending(f => f.ColorName).ToList(),
-            "colorDark"     => filteredFilaments.OrderBy(f => GetColorBrightness(f.ColorCode)).ToList(),
-            "colorLight"    => filteredFilaments.OrderByDescending(f => GetColorBrightness(f.ColorCode)).ToList(),
-            _               => filteredFilaments.OrderByDescending(f => f.DateAdded).ToList()
+            "oldest"        => _filteredFilaments.OrderBy(f => f.DateAdded).ToList(),
+            "remainingAsc"  => _filteredFilaments.OrderBy(f => f.WeightRemaining).ToList(),
+            "remainingDesc" => _filteredFilaments.OrderByDescending(f => f.WeightRemaining).ToList(),
+            "nameAsc"       => _filteredFilaments.OrderBy(f => f.ColorName).ToList(),
+            "nameDesc"      => _filteredFilaments.OrderByDescending(f => f.ColorName).ToList(),
+            "colorDark"     => _filteredFilaments.OrderBy(f => GetColorBrightness(f.ColorCode)).ToList(),
+            "colorLight"    => _filteredFilaments.OrderByDescending(f => GetColorBrightness(f.ColorCode)).ToList(),
+            _               => _filteredFilaments.OrderByDescending(f => f.DateAdded).ToList()
         };
     }
 
@@ -325,10 +328,10 @@
 
     private void ToggleLowFilter()
     {
-        filterLowOnly = !filterLowOnly;
+        _filterLowOnly = !_filterLowOnly;
         FilterFilaments();
     }
 
-    private void OpenDetail(Filament filament) => selectedFilament = filament;
-    private void CloseDetail() => selectedFilament = null;
+    private void OpenDetail(Filament filament) => _selectedFilament = filament;
+    private void CloseDetail() => _selectedFilament = null;
 }

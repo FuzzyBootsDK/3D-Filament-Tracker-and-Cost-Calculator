@@ -5,7 +5,7 @@
     </div>
 
     <!-- Quick Navigation -->
-    <div class="formCard"
+    <div class="formCard" id="toc"
          style="border-color: rgba(99,102,241,.40); background: rgba(99,102,241,.05); margin-top: 14px;">
         <h2 style="margin-top: 0;">📑 Quick Navigation</h2>
         <div style="color: var(--muted); line-height: 1.8;">
@@ -22,12 +22,23 @@
                 <a href="#tips" class="helpNavLink">💡 Tips & Best Practices</a>
                 <a href="#livetracker" class="helpNavLink">🖨️ BambuLab Live Tracking</a>
                 <a href="#ams" class="helpNavLink">🎞️ AMS Slot Management</a>
+                <a href="#amssync" class="helpNavLink">🔄 AMS Auto-Weight Sync</a>
                 <a href="#mqttterminal" class="helpNavLink">📡 MQTT Message Log</a>
                 <a href="#quickactions" class="helpNavLink">⚡ Quick Actions & Workflows</a>
                 <a href="#faq" class="helpNavLink">❓ Troubleshooting & FAQ</a>
             </div>
         </div>
     </div>
+
+    <!-- back-to-top component defined once as a snippet -->
+    @{
+        RenderFragment backToTop =
+            @<div style="margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--border);">
+                <a href="#toc" style="color: var(--muted); font-size: 13px; text-decoration: none;">
+                    ↑ Back to Table of Contents
+                </a>
+            </div>;
+    }
 
     <div class="formCard" id="overview"
          style="border-color: rgba(59,130,246,.40); background: rgba(59,130,246,.05); scroll-margin-top: 20px;">
@@ -118,6 +129,7 @@
                     for diagnostics
                 </li>
                 <li><strong>Inventory Linking</strong> - Match AMS slots to your tracked inventory filaments</li>
+                <li><strong>AMS Auto-Weight Sync</strong> - Automatically update spool weights from AMS RFID data</li>
             </ul>
 
             <p style="margin-top: 16px;">
@@ -125,6 +137,7 @@
                     features!</em>
             </p>
         </div>
+        @backToTop
     </div>
 
     <div class="formCard" id="inventory" style="scroll-margin-top: 20px;">
@@ -180,6 +193,7 @@
                 </li>
             </ul>
         </div>
+        @backToTop
     </div>
 
     <div class="formCard" id="adding" style="scroll-margin-top: 20px;">
@@ -248,6 +262,7 @@
                     you can track multiple spools of the same filament and see your total remaining stock.</em>
             </p>
         </div>
+        @backToTop
     </div>
 
     <div class="formCard" id="spools" style="scroll-margin-top: 20px;">
@@ -298,6 +313,7 @@
                     automatically based on your filament inventory.</em>
             </p>
         </div>
+        @backToTop
     </div>
 
     <div class="formCard" id="calculator" style="scroll-margin-top: 20px;">
@@ -440,6 +456,7 @@
                 <li>Save quotes as PDFs to track pricing history</li>
             </ul>
         </div>
+        @backToTop
     </div>
 
     <div class="formCard" id="usage" style="scroll-margin-top: 20px;">
@@ -498,6 +515,7 @@
                     helps you follow FIFO inventory practices automatically!</em>
             </p>
         </div>
+        @backToTop
     </div>
 
     <div class="formCard" id="pricing" style="scroll-margin-top: 20px;">
@@ -576,6 +594,7 @@
                     your print cost estimates much more reliable!</em>
             </p>
         </div>
+        @backToTop
     </div>
 
     <div class="formCard" id="settings" style="scroll-margin-top: 20px;">
@@ -698,6 +717,36 @@
                 <li>Disconnect at any time</li>
             </ul>
 
+            <h3>🔄 AMS Auto-Weight Sync</h3>
+            <p>When BambuLab Live Tracking is enabled, two additional options become available:</p>
+            <ul>
+                <li>
+                    <strong>Auto-update spool weight from AMS</strong> — When checked, the app reads the remaining
+                    percentage reported by the AMS RFID chip and automatically updates the matching spool's weight in
+                    your inventory. The calculation is: <em>AMS% × spool total weight</em>.
+                    <ul>
+                        <li>Only applies to spools you have <strong>tagged / linked</strong> in the AMS page</li>
+                        <li>Non-tagged (third-party) spools are never touched</li>
+                        <li>Updates trigger every time the printer sends an AMS message (roughly every 2 s)</li>
+                        <li>A change smaller than 0.5 g is ignored to avoid constant DB writes</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Only decrease (never add filament back)</strong> — A sub-option of the above that acts
+                    as a safety guard. When checked (the default), the sync will only write a lower weight than what
+                    is already in the inventory — it will never increase it.
+                    <ul>
+                        <li><em>Leave this ON</em> if you trust your manual records and just want the AMS to keep them
+                            current as you print
+                        </li>
+                        <li><em>Turn this OFF</em> if you want full two-way sync — useful if you accidentally
+                            over-recorded usage and want the AMS RFID reading to correct it
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <p>See the <a href="#amssync">AMS Auto-Weight Sync section</a> for a detailed walkthrough.</p>
+
             <h3>📡 MQTT Message Log</h3>
             <p>A built-in diagnostic terminal displays the last 50 raw MQTT messages received from your printer in real
                 time. See the <a href="#mqttterminal">MQTT Message Log section</a> for details.</p>
@@ -713,6 +762,7 @@
                 </li>
             </ul>
         </div>
+        @backToTop
     </div>
 
     <div class="formCard" id="tips" style="scroll-margin-top: 20px;">
@@ -766,6 +816,7 @@
                 </li>
             </ul>
         </div>
+        @backToTop
     </div>
 
     <div class="formCard" id="livetracker" style="scroll-margin-top: 20px;">
@@ -950,6 +1001,7 @@
                 <li>Widget collapses on mobile screens to save space but remains accessible</li>
             </ul>
         </div>
+        @backToTop
     </div>
 
     <div class="formCard" id="ams" style="scroll-margin-top: 20px;">
@@ -986,19 +1038,22 @@
                 <li>An empty slot shows "Empty" in muted text</li>
             </ul>
 
-            <h3>Matching AMS Slots to Your Inventory:</h3>
+            <h3>Linking a Slot to Your Inventory:</h3>
+            <ol>
+                <li>Go to the <strong>AMS</strong> page</li>
+                <li>Find the slot whose filament you want to track</li>
+                <li>Use the <strong>"Link to inventory…"</strong> dropdown to select the matching spool from your
+                    inventory
+                </li>
+                <li>Click <strong>"💾 Save link"</strong> — the app stores the spool's RFID UUID so it
+                    recognises this spool automatically next time it is inserted
+                </li>
+            </ol>
             <p>
-                You can use the AMS color and type information to quickly identify which spool in your inventory
-                is currently loaded. The dropdown in AMS-aware views shows
-                <strong>"Brand · Type · Sub-Brand - Color Name"</strong> so you can match it precisely to what the
-                printer reports.
+                Once a slot is linked, the AMS page shows both the <strong>AMS %</strong> and the current
+                <strong>inventory weight</strong> side by side so you can spot discrepancies at a glance.
+                A linked slot also enables the AMS Auto-Weight Sync feature described in the next section.
             </p>
-
-            <h3>Multiple AMS Units:</h3>
-            <ul>
-                <li>If you have more than one AMS attached, each unit is shown separately</li>
-                <li>Each unit displays its AMS ID, temperature, and humidity alongside the four slot cards</li>
-            </ul>
 
             <h3>Tips for AMS Use:</h3>
             <ul>
@@ -1007,8 +1062,139 @@
                 </li>
                 <li>Non-tagged spools may show empty type/sub-brand fields</li>
                 <li>The remaining % is an estimate from the spool tag — weigh spools manually for precision</li>
+                <li>Linking a spool once is enough — the RFID UUID is permanent and the app will auto-detect it in
+                    future sessions
+                </li>
             </ul>
         </div>
+        @backToTop
+    </div>
+
+    <!-- NEW SECTION -->
+    <div class="formCard" id="amssync"
+         style="border-color: rgba(34,197,94,.30); background: rgba(34,197,94,.04); scroll-margin-top: 20px;">
+        <h2 style="margin-top: 0;">🔄 AMS Auto-Weight Sync</h2>
+        <div style="color: var(--muted); line-height: 1.8;">
+            <p>
+                The <strong>AMS Auto-Weight Sync</strong> feature automatically keeps your inventory up to date by
+                reading the remaining filament percentage from each AMS slot's RFID chip and writing it back to the
+                matching spool in your inventory — without you having to weigh or record anything manually after a
+                print.
+            </p>
+
+            <h3>Prerequisites:</h3>
+            <ul>
+                <li>BambuLab Live Tracking must be <strong>enabled and connected</strong> (Settings → BambuLab MQTT)
+                </li>
+                <li>The spool must be a <strong>Bambu Lab RFID-tagged</strong> spool (the tag reports the remaining %)
+                </li>
+                <li>The slot must be <strong>linked to a spool in your inventory</strong> via the AMS page</li>
+                <li>The linked spool must have a <strong>Total Weight</strong> set (e.g. 1000 g) so the % can be
+                    converted to grams
+                </li>
+            </ul>
+
+            <h3>How to Enable It:</h3>
+            <ol>
+                <li>Go to <strong>Settings</strong></li>
+                <li>Scroll to <strong>"🖨️ BambuLab MQTT Live Tracking"</strong></li>
+                <li>Make sure <strong>"Enable BambuLab Live Tracking"</strong> is checked</li>
+                <li>Check <strong>"Auto-update spool weight from AMS"</strong></li>
+                <li>Decide on the <strong>"Only decrease"</strong> sub-option (see below)</li>
+                <li>Click <strong>"💾 Save & Connect"</strong></li>
+            </ol>
+
+            <h3>How the Weight is Calculated:</h3>
+            <p>Every time the printer sends an AMS message the app:</p>
+            <ol>
+                <li>Reads the <code>remain</code> value for each slot (0 – 100 %)</li>
+                <li>Looks up the linked spool in the inventory</li>
+                <li>Calculates: <strong>new weight = Total Weight × remain / 100</strong></li>
+                <li>If the difference from the current stored weight is ≥ 0.5 g, the inventory is updated</li>
+            </ol>
+            <p>
+                Example: Your spool has a Total Weight of 1000 g. The AMS reports 75 % remaining.
+                The app writes <strong>750 g</strong> to the inventory.
+            </p>
+
+            <h3>"Only Decrease" Mode (default ON):</h3>
+            <p>
+                This sub-option controls whether the sync can also <em>increase</em> the stored weight:
+            </p>
+            <ul>
+                <li>
+                    <strong>ON (default / safe)</strong> — The AMS can only lower the weight, never raise it.
+                    Use this if you keep your records accurate manually and just want the AMS to
+                    automatically subtract usage after each print.
+                </li>
+                <li>
+                    <strong>OFF (full two-way sync)</strong> — The AMS reading overrides the stored weight in
+                    both directions. Useful to correct over-recording: if you accidentally subtracted too much
+                    from a spool, putting it back in the AMS will restore the weight automatically once the
+                    RFID chip reads a higher remaining value.
+                </li>
+            </ul>
+
+            <h3>What Gets Updated — and What Doesn't:</h3>
+            <ul>
+                <li>✅ <strong>Linked Bambu Lab RFID spools</strong> — updated automatically</li>
+                <li>✅ Works across multiple AMS units if you have more than one attached</li>
+                <li>❌ <strong>Non-tagged / third-party spools</strong> — never touched (no RFID = no UUID match)
+                </li>
+                <li>❌ <strong>Unlinked slots</strong> — ignored even if they have an RFID tag (you must link first)
+                </li>
+                <li>❌ Changes smaller than <strong>0.5 g</strong> are ignored to avoid excessive database writes
+                </li>
+            </ul>
+
+            <h3>Verifying It Works:</h3>
+            <ul>
+                <li>Go to the <strong>AMS</strong> page — each linked slot shows both <em>"AMS: X%"</em> and
+                    <em>"Inventory: Yg"</em>. After a few seconds of connection the two figures should align.
+                </li>
+                <li>Open the filament in <strong>Inventory</strong> and check the spool weight — it should match
+                    AMS% × Total Weight.
+                </li>
+                <li>Check the server console / Docker logs for lines like:<br/>
+                    <code>AMS auto-update: spool 12 (Bambu Lab Plum) ▼ decreased 530g → 210g (AMS 21%)</code>
+                </li>
+            </ul>
+
+            <h3>Troubleshooting:</h3>
+            <p><strong>Inventory weight never changes even though AMS sync is enabled</strong></p>
+            <ul>
+                <li>Confirm the slot is linked — go to AMS page and check the "Linked to:" label</li>
+                <li>Confirm the spool has a Total Weight set (0 g total = the calculated weight will always be 0)</li>
+                <li>The RFID UUID stored on the spool must match what is saved in the inventory. Re-save the link on
+                    the AMS page if in doubt
+                </li>
+                <li>Verify "Auto-update spool weight from AMS" is still checked after a page reload (Settings
+                    persists it to the database — reload the Settings page and confirm)
+                </li>
+            </ul>
+
+            <p><strong>Weight jumps up and down unexpectedly</strong></p>
+            <ul>
+                <li>The RFID chip reports in whole-percent steps, so a 1000 g spool has ~10 g resolution</li>
+                <li>If "Only decrease" is OFF and the RFID reading occasionally fluctuates by 1 %, you may see
+                    small up/down corrections — turn "Only decrease" back ON to prevent increases
+                </li>
+            </ul>
+
+            <p><strong>The spool weight jumped to a much higher value after I put a new spool in the same slot</strong></p>
+            <ul>
+                <li>The new spool has a different RFID UUID — it will only update the inventory if you link the new
+                    spool on the AMS page first
+                </li>
+                <li>The old spool link is not automatically transferred to the new spool</li>
+            </ul>
+
+            <p>
+                <em>💡 Pro tip: Leave "Only decrease" ON day-to-day. Turn it OFF temporarily only when you need to
+                    correct an over-recorded spool, then turn it back ON after the correction has been applied.</em>
+            </p>
+        </div>
+        @backToTop
     </div>
 
     <div class="formCard" id="mqttterminal" style="scroll-margin-top: 20px;">
@@ -1064,6 +1250,7 @@
                     🔄 Refresh when you're done.</em>
             </p>
         </div>
+        @backToTop
     </div>
 
     <div class="formCard" id="quickactions" style="scroll-margin-top: 20px;">
@@ -1132,6 +1319,7 @@
                 <li>Use the Refresh button if no messages appear yet</li>
             </ol>
         </div>
+        @backToTop
     </div>
 
     <div class="formCard" id="faq" style="scroll-margin-top: 20px;">
@@ -1224,7 +1412,27 @@
             <p>A: The log only fills once the printer sends a message. Try clicking 🔄 Refresh after a few seconds. If
                 the printer is idle it may only send occasional heartbeat messages. Start a print to see continuous
                 updates.</p>
+
+            <p><strong>Q: AMS sync is enabled but my inventory weight never changes</strong></p>
+            <p>A: Check three things:</p>
+            <ul>
+                <li>The AMS slot must be <strong>linked</strong> to a spool in your inventory (AMS page → "Link to
+                    inventory…" dropdown → Save link)
+                </li>
+                <li>The linked spool must have a <strong>Total Weight</strong> greater than 0 g — the calculation
+                    is AMS% × Total Weight
+                </li>
+                <li>The spool must be a Bambu Lab <strong>RFID-tagged</strong> spool — third-party spools without an
+                    RFID chip will never match
+                </li>
+            </ul>
+
+            <p><strong>Q: Can AMS sync add filament back to a spool?</strong></p>
+            <p>A: Yes — but only when <strong>"Only decrease"</strong> is turned OFF. By default it is ON, which means
+                the sync will only ever lower the stored weight. Turn it OFF in Settings if you need two-way
+                correction (e.g. to undo an accidental over-recording).</p>
         </div>
+        @backToTop
     </div>
 </section>
 

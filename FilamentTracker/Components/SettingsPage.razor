@@ -14,11 +14,11 @@
         <div class="sub">Customize your experience and manage your data</div>
     </div>
 
-    @if (!string.IsNullOrEmpty(message))
+    @if (!string.IsNullOrEmpty(_message))
     {
         <div class="strip"
-             style="margin-top: 14px; @(messageIsError ? "border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12);" : "border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.12);")">
-            <div>@message</div>
+             style="margin-top: 14px; @(_messageIsError ? "border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12);" : "border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.12);")">
+            <div>@_message</div>
         </div>
     }
 
@@ -44,7 +44,7 @@
         </div>
         <div style="margin-bottom: 16px;">
             <label class="label">Currency</label>
-            <select class="input" @bind="selectedCurrency">
+            <select class="input" @bind="_selectedCurrency">
                 <option value="DKK">DKK - Danish Krone</option>
                 <option value="USD">USD - US Dollar</option>
                 <option value="EUR">EUR - Euro</option>
@@ -71,8 +71,8 @@
                 <option value="TRY">TRY - Turkish Lira</option>
             </select>
         </div>
-        <button class="btn primary" @onclick="SaveCurrency" disabled="@isProcessing">
-            @if (isProcessing)
+        <button class="btn primary" @onclick="SaveCurrency" disabled="@_isProcessing">
+            @if (_isProcessing)
             {
                 <text>Saving...</text>
             }
@@ -90,7 +90,7 @@
         </div>
         <div style="margin-bottom: 16px;">
             <label class="label">Low Threshold (grams)</label>
-            <input type="number" class="input" @bind="lowThreshold" @bind:event="oninput" min="1" max="10000"
+            <input type="number" class="input" @bind="_lowThreshold" @bind:event="oninput" min="1" max="10000"
                    step="50"/>
             <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
                 Filaments below this weight will be marked as "Low" (yellow warning)
@@ -98,14 +98,14 @@
         </div>
         <div style="margin-bottom: 16px;">
             <label class="label">Critical Threshold (grams)</label>
-            <input type="number" class="input" @bind="criticalThreshold" @bind:event="oninput" min="1" max="10000"
+            <input type="number" class="input" @bind="_criticalThreshold" @bind:event="oninput" min="1" max="10000"
                    step="50"/>
             <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
                 Filaments below this weight will be marked as "Critical" (red alert)
             </div>
         </div>
-        <button class="btn primary" @onclick="SaveThresholds" disabled="@isProcessing">
-            @if (isProcessing)
+        <button class="btn primary" @onclick="SaveThresholds" disabled="@_isProcessing">
+            @if (_isProcessing)
             {
                 <text>Saving...</text>
             }
@@ -123,13 +123,13 @@
         </div>
 
         <div class="checkRow" style="margin-bottom: 16px;">
-            <input type="checkbox" @bind="bambuLabEnabled" id="bambuLabEnabled"/>
+            <input type="checkbox" @bind="_bambuLabEnabled" id="bambuLabEnabled"/>
             <label for="bambuLabEnabled">Enable BambuLab Live Tracking</label>
         </div>
 
         <div class="checkRow" style="margin-bottom: 8px;">
-            <input type="checkbox" @bind="amsAutoUpdateWeight" id="amsAutoUpdateWeight" disabled="@(!bambuLabEnabled)"/>
-            <label for="amsAutoUpdateWeight" style="@(!bambuLabEnabled ? "color: var(--muted);" : "")">
+            <input type="checkbox" @bind="_amsAutoUpdateWeight" id="amsAutoUpdateWeight" disabled="@(!_bambuLabEnabled)"/>
+            <label for="amsAutoUpdateWeight" style="@(!_bambuLabEnabled ? "color: var(--muted);" : "")">
                 Auto-update spool weight from AMS
             </label>
         </div>
@@ -140,10 +140,10 @@
         </div>
 
         <div class="checkRow" style="margin-bottom: 4px; margin-left: 20px;">
-            <input type="checkbox" @bind="amsAutoUpdateOnlyDecrease" id="amsAutoUpdateOnlyDecrease"
-                   disabled="@(!bambuLabEnabled || !amsAutoUpdateWeight)"/>
+            <input type="checkbox" @bind="_amsAutoUpdateOnlyDecrease" id="amsAutoUpdateOnlyDecrease"
+                   disabled="@(!_bambuLabEnabled || !_amsAutoUpdateWeight)"/>
             <label for="amsAutoUpdateOnlyDecrease"
-                   style="@(!bambuLabEnabled || !amsAutoUpdateWeight ? "color: var(--muted);" : "")">
+                   style="@(!_bambuLabEnabled || !_amsAutoUpdateWeight ? "color: var(--muted);" : "")">
                 Only decrease weight (never add back)
             </label>
         </div>
@@ -157,7 +157,7 @@
 
         <div style="margin-bottom: 16px;">
             <label class="label">Printer IP Address</label>
-            <input type="text" class="input" @bind="bambuLabIpAddress" placeholder="192.168.1.100"/>
+            <input type="text" class="input" @bind="_bambuLabIpAddress" placeholder="192.168.1.100"/>
             <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
                 Find this in your printer's network settings
             </div>
@@ -165,7 +165,7 @@
 
         <div style="margin-bottom: 16px;">
             <label class="label">Access Code</label>
-            <input type="text" class="input" @bind="bambuLabAccessCode" placeholder="12345678" maxlength="8"/>
+            <input type="text" class="input" @bind="_bambuLabAccessCode" placeholder="12345678" maxlength="8"/>
             <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
                 Found in Settings → Network → Access Code on your printer
             </div>
@@ -173,23 +173,23 @@
 
         <div style="margin-bottom: 16px;">
             <label class="label">Serial Number</label>
-            <input type="text" class="input" @bind="bambuLabSerialNumber" placeholder="01S00C..."/>
+            <input type="text" class="input" @bind="_bambuLabSerialNumber" placeholder="01S00C..."/>
             <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
                 Found in Settings → Device on your printer
             </div>
         </div>
 
-        @if (bambuLabConnectionStatus != null)
+        @if (_bambuLabConnectionStatus != null)
         {
             <div class="strip"
-                 style="margin-bottom: 16px; @(bambuLabConnectionSuccess ? "border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.12);" : "border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12);")">
-                <div>@bambuLabConnectionStatus</div>
+                 style="margin-bottom: 16px; @(_bambuLabConnectionSuccess ? "border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.12);" : "border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12);")">
+                <div>@_bambuLabConnectionStatus</div>
             </div>
         }
 
         <div class="row">
-            <button class="btn primary" @onclick="SaveBambuLabSettings" disabled="@isProcessing">
-                @if (isProcessing)
+            <button class="btn primary" @onclick="SaveBambuLabSettings" disabled="@_isProcessing">
+                @if (_isProcessing)
                 {
                     <text>Saving...</text>
                 }
@@ -199,16 +199,16 @@
                 }
             </button>
 
-            @if (bambuLabEnabled && BambuLabService.IsConnected)
+            @if (_bambuLabEnabled && BambuLabService.IsConnected)
             {
-                <button class="btn" @onclick="DisconnectBambuLab" disabled="@isProcessing">
+                <button class="btn" @onclick="DisconnectBambuLab" disabled="@_isProcessing">
                     🔌 Disconnect
                 </button>
             }
 
-            @if (bambuLabEnabled && !string.IsNullOrEmpty(bambuLabIpAddress))
+            @if (_bambuLabEnabled && !string.IsNullOrEmpty(_bambuLabIpAddress))
             {
-                <button class="btn" @onclick="TestBambuLabConnection" disabled="@isProcessing">
+                <button class="btn" @onclick="TestBambuLabConnection" disabled="@_isProcessing">
                     🧪 Test Connection
                 </button>
             }
@@ -235,10 +235,10 @@
                 <span style="font-size: 12px; color: var(--muted);">○ Not connected</span>
             }
             <div style="margin-left: auto; font-size: 12px; color: var(--muted);">
-                Messages: <strong>@mqttLogEntries.Count</strong>
-                @if (mqttLogEntries.Any())
+                Messages: <strong>@_mqttLogEntries.Count</strong>
+                @if (_mqttLogEntries.Any())
                 {
-                    <span> · Last: <strong>@mqttLogEntries.Last().Timestamp.ToString("HH:mm:ss")</strong></span>
+                    <span> · Last: <strong>@_mqttLogEntries.Last().Timestamp.ToString("HH:mm:ss")</strong></span>
                 }
             </div>
         </div>
@@ -255,7 +255,7 @@
             line-height: 1.6;
             color: #e6edf3;
         ">
-            @if (!mqttLogEntries.Any())
+            @if (!_mqttLogEntries.Any())
             {
                 <div style="color: #6e7681; text-align: center; padding-top: 160px;">
                     No messages yet. Connect to your printer to see live data.
@@ -263,7 +263,7 @@
             }
             else
             {
-                @foreach (var entry in mqttLogEntries.AsEnumerable().Reverse())
+                @foreach (var entry in _mqttLogEntries.AsEnumerable().Reverse())
                 {
                     <div
                         style="margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 6px;">
@@ -275,7 +275,7 @@
             }
         </div>
         <div style="font-size: 11px; color: var(--muted); margin-top: 8px;">
-            Showing last @mqttLogEntries.Count message(s) — auto-updates when connected.
+            Showing last @_mqttLogEntries.Count message(s) — auto-updates when connected.
         </div>
     </div>
 
@@ -284,8 +284,8 @@
         <div style="color: var(--muted); margin-bottom: 16px;">
             Download all your filament data as a CSV file for backup or analysis.
         </div>
-        <button class="btn primary" @onclick="ExportData" disabled="@isProcessing">
-            @if (isProcessing)
+        <button class="btn primary" @onclick="ExportData" disabled="@_isProcessing">
+            @if (_isProcessing)
             {
                 <text>Exporting...</text>
             }
@@ -305,15 +305,15 @@
             Price Per Kg
         </div>
         <div style="margin-bottom: 16px;">
-            <button class="btn" @onclick="DownloadTemplate" disabled="@isProcessing">
+            <button class="btn" @onclick="DownloadTemplate" disabled="@_isProcessing">
                 📄 Download CSV Template
             </button>
         </div>
         <div class="row">
             <InputFile OnChange="HandleFileSelected" class="input" style="flex: initial;" accept=".csv"
-                       disabled="@isProcessing"/>
-            <button class="btn primary" @onclick="ImportData" disabled="@(selectedFile == null || isProcessing)">
-                @if (isProcessing)
+                       disabled="@_isProcessing"/>
+            <button class="btn primary" @onclick="ImportData" disabled="@(_selectedFile == null || _isProcessing)">
+                @if (_isProcessing)
                 {
                     <text>Importing...</text>
                 }
@@ -323,10 +323,10 @@
                 }
             </button>
         </div>
-        @if (selectedFile != null)
+        @if (_selectedFile != null)
         {
             <div style="margin-top: 8px; color: var(--muted); font-size: 12px;">
-                Selected: @selectedFile.Name (@(selectedFile.Size / 1024.0)KB)
+                Selected: @_selectedFile.Name (@(_selectedFile.Size / 1024.0)KB)
             </div>
         }
     </div>
@@ -338,9 +338,9 @@
         </div>
 
         <div class="spoolList" style="max-height: 300px; overflow-y: auto; margin-bottom: 16px;">
-            @if (brands.Any())
+            @if (_brands.Any())
             {
-                @foreach (var brand in brands)
+                @foreach (var brand in _brands)
                 {
                     <div class="spoolRow">
                         <div class="left">
@@ -374,9 +374,9 @@
             This cannot be undone! Make sure to export your data first if you need it.
         </div>
 
-        @if (!showPurgeConfirm)
+        @if (!_showPurgeConfirm)
         {
-            <button class="btn danger" @onclick="() => showPurgeConfirm = true" disabled="@isProcessing">
+            <button class="btn danger" @onclick="() => _showPurgeConfirm = true" disabled="@_isProcessing">
                 🗑️ Purge Database
             </button>
         }
@@ -388,12 +388,12 @@
                     Are you absolutely sure?
                 </div>
                 <div style="color: var(--muted); margin-bottom: 16px; font-size: 14px;">
-                    This will delete ALL @filamentCount filament(s) and @spoolCount spool(s) from your database.
+                    This will delete ALL @_filamentCount filament(s) and @_spoolCount spool(s) from your database.
                     This action cannot be undone!
                 </div>
                 <div class="row">
-                    <button class="btn danger" @onclick="PurgeDatabase" disabled="@isProcessing">
-                        @if (isProcessing)
+                    <button class="btn danger" @onclick="PurgeDatabase" disabled="@_isProcessing">
+                        @if (_isProcessing)
                         {
                             <text>Deleting...</text>
                         }
@@ -402,7 +402,7 @@
                             <text>Yes, Delete Everything</text>
                         }
                     </button>
-                    <button class="btn" @onclick="() => showPurgeConfirm = false">
+                    <button class="btn" @onclick="() => _showPurgeConfirm = false">
                         Cancel
                     </button>
                 </div>
@@ -439,30 +439,30 @@
 </section>
 
 @code {
-    private IBrowserFile? selectedFile;
-    private bool isProcessing;
-    private bool showPurgeConfirm;
-    private string message = "";
-    private bool messageIsError;
-    private int filamentCount;
-    private int spoolCount;
-    private List<Brand> brands = new();
-    private int lowThreshold = 500;
-    private int criticalThreshold = 250;
-    private string selectedCurrency = "DKK";
+    private IBrowserFile? _selectedFile;
+    private bool _isProcessing;
+    private bool _showPurgeConfirm;
+    private string _message = "";
+    private bool _messageIsError;
+    private int _filamentCount;
+    private int _spoolCount;
+    private List<Brand> _brands = new();
+    private int _lowThreshold = 500;
+    private int _criticalThreshold = 250;
+    private string _selectedCurrency = "DKK";
 
     // BambuLab settings
-    private bool bambuLabEnabled;
-    private bool amsAutoUpdateWeight;
-    private bool amsAutoUpdateOnlyDecrease = true;
-    private string bambuLabIpAddress = "";
-    private string bambuLabAccessCode = "";
-    private string bambuLabSerialNumber = "";
-    private string? bambuLabConnectionStatus;
-    private bool bambuLabConnectionSuccess;
+    private bool _bambuLabEnabled;
+    private bool _amsAutoUpdateWeight;
+    private bool _amsAutoUpdateOnlyDecrease = true;
+    private string _bambuLabIpAddress = "";
+    private string _bambuLabAccessCode = "";
+    private string _bambuLabSerialNumber = "";
+    private string? _bambuLabConnectionStatus;
+    private bool _bambuLabConnectionSuccess;
 
     // MQTT log terminal
-    private List<MqttLogEntry> mqttLogEntries = new();
+    private List<MqttLogEntry> _mqttLogEntries = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -486,7 +486,7 @@
             {
                 try
                 {
-                    mqttLogEntries = BambuLabService.GetMqttLog().ToList();
+                    _mqttLogEntries = BambuLabService.GetMqttLog().ToList();
                     StateHasChanged();
                 }
                 catch
@@ -503,13 +503,13 @@
 
     private void RefreshMqttLog()
     {
-        mqttLogEntries = BambuLabService.GetMqttLog().ToList();
+        _mqttLogEntries = BambuLabService.GetMqttLog().ToList();
         StateHasChanged();
     }
 
     private void ClearMqttDisplay()
     {
-        mqttLogEntries = new List<MqttLogEntry>();
+        _mqttLogEntries = new List<MqttLogEntry>();
         StateHasChanged();
     }
 
@@ -529,7 +529,7 @@
             foreach (var e in entries)
             {
                 var ts = e.Timestamp.ToString("o");
-                var escaped = (e.Payload ?? "").Replace("\"", "\"\"");
+                var escaped = (e.Payload).Replace("\"", "\"\"");
                 sb.AppendLine($"\"{ts}\",\"{escaped}\"");
             }
 
@@ -571,28 +571,28 @@
     private async Task LoadThresholds()
     {
         var settings = await FilamentService.GetSettingsAsync();
-        lowThreshold = (int)settings.LowThreshold;
-        criticalThreshold = (int)settings.CriticalThreshold;
-        selectedCurrency = settings.Currency;
+        _lowThreshold = (int)settings.LowThreshold;
+        _criticalThreshold = (int)settings.CriticalThreshold;
+        _selectedCurrency = settings.Currency;
 
         // Load BambuLab settings
-        bambuLabEnabled = settings.BambuLabEnabled;
-        amsAutoUpdateWeight = settings.AmsAutoUpdateWeight;
-        amsAutoUpdateOnlyDecrease = settings.AmsAutoUpdateOnlyDecrease;
-        bambuLabIpAddress = settings.BambuLabIpAddress ?? "";
-        bambuLabAccessCode = settings.BambuLabAccessCode ?? "";
-        bambuLabSerialNumber = settings.BambuLabSerialNumber ?? "";
+        _bambuLabEnabled = settings.BambuLabEnabled;
+        _amsAutoUpdateWeight = settings.AmsAutoUpdateWeight;
+        _amsAutoUpdateOnlyDecrease = settings.AmsAutoUpdateOnlyDecrease;
+        _bambuLabIpAddress = settings.BambuLabIpAddress ?? "";
+        _bambuLabAccessCode = settings.BambuLabAccessCode ?? "";
+        _bambuLabSerialNumber = settings.BambuLabSerialNumber ?? "";
     }
 
     private async Task SaveCurrency()
     {
         try
         {
-            isProcessing = true;
+            _isProcessing = true;
             StateHasChanged();
 
             var settings = await FilamentService.GetSettingsAsync();
-            settings.Currency = selectedCurrency;
+            settings.Currency = _selectedCurrency;
 
             await FilamentService.UpdateSettingsAsync(settings);
 
@@ -604,7 +604,7 @@
         }
         finally
         {
-            isProcessing = false;
+            _isProcessing = false;
         }
     }
 
@@ -613,27 +613,27 @@
         try
         {
             // Validate thresholds
-            if (criticalThreshold >= lowThreshold)
+            if (_criticalThreshold >= _lowThreshold)
             {
                 ShowMessage("Critical threshold must be less than Low threshold", true);
                 return;
             }
 
-            if (criticalThreshold < 1 || lowThreshold < 1)
+            if (_criticalThreshold < 1 || _lowThreshold < 1)
             {
                 ShowMessage("Thresholds must be greater than 0", true);
                 return;
             }
 
-            isProcessing = true;
+            _isProcessing = true;
             StateHasChanged();
 
             var settings = await FilamentService.GetSettingsAsync();
-            settings.LowThreshold = lowThreshold;
-            settings.CriticalThreshold = criticalThreshold;
+            settings.LowThreshold = _lowThreshold;
+            settings.CriticalThreshold = _criticalThreshold;
 
             await FilamentService.UpdateSettingsAsync(settings);
-            ThresholdService.SetThresholds(lowThreshold, criticalThreshold);
+            ThresholdService.SetThresholds(_lowThreshold, _criticalThreshold);
 
             ShowMessage("Thresholds saved successfully! Changes apply immediately.", false);
         }
@@ -643,13 +643,13 @@
         }
         finally
         {
-            isProcessing = false;
+            _isProcessing = false;
         }
     }
 
     private async Task LoadBrands()
     {
-        brands = await FilamentService.GetBrandsAsync();
+        _brands = await FilamentService.GetBrandsAsync();
     }
 
     private async Task DeleteBrand(int brandId)
@@ -669,8 +669,8 @@
     private async Task UpdateCounts()
     {
         var filaments = await FilamentService.GetAllFilamentsAsync();
-        filamentCount = filaments.Count;
-        spoolCount = filaments.Sum(f => f.SpoolCount);
+        _filamentCount = filaments.Count;
+        _spoolCount = filaments.Sum(f => f.SpoolCount);
     }
 
     private void SetTheme(bool isDark)
@@ -703,7 +703,7 @@
     {
         try
         {
-            isProcessing = true;
+            _isProcessing = true;
             StateHasChanged();
 
             var csv = await CsvService.ExportToCsvAsync();
@@ -714,7 +714,7 @@
 
             await Js.InvokeVoidAsync("downloadFile", fileName, base64);
 
-            ShowMessage($"Successfully exported {filamentCount} filament(s) to {fileName}", false);
+            ShowMessage($"Successfully exported {_filamentCount} filament(s) to {fileName}", false);
         }
         catch (Exception ex)
         {
@@ -722,33 +722,33 @@
         }
         finally
         {
-            isProcessing = false;
+            _isProcessing = false;
         }
     }
 
     private void HandleFileSelected(InputFileChangeEventArgs e)
     {
-        selectedFile = e.File;
+        _selectedFile = e.File;
     }
 
     private async Task ImportData()
     {
-        if (selectedFile == null) return;
+        if (_selectedFile == null) return;
 
         try
         {
-            isProcessing = true;
+            _isProcessing = true;
             StateHasChanged();
 
-            await using var stream = selectedFile.OpenReadStream(10 * 1024 * 1024); // 10MB max
+            await using var stream = _selectedFile.OpenReadStream(10 * 1024 * 1024); // 10MB max
             using var reader = new StreamReader(stream);
             var csv = await reader.ReadToEndAsync();
 
             await CsvService.ImportFromCsvAsync(csv);
             await UpdateCounts();
 
-            ShowMessage($"Successfully imported filaments from {selectedFile.Name}", false);
-            selectedFile = null;
+            ShowMessage($"Successfully imported filaments from {_selectedFile.Name}", false);
+            _selectedFile = null;
         }
         catch (Exception ex)
         {
@@ -756,7 +756,7 @@
         }
         finally
         {
-            isProcessing = false;
+            _isProcessing = false;
         }
     }
 
@@ -764,13 +764,13 @@
     {
         try
         {
-            isProcessing = true;
+            _isProcessing = true;
             StateHasChanged();
 
             await FilamentService.PurgeDatabaseAsync();
             await UpdateCounts();
 
-            showPurgeConfirm = false;
+            _showPurgeConfirm = false;
             ShowMessage("Database purged successfully. All filament data has been deleted.", false);
         }
         catch (Exception ex)
@@ -779,18 +779,18 @@
         }
         finally
         {
-            isProcessing = false;
+            _isProcessing = false;
         }
     }
 
     private void ShowMessage(string msg, bool isError)
     {
-        message = msg;
-        messageIsError = isError;
+        _message = msg;
+        _messageIsError = isError;
 
         _ = Task.Delay(5000).ContinueWith(_ =>
         {
-            message = "";
+            _message = "";
             InvokeAsync(StateHasChanged);
         });
     }
@@ -800,47 +800,47 @@
     {
         try
         {
-            isProcessing = true;
-            bambuLabConnectionStatus = null;
+            _isProcessing = true;
+            _bambuLabConnectionStatus = null;
             StateHasChanged();
 
             var settings = await FilamentService.GetSettingsAsync();
-            settings.BambuLabEnabled = bambuLabEnabled;
-            settings.AmsAutoUpdateWeight = amsAutoUpdateWeight;
-            settings.AmsAutoUpdateOnlyDecrease = amsAutoUpdateOnlyDecrease;
-            settings.BambuLabIpAddress = bambuLabIpAddress;
-            settings.BambuLabAccessCode = bambuLabAccessCode;
-            settings.BambuLabSerialNumber = bambuLabSerialNumber;
+            settings.BambuLabEnabled = _bambuLabEnabled;
+            settings.AmsAutoUpdateWeight = _amsAutoUpdateWeight;
+            settings.AmsAutoUpdateOnlyDecrease = _amsAutoUpdateOnlyDecrease;
+            settings.BambuLabIpAddress = _bambuLabIpAddress;
+            settings.BambuLabAccessCode = _bambuLabAccessCode;
+            settings.BambuLabSerialNumber = _bambuLabSerialNumber;
 
             await FilamentService.UpdateSettingsAsync(settings);
 
             // Propagate the auto-update setting to the live service immediately
-            BambuLabService.AmsAutoUpdateWeight = amsAutoUpdateWeight;
-            BambuLabService.AmsAutoUpdateOnlyDecrease = amsAutoUpdateOnlyDecrease;
+            BambuLabService.AmsAutoUpdateWeight = _amsAutoUpdateWeight;
+            BambuLabService.AmsAutoUpdateOnlyDecrease = _amsAutoUpdateOnlyDecrease;
 
             // Connect if enabled
-            if (bambuLabEnabled &&
-                !string.IsNullOrEmpty(bambuLabIpAddress) &&
-                !string.IsNullOrEmpty(bambuLabAccessCode) &&
-                !string.IsNullOrEmpty(bambuLabSerialNumber))
+            if (_bambuLabEnabled &&
+                !string.IsNullOrEmpty(_bambuLabIpAddress) &&
+                !string.IsNullOrEmpty(_bambuLabAccessCode) &&
+                !string.IsNullOrEmpty(_bambuLabSerialNumber))
             {
                 try
                 {
-                    await BambuLabService.ConnectAsync(bambuLabIpAddress, bambuLabAccessCode, bambuLabSerialNumber);
-                    bambuLabConnectionStatus = "✅ Successfully connected to BambuLab printer!";
-                    bambuLabConnectionSuccess = true;
+                    await BambuLabService.ConnectAsync(_bambuLabIpAddress, _bambuLabAccessCode, _bambuLabSerialNumber);
+                    _bambuLabConnectionStatus = "✅ Successfully connected to BambuLab printer!";
+                    _bambuLabConnectionSuccess = true;
                 }
                 catch (Exception ex)
                 {
-                    bambuLabConnectionStatus = $"❌ Connection failed: {ex.Message}";
-                    bambuLabConnectionSuccess = false;
+                    _bambuLabConnectionStatus = $"❌ Connection failed: {ex.Message}";
+                    _bambuLabConnectionSuccess = false;
                 }
             }
-            else if (!bambuLabEnabled)
+            else if (!_bambuLabEnabled)
             {
                 await BambuLabService.DisconnectAsync();
-                bambuLabConnectionStatus = "Settings saved. BambuLab tracking disabled.";
-                bambuLabConnectionSuccess = true;
+                _bambuLabConnectionStatus = "Settings saved. BambuLab tracking disabled.";
+                _bambuLabConnectionSuccess = true;
             }
 
             ShowMessage("BambuLab settings saved!", false);
@@ -851,7 +851,7 @@
         }
         finally
         {
-            isProcessing = false;
+            _isProcessing = false;
         }
     }
 
@@ -859,43 +859,43 @@
     {
         try
         {
-            isProcessing = true;
-            bambuLabConnectionStatus = "Testing connection...";
+            _isProcessing = true;
+            _bambuLabConnectionStatus = "Testing connection...";
             StateHasChanged();
 
-            if (string.IsNullOrEmpty(bambuLabIpAddress) ||
-                string.IsNullOrEmpty(bambuLabAccessCode) ||
-                string.IsNullOrEmpty(bambuLabSerialNumber))
+            if (string.IsNullOrEmpty(_bambuLabIpAddress) ||
+                string.IsNullOrEmpty(_bambuLabAccessCode) ||
+                string.IsNullOrEmpty(_bambuLabSerialNumber))
             {
-                bambuLabConnectionStatus = "❌ Please fill in all fields";
-                bambuLabConnectionSuccess = false;
+                _bambuLabConnectionStatus = "❌ Please fill in all fields";
+                _bambuLabConnectionSuccess = false;
                 return;
             }
 
-            await BambuLabService.ConnectAsync(bambuLabIpAddress, bambuLabAccessCode, bambuLabSerialNumber);
+            await BambuLabService.ConnectAsync(_bambuLabIpAddress, _bambuLabAccessCode, _bambuLabSerialNumber);
 
             // Wait a moment for the connection to establish
             await Task.Delay(2000);
 
             if (BambuLabService.IsConnected)
             {
-                bambuLabConnectionStatus = "✅ Connection successful! Receiving data from printer.";
-                bambuLabConnectionSuccess = true;
+                _bambuLabConnectionStatus = "✅ Connection successful! Receiving data from printer.";
+                _bambuLabConnectionSuccess = true;
             }
             else
             {
-                bambuLabConnectionStatus = "❌ Connection failed. Check your settings and network.";
-                bambuLabConnectionSuccess = false;
+                _bambuLabConnectionStatus = "❌ Connection failed. Check your settings and network.";
+                _bambuLabConnectionSuccess = false;
             }
         }
         catch (Exception ex)
         {
-            bambuLabConnectionStatus = $"❌ Connection failed: {ex.Message}";
-            bambuLabConnectionSuccess = false;
+            _bambuLabConnectionStatus = $"❌ Connection failed: {ex.Message}";
+            _bambuLabConnectionSuccess = false;
         }
         finally
         {
-            isProcessing = false;
+            _isProcessing = false;
         }
     }
 
@@ -903,13 +903,13 @@
     {
         try
         {
-            isProcessing = true;
+            _isProcessing = true;
             StateHasChanged();
 
             await BambuLabService.DisconnectAsync();
 
-            bambuLabConnectionStatus = "Disconnected from printer";
-            bambuLabConnectionSuccess = true;
+            _bambuLabConnectionStatus = "Disconnected from printer";
+            _bambuLabConnectionSuccess = true;
 
             ShowMessage("Disconnected from BambuLab printer", false);
         }
@@ -919,7 +919,7 @@
         }
         finally
         {
-            isProcessing = false;
+            _isProcessing = false;
         }
     }
 

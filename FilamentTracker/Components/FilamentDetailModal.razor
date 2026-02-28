@@ -50,7 +50,7 @@
                             {
                                 var isNextToUse = spool.Id == nextSpoolId && spool.WeightRemaining > 0;
 
-                                <div class="spoolRow @(selectedSpool?.Id == spool.Id ? "selected" : "")"
+                                <div class="spoolRow @(_selectedSpool?.Id == spool.Id ? "selected" : "")"
                                      @onclick="() => SelectSpool(spool)"
                                      style="@(isNextToUse ? "border-left: 3px solid var(--ok);" : "")">
                                     <div class="left">
@@ -86,16 +86,16 @@
                         </div>
 
                         <button class="btn" style="margin-top: 12px; width: 100%;" @onclick="ToggleAddSpool">
-                            @(showAddSpool ? "❌ Cancel" : "➕ Add New Spool")
+                            @(_showAddSpool ? "❌ Cancel" : "➕ Add New Spool")
                         </button>
 
-                        @if (showAddSpool)
+                        @if (_showAddSpool)
                         {
                             <div
                                 style="margin-top: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: rgba(59, 130, 246, .08);">
                                 <div style="margin-bottom: 10px;">
                                     <label>Spool Type</label>
-                                    <select class="input" value="@(newSpoolIsRefill ? "true" : "false")"
+                                    <select class="input" value="@(_newSpoolIsRefill ? "true" : "false")"
                                             @onchange="OnNewSpoolTypeChanged">
                                         <option value="false">On Spool</option>
                                         <option value="true">Refill</option>
@@ -104,18 +104,18 @@
 
                                 <div style="margin-bottom: 10px;">
                                     <label>Total Weight (g)</label>
-                                    <input class="input" type="number" @bind="newSpoolTotalWeight" min="1" step="1"/>
+                                    <input class="input" type="number" @bind="_newSpoolTotalWeight" min="1" step="1"/>
                                 </div>
 
                                 <div style="margin-bottom: 10px;">
                                     <label>Weight Remaining (g)</label>
-                                    <input class="input" type="number" @bind="newSpoolWeightRemaining" min="0"
+                                    <input class="input" type="number" @bind="_newSpoolWeightRemaining" min="0"
                                            step="1"/>
                                 </div>
 
                                 <div style="margin-bottom: 10px;">
                                     <label>Spool Material</label>
-                                    <select class="input" @bind="newSpoolMaterial">
+                                    <select class="input" @bind="_newSpoolMaterial">
                                         <option value="">None</option>
                                         <option value="plastic">Plastic</option>
                                         <option value="cardboard">Cardboard</option>
@@ -124,7 +124,7 @@
 
                                 <div style="margin-bottom: 10px;">
                                     <label>Purchase Price Per Kg (optional)</label>
-                                    <input class="input" type="number" @bind="newSpoolPurchasePrice" step="0.01" min="0"
+                                    <input class="input" type="number" @bind="_newSpoolPurchasePrice" step="0.01" min="0"
                                            placeholder="e.g., 149.00"/>
                                     <small
                                         style="color: var(--muted); font-size: 11px; margin-top: 4px; display: block;">
@@ -133,7 +133,7 @@
                                 </div>
 
                                 <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" @bind="newSpoolIsReusable" id="newSpoolReusableCheck"/>
+                                    <input type="checkbox" @bind="_newSpoolIsReusable" id="newSpoolReusableCheck"/>
                                     <label for="newSpoolReusableCheck" style="margin: 0; cursor: pointer;">Reusable
                                         Spool</label>
                                 </div>
@@ -149,14 +149,14 @@
                     <div class="panel">
                         <div class="panelTitle">Manage Spool</div>
 
-                        @if (selectedSpool == null)
+                        @if (_selectedSpool == null)
                         {
                             <div class="help">Select a spool on the left to manage it.</div>
                         }
                         else
                         {
                             <div class="help">
-                                Editing: @(selectedSpool.IsRefill ? "Refill" : "Spool") (@Math.Round(selectedSpool.WeightRemaining, 0)g)
+                                Editing: @(_selectedSpool.IsRefill ? "Refill" : "Spool") (@Math.Round(_selectedSpool.WeightRemaining, 0)g)
                             </div>
 
                             <!-- Record usage -->
@@ -164,7 +164,7 @@
                                 <label>Record Usage</label>
                                 <div class="row">
                                     <div class="field">
-                                        <input class="input" type="number" @bind="gramsToSubtract" min="0" step="1"
+                                        <input class="input" type="number" @bind="_gramsToSubtract" min="0" step="1"
                                                placeholder="Grams used"/>
                                     </div>
                                     <button class="btn primary" @onclick="RecordUsage">Record</button>
@@ -177,10 +177,10 @@
                                 <button class="btn" @onclick="() => RecordUsageQuick(100)">-100g</button>
                             </div>
 
-                            @if (!string.IsNullOrEmpty(usageMessage))
+                            @if (!string.IsNullOrEmpty(_usageMessage))
                             {
                                 <div class="help" style="color: var(--ok); margin-top: 8px;">
-                                    @usageMessage
+                                    @_usageMessage
                                 </div>
                             }
 
@@ -190,7 +190,7 @@
                             <!-- Edit spool details -->
                             <div>
                                 <label>Spool Type</label>
-                                <select class="input" value="@(editIsRefill ? "true" : "false")"
+                                <select class="input" value="@(_editIsRefill ? "true" : "false")"
                                         @onchange="OnEditSpoolTypeChanged">
                                     <option value="false">On Spool</option>
                                     <option value="true">Refill</option>
@@ -199,17 +199,17 @@
 
                             <div style="margin-top: 10px;">
                                 <label>Remaining (g)</label>
-                                <input class="input" type="number" @bind="editRemaining" min="0" step="1"/>
+                                <input class="input" type="number" @bind="_editRemaining" min="0" step="1"/>
                             </div>
 
                             <div style="margin-top: 10px;">
                                 <label>Total Capacity (g)</label>
-                                <input class="input" type="number" @bind="editCapacity" min="1" step="1"/>
+                                <input class="input" type="number" @bind="_editCapacity" min="1" step="1"/>
                             </div>
 
                             <div style="margin-top: 10px;">
                                 <label>Spool Material</label>
-                                <select class="input" @bind="editMaterial">
+                                <select class="input" @bind="_editMaterial">
                                     <option value="">None</option>
                                     <option value="plastic">Plastic</option>
                                     <option value="cardboard">Cardboard</option>
@@ -218,7 +218,7 @@
 
                             <div style="margin-top: 10px;">
                                 <label>Purchase Price Per Kg (optional)</label>
-                                <input class="input" type="number" @bind="editPurchasePrice" step="0.01" min="0"
+                                <input class="input" type="number" @bind="_editPurchasePrice" step="0.01" min="0"
                                        placeholder="e.g., 149.00"/>
                                 <small style="color: var(--muted); font-size: 11px; margin-top: 4px; display: block;">
                                     Used for weighted average in calculator
@@ -226,7 +226,7 @@
                             </div>
 
                             <div class="checkRow" style="margin-top: 12px;">
-                                <input type="checkbox" @bind="editReusable" id="editReusableCheck"/>
+                                <input type="checkbox" @bind="_editReusable" id="editReusableCheck"/>
                                 <label for="editReusableCheck" style="margin: 0; cursor: pointer;">Reusable
                                     Spool</label>
                             </div>
@@ -271,7 +271,7 @@
 
                     <div style="margin-bottom: 10px;">
                         <label>Manual Price Override (optional)</label>
-                        <input class="input" type="number" @bind="editManualPrice" step="0.01" min="0"
+                        <input class="input" type="number" @bind="_editManualPrice" step="0.01" min="0"
                                placeholder="Leave empty to use spool average"/>
                         <small style="color: var(--muted); font-size: 11px; margin-top: 4px; display: block;">
                             Set this to override automatic average calculation
@@ -281,16 +281,16 @@
                     <div class="row">
                         <div class="field">
                             <label>Storage Location</label>
-                            <input class="input" @bind="editLocation"/>
+                            <input class="input" @bind="_editLocation"/>
                         </div>
                         <div class="field">
                             <label>Diameter (mm)</label>
-                            <input class="input" type="number" @bind="editDiameter" step="0.01"/>
+                            <input class="input" type="number" @bind="_editDiameter" step="0.01"/>
                         </div>
                     </div>
                     <div style="margin-top: 10px;">
                         <label>Notes</label>
-                        <textarea class="input" @bind="editNotes"></textarea>
+                        <textarea class="input" @bind="_editNotes"></textarea>
                     </div>
                 </div>
             </div>
@@ -300,7 +300,7 @@
                     <button class="btn primary" @onclick="SaveChanges">Save All Changes</button>
                     <button class="btn" @onclick="Close">Close</button>
                 </div>
-                @if (selectedSpool != null)
+                @if (_selectedSpool != null)
                 {
                     <button class="btn danger" style="margin-left: 10px;" @onclick="DeleteSpool">Delete This Spool</button>
                 }
@@ -318,30 +318,30 @@
     [Parameter] public EventCallback OnClose { get; set; }
     [Parameter] public EventCallback OnUpdate { get; set; }
 
-    private Spool? selectedSpool;
-    private decimal gramsToSubtract = 50;
-    private string usageMessage = "";
+    private Spool? _selectedSpool;
+    private decimal _gramsToSubtract = 50;
+    private string _usageMessage = "";
 
     // Edit fields
-    private bool editIsRefill;
-    private decimal editRemaining;
-    private decimal editCapacity;
-    private string? editMaterial;
-    private bool editReusable;
-    private decimal? editPurchasePrice;
-    private string? editLocation;
-    private string? editNotes;
-    private decimal editDiameter;
-    private decimal? editManualPrice;
+    private bool _editIsRefill;
+    private decimal _editRemaining;
+    private decimal _editCapacity;
+    private string? _editMaterial;
+    private bool _editReusable;
+    private decimal? _editPurchasePrice;
+    private string? _editLocation;
+    private string? _editNotes;
+    private decimal _editDiameter;
+    private decimal? _editManualPrice;
 
     // Add new spool fields
-    private bool showAddSpool;
-    private bool newSpoolIsRefill;
-    private decimal newSpoolTotalWeight = 1000;
-    private decimal newSpoolWeightRemaining = 1000;
-    private string? newSpoolMaterial = "";
-    private bool newSpoolIsReusable;
-    private decimal? newSpoolPurchasePrice;
+    private bool _showAddSpool;
+    private bool _newSpoolIsRefill;
+    private decimal _newSpoolTotalWeight = 1000;
+    private decimal _newSpoolWeightRemaining = 1000;
+    private string? _newSpoolMaterial = "";
+    private bool _newSpoolIsReusable;
+    private decimal? _newSpoolPurchasePrice;
 
     protected override void OnParametersSet()
     {
@@ -349,7 +349,7 @@
         {
             // Auto-select the spool that should be used next: partially used spools first,
             // then oldest added. Fall back to first spool when none match.
-            selectedSpool = Filament.Spools
+            _selectedSpool = Filament.Spools
                                 .Where(s => s is { WeightRemaining: > 0, DateEmptied: null })
                                 .OrderBy(s => s.PercentRemaining == 100 ? 1 : 0)
                                 .ThenBy(s => s.DateAdded)
@@ -362,21 +362,21 @@
 
     private void SelectSpool(Spool spool)
     {
-        selectedSpool = spool;
+        _selectedSpool = spool;
         LoadSpoolForEditing();
-        usageMessage = "";
+        _usageMessage = "";
     }
 
     private void LoadSpoolForEditing()
     {
-        if (selectedSpool != null)
+        if (_selectedSpool != null)
         {
-            editIsRefill = selectedSpool.IsRefill;
-            editRemaining = selectedSpool.WeightRemaining;
-            editCapacity = selectedSpool.TotalWeight;
-            editMaterial = selectedSpool.SpoolMaterial;
-            editReusable = selectedSpool.IsReusable;
-            editPurchasePrice = selectedSpool.PurchasePricePerKg;
+            _editIsRefill = _selectedSpool.IsRefill;
+            _editRemaining = _selectedSpool.WeightRemaining;
+            _editCapacity = _selectedSpool.TotalWeight;
+            _editMaterial = _selectedSpool.SpoolMaterial;
+            _editReusable = _selectedSpool.IsReusable;
+            _editPurchasePrice = _selectedSpool.PurchasePricePerKg;
         }
     }
 
@@ -384,21 +384,21 @@
     {
         if (Filament != null)
         {
-            editLocation = Filament.Location;
-            editNotes = Filament.Notes;
-            editDiameter = Filament.Diameter;
-            editManualPrice = Filament.PricePerKg;
+            _editLocation = Filament.Location;
+            _editNotes = Filament.Notes;
+            _editDiameter = Filament.Diameter;
+            _editManualPrice = Filament.PricePerKg;
         }
     }
 
     private async Task RecordUsage()
     {
-        if (selectedSpool == null || gramsToSubtract <= 0) return;
+        if (_selectedSpool == null || _gramsToSubtract <= 0) return;
 
-        selectedSpool.WeightRemaining = Math.Max(0, selectedSpool.WeightRemaining - gramsToSubtract);
-        editRemaining = selectedSpool.WeightRemaining;
+        _selectedSpool.WeightRemaining = Math.Max(0, _selectedSpool.WeightRemaining - _gramsToSubtract);
+        _editRemaining = _selectedSpool.WeightRemaining;
 
-        await FilamentService.UpdateSpoolAsync(selectedSpool);
+        await FilamentService.UpdateSpoolAsync(_selectedSpool);
 
         // Reload filament to ensure everything is in sync
         if (Filament != null)
@@ -407,7 +407,7 @@
             if (updated != null)
             {
                 Filament = updated;
-                selectedSpool = Filament.Spools.FirstOrDefault(s => s.Id == selectedSpool.Id);
+                _selectedSpool = Filament.Spools.FirstOrDefault(s => s.Id == _selectedSpool.Id);
                 LoadSpoolForEditing();
             }
         }
@@ -415,18 +415,18 @@
         await OnUpdate.InvokeAsync();
         StateHasChanged();
 
-        usageMessage = $"Recorded {gramsToSubtract}g usage. {Math.Round(selectedSpool?.WeightRemaining ?? 0, 0)}g remaining.";
+        _usageMessage = $"Recorded {_gramsToSubtract}g usage. {Math.Round(_selectedSpool?.WeightRemaining ?? 0, 0)}g remaining.";
 
         _ = Task.Delay(3000).ContinueWith(_ =>
         {
-            usageMessage = "";
+            _usageMessage = "";
             InvokeAsync(StateHasChanged);
         });
     }
 
     private async Task RecordUsageQuick(decimal grams)
     {
-        gramsToSubtract = grams;
+        _gramsToSubtract = grams;
         await RecordUsage();
     }
 
@@ -435,23 +435,23 @@
         if (Filament == null) return;
 
         // Update spool if selected
-        if (selectedSpool != null)
+        if (_selectedSpool != null)
         {
-            selectedSpool.IsRefill = editIsRefill;
-            selectedSpool.WeightRemaining = editRemaining;
-            selectedSpool.TotalWeight = editCapacity;
-            selectedSpool.SpoolMaterial = editMaterial;
-            selectedSpool.IsReusable = editReusable;
-            selectedSpool.PurchasePricePerKg = editPurchasePrice;
+            _selectedSpool.IsRefill = _editIsRefill;
+            _selectedSpool.WeightRemaining = _editRemaining;
+            _selectedSpool.TotalWeight = _editCapacity;
+            _selectedSpool.SpoolMaterial = _editMaterial;
+            _selectedSpool.IsReusable = _editReusable;
+            _selectedSpool.PurchasePricePerKg = _editPurchasePrice;
 
-            await FilamentService.UpdateSpoolAsync(selectedSpool);
+            await FilamentService.UpdateSpoolAsync(_selectedSpool);
         }
 
         // Update filament
-        Filament.Location = editLocation;
-        Filament.Notes = editNotes;
-        Filament.Diameter = editDiameter;
-        Filament.PricePerKg = editManualPrice;
+        Filament.Location = _editLocation;
+        Filament.Notes = _editNotes;
+        Filament.Diameter = _editDiameter;
+        Filament.PricePerKg = _editManualPrice;
 
         await FilamentService.UpdateFilamentAsync(Filament);
 
@@ -461,9 +461,9 @@
         {
             Filament = updated;
             // Reselect the current spool if it still exists
-            if (selectedSpool != null)
+            if (_selectedSpool != null)
             {
-                selectedSpool = Filament.Spools.FirstOrDefault(s => s.Id == selectedSpool.Id);
+                _selectedSpool = Filament.Spools.FirstOrDefault(s => s.Id == _selectedSpool.Id);
                 LoadSpoolForEditing();
             }
 
@@ -473,19 +473,19 @@
         await OnUpdate.InvokeAsync();
         StateHasChanged();
 
-        usageMessage = "Changes saved successfully!";
+        _usageMessage = "Changes saved successfully!";
         _ = Task.Delay(2000).ContinueWith(_ =>
         {
-            usageMessage = "";
+            _usageMessage = "";
             InvokeAsync(StateHasChanged);
         });
     }
 
     private async Task DeleteSpool()
     {
-        if (selectedSpool == null) return;
+        if (_selectedSpool == null) return;
 
-        await FilamentService.DeleteSpoolAsync(selectedSpool.Id);
+        await FilamentService.DeleteSpoolAsync(_selectedSpool.Id);
 
         // Reload filament
         if (Filament != null)
@@ -494,7 +494,7 @@
             if (updated != null && updated.Spools.Any())
             {
                 Filament = updated;
-                selectedSpool = Filament.Spools.FirstOrDefault();
+                _selectedSpool = Filament.Spools.FirstOrDefault();
                 LoadSpoolForEditing();
             }
             else
@@ -540,27 +540,27 @@
 
     private void OnNewSpoolTypeChanged(ChangeEventArgs e)
     {
-        newSpoolIsRefill = e.Value?.ToString() == "true";
+        _newSpoolIsRefill = e.Value?.ToString() == "true";
     }
 
     private void OnEditSpoolTypeChanged(ChangeEventArgs e)
     {
-        editIsRefill = e.Value?.ToString() == "true";
+        _editIsRefill = e.Value?.ToString() == "true";
     }
 
     private void ToggleAddSpool()
     {
-        showAddSpool = !showAddSpool;
+        _showAddSpool = !_showAddSpool;
 
         // Reset form when opening
-        if (showAddSpool)
+        if (_showAddSpool)
         {
-            newSpoolIsRefill = false;
-            newSpoolTotalWeight = 1000;
-            newSpoolWeightRemaining = 1000;
-            newSpoolMaterial = "";
-            newSpoolIsReusable = false;
-            newSpoolPurchasePrice = null;
+            _newSpoolIsRefill = false;
+            _newSpoolTotalWeight = 1000;
+            _newSpoolWeightRemaining = 1000;
+            _newSpoolMaterial = "";
+            _newSpoolIsReusable = false;
+            _newSpoolPurchasePrice = null;
         }
     }
 
@@ -571,12 +571,12 @@
         var newSpool = new Spool
         {
             FilamentId = Filament.Id,
-            IsRefill = newSpoolIsRefill,
-            TotalWeight = newSpoolTotalWeight,
-            WeightRemaining = newSpoolWeightRemaining,
-            SpoolMaterial = string.IsNullOrWhiteSpace(newSpoolMaterial) ? null : newSpoolMaterial,
-            IsReusable = newSpoolIsReusable,
-            PurchasePricePerKg = newSpoolPurchasePrice,
+            IsRefill = _newSpoolIsRefill,
+            TotalWeight = _newSpoolTotalWeight,
+            WeightRemaining = _newSpoolWeightRemaining,
+            SpoolMaterial = string.IsNullOrWhiteSpace(_newSpoolMaterial) ? null : _newSpoolMaterial,
+            IsReusable = _newSpoolIsReusable,
+            PurchasePricePerKg = _newSpoolPurchasePrice,
             DateAdded = DateTime.Now
         };
 
@@ -588,19 +588,19 @@
         {
             Filament = updated;
             // Select the newly added spool
-            selectedSpool = Filament.Spools.OrderByDescending(s => s.DateAdded).FirstOrDefault();
+            _selectedSpool = Filament.Spools.OrderByDescending(s => s.DateAdded).FirstOrDefault();
             LoadSpoolForEditing();
             LoadFilamentForEditing();
         }
 
-        showAddSpool = false;
+        _showAddSpool = false;
         await OnUpdate.InvokeAsync();
         StateHasChanged();
 
-        usageMessage = "New spool added successfully!";
+        _usageMessage = "New spool added successfully!";
         _ = Task.Delay(3000).ContinueWith(_ =>
         {
-            usageMessage = "";
+            _usageMessage = "";
             InvokeAsync(StateHasChanged);
         });
     }

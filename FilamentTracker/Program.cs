@@ -1,4 +1,3 @@
-using System.Data;
 using FilamentTracker.Data;
 using FilamentTracker.Models;
 using FilamentTracker.Services;
@@ -72,35 +71,25 @@ using (var scope = app.Services.CreateScope())
             )");
 
         // Add missing columns only when they do not already exist to avoid noisy errors
+        // Capture the connection string up-front so the local function doesn't close over `context`
+        var dbConnStr = context.Database.GetDbConnection().ConnectionString;
         async Task<bool> ColumnExistsAsync(string tableName, string columnName)
         {
-            var conn = context.Database.GetDbConnection();
+            await using var conn = new Microsoft.Data.Sqlite.SqliteConnection(dbConnStr);
             try
             {
-                if (conn.State != ConnectionState.Open)
-                    await conn.OpenAsync();
-
+                await conn.OpenAsync();
                 await using var cmd = conn.CreateCommand();
                 cmd.CommandText = $"PRAGMA table_info('{tableName}');";
                 await using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
-                    if (reader["name"] != null && reader["name"].ToString() == columnName)
+                    if (reader["name"].ToString() == columnName)
                         return true;
             }
-            catch
+            catch (Exception ex)
             {
-                // If something goes wrong querying PRAGMA, fall back to not attempting the alter
+                Console.Error.WriteLine($"[ColumnExistsAsync] {tableName}.{columnName}: {ex.Message}");
                 return true;
-            }
-            finally
-            {
-                try
-                {
-                    await conn.CloseAsync();
-                }
-                catch
-                {
-                }
             }
 
             return false;
@@ -233,6 +222,9 @@ using (var scope = app.Services.CreateScope())
                 var bambuLabService = scope.ServiceProvider.GetRequiredService<BambuLabService>();
                 bambuLabService.AmsAutoUpdateWeight = settings.AmsAutoUpdateWeight;
                 bambuLabService.AmsAutoUpdateOnlyDecrease = settings.AmsAutoUpdateOnlyDecrease;
+                // Capture logger before Task.Run so the lambda doesn't close over the disposable scope
+                var startupLogger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>()
+                    .CreateLogger("BambuLabInit");
                 _ = Task.Run(async () =>
                 {
                     try
@@ -245,16 +237,15 @@ using (var scope = app.Services.CreateScope())
                     }
                     catch (Exception ex)
                     {
-                        var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>()
-                            .CreateLogger("BambuLabInit");
-                        logger.LogError(ex, "Failed to connect to BambuLab printer on startup");
+                        startupLogger.LogError(ex, "Failed to connect to BambuLab printer on startup");
                     }
                 });
             }
         }
     }
-    catch
+    catch (Exception ex)
     {
+        Console.Error.WriteLine($"[Startup] Database migration error: {ex.Message}");
     }
 }
 
