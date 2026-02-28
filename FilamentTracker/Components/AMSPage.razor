@@ -5,14 +5,15 @@
 @implements IDisposable
 
 @code {
+
     // ── State ──────────────────────────────────────────────────────────────────
     private List<Filament> _inventory = new();
     private bool _amsAttached;
     private List<AMSUnit> _amsUnits = new();
 
     // Per-slot: linked spool id (0 = none), save-status message
-    private readonly Dictionary<string, int> _slotSpoolMap = new();      // key = slotKey
-    private readonly Dictionary<string, string?> _slotSaveMsg = new();   // key = slotKey
+    private readonly Dictionary<string, int> _slotSpoolMap = new(); // key = slotKey
+    private readonly Dictionary<string, string?> _slotSaveMsg = new(); // key = slotKey
     private readonly Dictionary<string, bool> _slotSaving = new();
 
     protected override async Task OnInitializedAsync()
@@ -34,7 +35,10 @@
                 _inventory = await FilamentService.GetAllFilamentsAsync();
                 StateHasChanged();
             }
-            catch { /* disposed */ }
+            catch
+            {
+                /* disposed */
+            }
         });
     }
 
@@ -52,16 +56,22 @@
                     _inventory = await FilamentService.GetAllFilamentsAsync();
                     StateHasChanged();
                 }
-                catch { /* disposed */ }
+                catch
+                {
+                    /* disposed */
+                }
             });
         }
-        catch { /* protect MQTT thread */ }
+        catch
+        {
+            /* protect MQTT thread */
+        }
     }
 
     private void RefreshFromStatus(PrintStatus status)
     {
         _amsAttached = status.AMSUnits is { Count: > 0 };
-        _amsUnits = status.AMSUnits ?? new();
+        _amsUnits = status.AMSUnits ?? new List<AMSUnit>();
     }
 
     /// Auto-match every slot that has a tray_uuid or tag_uid against saved spool links.
@@ -87,16 +97,20 @@
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────
-    private static string SlotKey(AMSUnit unit, AMSSlot slot) =>
-        $"{unit.AMSId}_{slot.Id}";
+    private static string SlotKey(AMSUnit unit, AMSSlot slot)
+    {
+        return $"{unit.AMSId}_{slot.Id}";
+    }
 
-    private bool HasRfid(AMSSlot slot) =>
-        !string.IsNullOrEmpty(slot.TrayUuid) && slot.TrayUuid.Replace("0", "").Length > 0;
+    private bool HasRfid(AMSSlot slot)
+    {
+        return !string.IsNullOrEmpty(slot.TrayUuid) && slot.TrayUuid.Replace("0", "").Length > 0;
+    }
 
     private string FormatSlotType(string? trayType, string? traySubBrands)
     {
         var type = (trayType ?? "").Trim();
-        var sub  = (traySubBrands ?? "").Trim();
+        var sub = (traySubBrands ?? "").Trim();
         if (string.IsNullOrEmpty(type) && string.IsNullOrEmpty(sub)) return "";
         if (string.IsNullOrEmpty(sub)) return type;
         if (string.IsNullOrEmpty(type)) return sub;
@@ -138,8 +152,10 @@
         return null;
     }
 
-    private int GetSelectedSpoolId(string key) =>
-        _slotSpoolMap.TryGetValue(key, out var id) ? id : 0;
+    private int GetSelectedSpoolId(string key)
+    {
+        return _slotSpoolMap.TryGetValue(key, out var id) ? id : 0;
+    }
 
     private void OnSpoolSelected(string key, ChangeEventArgs e)
     {
@@ -184,6 +200,7 @@
             StateHasChanged();
         }
     }
+
 }
 
 @if (!_amsAttached)
@@ -229,7 +246,8 @@ else
                             AMS: @(slot.Remain.HasValue ? $"{slot.Remain}%" : "—")
                             @if (linkedWeight.HasValue)
                             {
-                                <span style="color: var(--muted);"> · Inventory: @Math.Round(linkedWeight.Value, 0)g</span>
+                                <span
+                                    style="color: var(--muted);"> · Inventory: @Math.Round(linkedWeight.Value, 0)g</span>
                             }
                         </div>
 
@@ -259,7 +277,7 @@ else
                                 <option value="0">— Link to inventory spool —</option>
                                 @foreach (var filament in _inventory)
                                 {
-                                    @foreach (var spool in (filament.Spools ?? new List<Spool>()))
+                                    @foreach (var spool in filament.Spools ?? new List<Spool>())
                                     {
                                         <option value="@spool.Id">
                                             @FormatFilamentOption(filament) (@spool.WeightRemaining g left)
@@ -331,7 +349,9 @@ else
         box-shadow: 0 8px 30px rgba(0, 0, 0, .08);
     }
 
-    .light .amsSlot { background: var(--panel2); }
+    .light .amsSlot {
+        background: var(--panel2);
+    }
 
     .amsSlotCircle {
         width: 38px;
@@ -347,7 +367,11 @@ else
         color: var(--text);
     }
 
-    .amsSlotType { font-size: 14px; color: var(--muted); text-align: center; }
+    .amsSlotType {
+        font-size: 14px;
+        color: var(--muted);
+        text-align: center;
+    }
 
     .amsSlotTypePill {
         display: inline-block;
@@ -361,7 +385,10 @@ else
         letter-spacing: 0.03em;
     }
 
-    .amsSlotRemain { font-size: 13px; color: var(--text); }
+    .amsSlotRemain {
+        font-size: 13px;
+        color: var(--text);
+    }
 
     .amsLinkedBadge {
         font-size: 12px;
@@ -376,7 +403,9 @@ else
         word-break: break-word;
     }
 
-    .amsSlotSelect { width: 100%; }
+    .amsSlotSelect {
+        width: 100%;
+    }
 
     .amsSlotSelect select {
         width: 100%;
