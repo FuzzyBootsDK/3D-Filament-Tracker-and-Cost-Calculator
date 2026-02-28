@@ -295,18 +295,18 @@
                 </div>
             </div>
 
-            <div class="modalFooter" style="padding-left: 16px;">
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; padding-left: 10px;">
+            <div class="modalFooter" style="padding: 14px 16px;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-left: 10px;">
                     <button class="btn primary" @onclick="SaveChanges">Save All Changes</button>
                     <button class="btn" @onclick="Close">Close</button>
                 </div>
                 @if (_selectedSpool != null)
                 {
-                    <button class="btn danger" style="margin-left: 10px;" @onclick="DeleteSpool">Delete This Spool</button>
+                    <button class="btn danger" style="margin-right: 10px;" @onclick="DeleteSpool">Delete This Spool</button>
                 }
                 else
                 {
-                    <button class="btn danger" style="margin-left: 10px;" @onclick="DeleteFilament">Delete Entire Filament</button>
+                    <button class="btn danger" style="margin-right: 10px;" @onclick="DeleteFilament">Delete Entire Filament</button>
                 }
             </div>
         </div>
