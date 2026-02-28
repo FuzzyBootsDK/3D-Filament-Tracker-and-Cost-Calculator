@@ -4,14 +4,13 @@ namespace FilamentTracker.Models;
 
 public class ReusableSpool
 {
-    public int Id { get; set; }
-    
-    [Required]
-    public string Material { get; set; } = "plastic"; // plastic, reusable, etc.
-    
+    public int Id { get; init; }
+
+    [Required] public string Material { get; init; } = "plastic"; // plastic, reusable, etc.
+
     public bool InUse { get; set; }
-    
+
     public int? CurrentSpoolId { get; set; }
-    
-    public DateTime DateAdded { get; set; } = DateTime.Now;
+
+    public DateTime DateAdded { get; init; } = DateTime.Now;
 }

@@ -1,4 +1,6 @@
+using System.Data;
 using FilamentTracker.Data;
+using FilamentTracker.Models;
 using FilamentTracker.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,27 +9,27 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor(options =>
-{
-    // How long a disconnected circuit is kept alive on the server (default: 3 min)
-    // Set to 60 min so the page recovers after network blips on the NAS
-    options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(60);
-    // Give the client longer to reconnect before the circuit is torn down
-    options.DisconnectedCircuitMaxRetained = 100;
-    // Detailed errors in production — turn off if you prefer (false hides stack traces)
-    options.DetailedErrors = false;
-})
-.AddHubOptions(options =>
-{
-    // Keep-alive: ping every 15 s, wait 60 s before declaring the connection dead
-    options.KeepAliveInterval       = TimeSpan.FromSeconds(15);
-    options.ClientTimeoutInterval   = TimeSpan.FromSeconds(60);
-    // Allow larger messages (useful for CSV imports)
-    options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10 MB
-});
+    {
+        // How long a disconnected circuit is kept alive on the server (default: 3 min)
+        // Set to 60 min so the page recovers after network blips on the NAS
+        options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(60);
+        // Give the client longer to reconnect before the circuit is torn down
+        options.DisconnectedCircuitMaxRetained = 100;
+        // Detailed errors in production — turn off if you prefer (false hides stack traces)
+        options.DetailedErrors = false;
+    })
+    .AddHubOptions(options =>
+    {
+        // Keep-alive: ping every 15 s, wait 60 s before declaring the connection dead
+        options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+        options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+        // Allow larger messages (useful for CSV imports)
+        options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10 MB
+    });
 
 // Determine database path (Docker-friendly)
-var dbPath = builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? (Directory.Exists("/app/data") ? "Data Source=/app/data/filaments.db" : "Data Source=filaments.db");
+var dbPath = builder.Configuration.GetConnectionString("DefaultConnection")
+             ?? (Directory.Exists("/app/data") ? "Data Source=/app/data/filaments.db" : "Data Source=filaments.db");
 
 // Add SQLite database
 builder.Services.AddDbContextFactory<FilamentContext>(options =>
@@ -46,9 +48,9 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<FilamentContext>>();
-    using var context = await contextFactory.CreateDbContextAsync();
+    await using var context = await contextFactory.CreateDbContextAsync();
     await context.Database.EnsureCreatedAsync();
-    
+
     // Manually create missing tables if needed (for existing databases)
     try
     {
@@ -59,8 +61,8 @@ using (var scope = app.Services.CreateScope())
                 Name TEXT NOT NULL,
                 DateAdded TEXT NOT NULL
             )");
-        
-        // Check if AppSettings table exists, if not create it
+
+        // Check if the AppSettings table exists, if not create it
         await context.Database.ExecuteSqlRawAsync(@"
             CREATE TABLE IF NOT EXISTS AppSettings (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,24 +70,22 @@ using (var scope = app.Services.CreateScope())
                 CriticalThreshold REAL NOT NULL,
                 Currency TEXT NOT NULL DEFAULT 'DKK'
             )");
-        
+
         // Add missing columns only when they do not already exist to avoid noisy errors
         async Task<bool> ColumnExistsAsync(string tableName, string columnName)
         {
             var conn = context.Database.GetDbConnection();
             try
             {
-                if (conn.State != System.Data.ConnectionState.Open)
+                if (conn.State != ConnectionState.Open)
                     await conn.OpenAsync();
 
-                using var cmd = conn.CreateCommand();
+                await using var cmd = conn.CreateCommand();
                 cmd.CommandText = $"PRAGMA table_info('{tableName}');";
-                using var reader = await cmd.ExecuteReaderAsync();
+                await using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
-                {
                     if (reader["name"] != null && reader["name"].ToString() == columnName)
                         return true;
-                }
             }
             catch
             {
@@ -94,82 +94,103 @@ using (var scope = app.Services.CreateScope())
             }
             finally
             {
-                try { await conn.CloseAsync(); } catch { }
+                try
+                {
+                    await conn.CloseAsync();
+                }
+                catch
+                {
+                }
             }
 
             return false;
         }
 
         if (!await ColumnExistsAsync("AppSettings", "Currency"))
-        {
             // Adding without NOT NULL constraint here keeps the operation simple across SQLite versions
             await context.Database.ExecuteSqlRawAsync(@"
                 ALTER TABLE AppSettings ADD COLUMN Currency TEXT DEFAULT 'DKK'
             ");
-        }
 
         if (!await ColumnExistsAsync("Filaments", "PricePerKg"))
-        {
             await context.Database.ExecuteSqlRawAsync(@"
                 ALTER TABLE Filaments ADD COLUMN PricePerKg REAL
             ");
-        }
 
         // Ensure Filaments.ColorHex exists (added in recent migration); add defensively for older DBs
         if (!await ColumnExistsAsync("Filaments", "ColorHex"))
-        {
             await context.Database.ExecuteSqlRawAsync(@"
                 ALTER TABLE Filaments ADD COLUMN ColorHex TEXT DEFAULT ''
             ");
-        }
 
         if (!await ColumnExistsAsync("Spools", "PurchasePricePerKg"))
-        {
             await context.Database.ExecuteSqlRawAsync(@"
                 ALTER TABLE Spools ADD COLUMN PurchasePricePerKg REAL
             ");
-        }
-        
+
+        if (!await ColumnExistsAsync("Spools", "AmsTrayUuid"))
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE Spools ADD COLUMN AmsTrayUuid TEXT
+            ");
+
+        if (!await ColumnExistsAsync("Spools", "AmsTagUid"))
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE Spools ADD COLUMN AmsTagUid TEXT
+            ");
+
         // Add BambuLab MQTT columns
         if (!await ColumnExistsAsync("AppSettings", "BambuLabIpAddress"))
-        {
             await context.Database.ExecuteSqlRawAsync(@"
                 ALTER TABLE AppSettings ADD COLUMN BambuLabIpAddress TEXT
             ");
-        }
-        
+
         if (!await ColumnExistsAsync("AppSettings", "BambuLabAccessCode"))
-        {
             await context.Database.ExecuteSqlRawAsync(@"
                 ALTER TABLE AppSettings ADD COLUMN BambuLabAccessCode TEXT
             ");
-        }
-        
+
         if (!await ColumnExistsAsync("AppSettings", "BambuLabSerialNumber"))
-        {
             await context.Database.ExecuteSqlRawAsync(@"
                 ALTER TABLE AppSettings ADD COLUMN BambuLabSerialNumber TEXT
             ");
-        }
-        
+
         if (!await ColumnExistsAsync("AppSettings", "BambuLabEnabled"))
-        {
             await context.Database.ExecuteSqlRawAsync(@"
                 ALTER TABLE AppSettings ADD COLUMN BambuLabEnabled INTEGER NOT NULL DEFAULT 0
             ");
-        }
-        
+
+        if (!await ColumnExistsAsync("AppSettings", "AmsAutoUpdateWeight"))
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE AppSettings ADD COLUMN AmsAutoUpdateWeight INTEGER NOT NULL DEFAULT 0
+            ");
+
+        if (!await ColumnExistsAsync("AppSettings", "AmsAutoUpdateOnlyDecrease"))
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE AppSettings ADD COLUMN AmsAutoUpdateOnlyDecrease INTEGER NOT NULL DEFAULT 1
+            ");
+
+        // Backfill: existing rows that had the column added will have NULL — set them to sensible defaults
+        await context.Database.ExecuteSqlRawAsync(@"
+            UPDATE AppSettings SET AmsAutoUpdateOnlyDecrease = 1 WHERE AmsAutoUpdateOnlyDecrease IS NULL
+        ");
+        await context.Database.ExecuteSqlRawAsync(@"
+            UPDATE AppSettings SET AmsAutoUpdateWeight = 0 WHERE AmsAutoUpdateWeight IS NULL
+        ");
+        await context.Database.ExecuteSqlRawAsync(@"
+            UPDATE AppSettings SET BambuLabEnabled = 0 WHERE BambuLabEnabled IS NULL
+        ");
+
         // Ensure default settings exist
         if (!await context.AppSettings.AnyAsync())
         {
-            context.AppSettings.Add(new FilamentTracker.Models.AppSettings
+            context.AppSettings.Add(new AppSettings
             {
                 LowThreshold = 500,
                 CriticalThreshold = 250
             });
             await context.SaveChangesAsync();
         }
-        
+
         // Load settings into ThresholdService
         var settings = await context.AppSettings.FirstOrDefaultAsync();
         if (settings != null)
@@ -182,11 +203,9 @@ using (var scope = app.Services.CreateScope())
                 var envBambuCode = Environment.GetEnvironmentVariable("BAMBULAB_CODE");
                 var envBambuSerial = Environment.GetEnvironmentVariable("BAMBULAB_SERIAL");
 
-                if (!string.IsNullOrEmpty(envBambuEnabled) && 
+                if (!string.IsNullOrEmpty(envBambuEnabled) &&
                     (envBambuEnabled == "1" || envBambuEnabled.Equals("true", StringComparison.OrdinalIgnoreCase)))
-                {
                     settings.BambuLabEnabled = true;
-                }
 
                 if (!string.IsNullOrEmpty(envBambuIp))
                     settings.BambuLabIpAddress = envBambuIp;
@@ -206,12 +225,14 @@ using (var scope = app.Services.CreateScope())
             thresholdService.SetThresholds(settings.LowThreshold, settings.CriticalThreshold);
 
             // Initialize BambuLab connection if enabled
-            if (settings.BambuLabEnabled && 
-                !string.IsNullOrEmpty(settings.BambuLabIpAddress) && 
-                !string.IsNullOrEmpty(settings.BambuLabAccessCode) && 
+            if (settings.BambuLabEnabled &&
+                !string.IsNullOrEmpty(settings.BambuLabIpAddress) &&
+                !string.IsNullOrEmpty(settings.BambuLabAccessCode) &&
                 !string.IsNullOrEmpty(settings.BambuLabSerialNumber))
             {
                 var bambuLabService = scope.ServiceProvider.GetRequiredService<BambuLabService>();
+                bambuLabService.AmsAutoUpdateWeight = settings.AmsAutoUpdateWeight;
+                bambuLabService.AmsAutoUpdateOnlyDecrease = settings.AmsAutoUpdateOnlyDecrease;
                 _ = Task.Run(async () =>
                 {
                     try
@@ -232,7 +253,9 @@ using (var scope = app.Services.CreateScope())
             }
         }
     }
-    catch { }
+    catch
+    {
+    }
 }
 
 // Configure the HTTP request pipeline.

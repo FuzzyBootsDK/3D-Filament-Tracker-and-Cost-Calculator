@@ -6,69 +6,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-    <base href="~/" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="shortcut icon" href="favicon.svg" />
-    <link href="css/site.css" rel="stylesheet" />
-    <link href="FilamentTracker.styles.css" rel="stylesheet" />
-    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"/>
+    <base href="~/"/>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+    <link rel="shortcut icon" href="favicon.svg"/>
+    <link href="css/site.css" rel="stylesheet"/>
+    <link href="FilamentTracker.styles.css" rel="stylesheet"/>
+    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered"/>
     <title>Filament Tracker</title>
 </head>
 <body>
-    <component type="typeof(App)" render-mode="ServerPrerendered" />
+<component type="typeof(App)" render-mode="ServerPrerendered"/>
 
-    <!-- Reconnecting toast (shown when SignalR drops) -->
-    <div id="blazor-reconnect-ui" style="display:none;">
-        🔄 Connection lost — reconnecting…
-    </div>
+<!-- Reconnecting toast (shown when SignalR drops) -->
+<div id="blazor-reconnect-ui" style="display:none;">
+    🔄 Connection lost — reconnecting…
+</div>
 
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
-    </div>
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
 
-    <script src="_framework/blazor.server.js" autostart="false"></script>
-    <script>
-        Blazor.start({
-            reconnectionOptions: {
-                // Retry up to 60 times with 2 s gaps (~2 min total)
-                maxRetries: 60,
-                retryIntervalMilliseconds: 2000
+<script src="_framework/blazor.server.js" autostart="false"></script>
+<script>
+    Blazor.start({
+        reconnectionOptions: {
+            // Retry up to 60 times with 2 s gaps (~2 min total)
+            maxRetries: 60,
+            retryIntervalMilliseconds: 2000
+        },
+        reconnectionHandler: {
+            onConnectionDown: () => {
+                document.getElementById('blazor-reconnect-ui').style.display = 'block';
             },
-            reconnectionHandler: {
-                onConnectionDown: () => {
-                    document.getElementById('blazor-reconnect-ui').style.display = 'block';
-                },
-                onConnectionUp: () => {
-                    document.getElementById('blazor-reconnect-ui').style.display = 'none';
-                }
+            onConnectionUp: () => {
+                document.getElementById('blazor-reconnect-ui').style.display = 'none';
             }
-        });
+        }
+    });
 
-        // When the user switches back to this tab the browser may have
-        // throttled the WebSocket. Force Blazor to reconnect immediately.
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                // Small delay lets the network stack wake up first
-                setTimeout(() => {
-                    try { Blazor.reconnect(); } catch (_) { /* already connected */ }
-                }, 200);
-            }
-        });
-
-        // Also reconnect when the window regains focus (e.g. alt-tab)
-        window.addEventListener('focus', () => {
+    // When the user switches back to this tab, the browser may have
+    // throttled the WebSocket. Force Blazor to reconnect immediately.
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            // Small delay lets the network stack wake up first
             setTimeout(() => {
-                try { Blazor.reconnect(); } catch (_) { /* already connected */ }
+                try {
+                    Blazor.reconnect();
+                } catch (_) { /* already connected */
+                }
             }, 200);
-        });
-    </script>
-    <!-- Load calculator scripts after Blazor so scripts don't stomp on blazor startup -->
-    <script src="js/calculator-app.js"></script>
-    <script src="js/calculator-pdf.js"></script>
-    <script src="js/site.js"></script>
+        }
+    });
+
+    // Also, reconnect when the window regains focus (e.g., alt-tab)
+    window.addEventListener('focus', () => {
+        setTimeout(() => {
+            try {
+                Blazor.reconnect();
+            } catch (_) { /* already connected */
+            }
+        }, 200);
+    });
+</script>
+<!-- Load calculator scripts after Blazor so scripts don't stomp on blazor startup -->
+<script src="js/calculator-app.js"></script>
+<script src="js/calculator-pdf.js"></script>
+<script src="js/site.js"></script>
 </body>
 </html>

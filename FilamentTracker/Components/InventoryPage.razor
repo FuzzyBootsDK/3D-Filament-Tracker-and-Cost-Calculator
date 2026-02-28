@@ -1,7 +1,8 @@
 @using FilamentTracker.Models
-@using FilamentTracker.Services
 @inject FilamentService FilamentService
 @inject ThresholdService ThresholdService
+@inject BambuLabService BambuLabService
+@implements IDisposable
 
 <section>
     <div class="pageHeader">
@@ -55,7 +56,8 @@
     }
 
     <div class="controls">
-        <input class="input" placeholder="Search (brand, color, type, finish)..." @bind="searchText" @bind:event="oninput" @bind:after="FilterFilaments" />
+        <input class="input" placeholder="Search (brand, color, type, finish)..." @bind="searchText"
+               @bind:event="oninput" @bind:after="FilterFilaments"/>
         <select class="input" @bind="typeFilter" @bind:after="FilterFilaments">
             <option value="all">All Types</option>
             <option value="PLA">PLA</option>
@@ -82,15 +84,15 @@
     <section class="grid">
         @foreach (var filament in filteredFilaments)
         {
-            <div class="tile @GetFilamentStatus(filament) @(filament.SpoolCount > 1 ? "stacked" : "")" 
-                 tabindex="0" 
+            <div class="tile @GetFilamentStatus(filament) @(filament.SpoolCount > 1 ? "stacked" : "")"
+                 tabindex="0"
                  @onclick="() => OpenDetail(filament)">
-                
-                
-                
+
+
                 <div class="swatch" style="background: @filament.ColorCode;">
                     @{
                         var status = GetFilamentStatus(filament);
+                        var amsDiscrepancy = GetAmsDiscrepancy(filament);
                     }
                     <div class="badge">
                         @if (status == "critical")
@@ -106,11 +108,18 @@
                             <text>OK</text>
                         }
                     </div>
+                    @if (amsDiscrepancy.HasValue)
+                    {
+                        <div class="amsMismatchBadge"
+                             title="AMS reports @amsDiscrepancy.Value.amsRemain% remaining but inventory shows @amsDiscrepancy.Value.inventoryPct% — difference exceeds 5%">
+                            ⚠
+                        </div>
+                    }
                     <div class="brand">@filament.Brand</div>
                     <div class="name">@filament.ColorName</div>
                     <div class="pct">@Math.Round(filament.PercentRemaining, 0)%</div>
                 </div>
-                
+
                 <div class="tileBody">
                     <div class="meta">
                         <span class="tag type type-@filament.Type">@filament.Type</span>
@@ -119,19 +128,19 @@
                             <span class="tag finish finish-@filament.Finish">@filament.Finish</span>
                         }
                     </div>
-                    
+
                     <div class="barWrap">
-                        <div class="bar @(filament.Status == "ok" ? "" : "low")" 
+                        <div class="bar @(filament.Status == "ok" ? "" : "low")"
                              style="width: @(Math.Round(filament.PercentRemaining, 0))%"></div>
                     </div>
-                    
+
                     <div class="tileFooter">
                         <span>@Math.Round(filament.WeightRemaining, 0)g / @Math.Round(filament.TotalWeight, 0)g</span>
                     </div>
                 </div>
             </div>
         }
-        
+
         @if (filteredFilaments.Count == 0)
         {
             <div class="colSpan4" style="text-align: center; padding: 40px; color: var(--muted);">
@@ -143,7 +152,7 @@
 
 @if (selectedFilament != null)
 {
-    <FilamentDetailModal Filament="selectedFilament" OnClose="CloseDetail" OnUpdate="RefreshData" />
+    <FilamentDetailModal Filament="selectedFilament" OnClose="CloseDetail" OnUpdate="RefreshData"/>
 }
 
 @code {
@@ -151,28 +160,115 @@
     private List<Filament> filteredFilaments = new();
     private Dictionary<string, int> statistics = new();
     private Filament? selectedFilament;
-    
+
     private string searchText = "";
     private string typeFilter = "all";
     private string sortOption = "newest";
-    private bool filterLowOnly = false;
-    
+    private bool filterLowOnly;
+
+    // spoolId → AMS-reported remain % (from live MQTT)
+    private Dictionary<int, int> _amsRemainBySpoolId = new();
+
     private int lowStockCount => statistics.GetValueOrDefault("Low", 0) + statistics.GetValueOrDefault("Critical", 0);
     private int criticalCount => statistics.GetValueOrDefault("Critical", 0);
 
     protected override async Task OnInitializedAsync()
     {
         await RefreshData();
+        RebuildAmsMap(BambuLabService.GetCurrentStatus());
+        BambuLabService.OnStatusUpdated += HandleStatusUpdated;
+        BambuLabService.OnAmsWeightUpdated += HandleAmsWeightUpdated;
+    }
+
+    public void Dispose()
+    {
+        BambuLabService.OnStatusUpdated -= HandleStatusUpdated;
+        BambuLabService.OnAmsWeightUpdated -= HandleAmsWeightUpdated;
+    }
+
+    private void HandleAmsWeightUpdated()
+    {
+        // Reload everything from DB so tile weights, bars and discrepancy badges update
+        InvokeAsync(async () =>
+        {
+            try
+            {
+                await RefreshData();
+            }
+            catch { /* disposed */ }
+        });
+    }
+
+    private void HandleStatusUpdated(PrintStatus status)
+    {
+        try
+        {
+            RebuildAmsMap(status);
+            InvokeAsync(StateHasChanged);
+        }
+        catch { }
+    }
+
+    /// Build a lookup of spoolId → AMS remain% using the saved RFID ids on each spool.
+    private void RebuildAmsMap(PrintStatus status)
+    {
+        var map = new Dictionary<int, int>();
+        if (status.AMSUnits == null) { _amsRemainBySpoolId = map; return; }
+
+        foreach (var unit in status.AMSUnits)
+        foreach (var slot in unit.Slots)
+        {
+            if (slot.Remain == null) continue;
+
+            // Skip placeholder all-zero UUIDs (non-RFID spools)
+            var hasUuid = !string.IsNullOrEmpty(slot.TrayUuid) && slot.TrayUuid.Replace("0", "").Length > 0;
+            var hasTag  = !string.IsNullOrEmpty(slot.TagUid)  && slot.TagUid.Replace("0", "").Length > 0;
+            if (!hasUuid && !hasTag) continue;
+
+            foreach (var filament in allFilaments)
+            foreach (var spool in filament.Spools ?? new List<Spool>())
+            {
+                if ((hasUuid && spool.AmsTrayUuid == slot.TrayUuid) ||
+                    (hasTag  && spool.AmsTagUid   == slot.TagUid))
+                {
+                    map[spool.Id] = slot.Remain.Value;
+                }
+            }
+        }
+
+        _amsRemainBySpoolId = map;
+    }
+
+    /// Returns (amsRemain%, inventoryPct%) if any spool for this filament has an AMS
+    /// discrepancy > 5% relative to the spool's total weight. Returns null if no linked AMS data.
+    private (int amsRemain, int inventoryPct)? GetAmsDiscrepancy(Filament filament)
+    {
+        foreach (var spool in filament.Spools ?? new List<Spool>())
+        {
+            if (!_amsRemainBySpoolId.TryGetValue(spool.Id, out var amsRemain)) continue;
+
+            // Inventory % = WeightRemaining / TotalWeight * 100
+            var totalWeight = (double)(spool.TotalWeight > 0 ? spool.TotalWeight : filament.TotalWeight);
+            if (totalWeight <= 0) continue;
+            var inventoryPct = (int)Math.Round((double)spool.WeightRemaining / totalWeight * 100.0);
+
+            // Both are already percentages of the same base (total weight = 100%)
+            // Discrepancy threshold is 5 percentage points
+            if (Math.Abs(amsRemain - inventoryPct) > 5)
+                return (amsRemain, inventoryPct);
+        }
+        return null;
     }
 
     private async Task RefreshData()
     {
         allFilaments = await FilamentService.GetAllFilamentsAsync();
         statistics = await FilamentService.GetStatisticsAsync();
+        RebuildAmsMap(BambuLabService.GetCurrentStatus());
         FilterFilaments();
         StateHasChanged();
     }
-    
+
     private string GetFilamentStatus(Filament filament)
     {
         return ThresholdService.GetStatus(filament.WeightRemaining);
@@ -183,7 +279,6 @@
         filteredFilaments = allFilaments
             .Where(f =>
             {
-                // Search filter
                 if (!string.IsNullOrWhiteSpace(searchText))
                 {
                     var search = searchText.ToLower();
@@ -193,30 +288,22 @@
                         !(f.Finish?.ToLower().Contains(search) ?? false))
                         return false;
                 }
-                
-                // Type filter
-                if (typeFilter != "all" && f.Type != typeFilter)
-                    return false;
-                
-                // Low stock filter
-                if (filterLowOnly && GetFilamentStatus(f) == "ok")
-                    return false;
-                
+                if (typeFilter != "all" && f.Type != typeFilter) return false;
+                if (filterLowOnly && GetFilamentStatus(f) == "ok") return false;
                 return true;
             })
             .ToList();
-        
-        // Sort
+
         filteredFilaments = sortOption switch
         {
-            "oldest" => filteredFilaments.OrderBy(f => f.DateAdded).ToList(),
-            "remainingAsc" => filteredFilaments.OrderBy(f => f.WeightRemaining).ToList(),
+            "oldest"        => filteredFilaments.OrderBy(f => f.DateAdded).ToList(),
+            "remainingAsc"  => filteredFilaments.OrderBy(f => f.WeightRemaining).ToList(),
             "remainingDesc" => filteredFilaments.OrderByDescending(f => f.WeightRemaining).ToList(),
-            "nameAsc" => filteredFilaments.OrderBy(f => f.ColorName).ToList(),
-            "nameDesc" => filteredFilaments.OrderByDescending(f => f.ColorName).ToList(),
-            "colorDark" => filteredFilaments.OrderBy(f => GetColorBrightness(f.ColorCode)).ToList(),
-            "colorLight" => filteredFilaments.OrderByDescending(f => GetColorBrightness(f.ColorCode)).ToList(),
-            _ => filteredFilaments.OrderByDescending(f => f.DateAdded).ToList()
+            "nameAsc"       => filteredFilaments.OrderBy(f => f.ColorName).ToList(),
+            "nameDesc"      => filteredFilaments.OrderByDescending(f => f.ColorName).ToList(),
+            "colorDark"     => filteredFilaments.OrderBy(f => GetColorBrightness(f.ColorCode)).ToList(),
+            "colorLight"    => filteredFilaments.OrderByDescending(f => GetColorBrightness(f.ColorCode)).ToList(),
+            _               => filteredFilaments.OrderByDescending(f => f.DateAdded).ToList()
         };
     }
 
@@ -224,30 +311,16 @@
     {
         try
         {
-            // Remove # if present
             var hex = hexColor.TrimStart('#');
-            
-            // Handle 3-digit hex codes
             if (hex.Length == 3)
-            {
                 hex = string.Concat(hex[0], hex[0], hex[1], hex[1], hex[2], hex[2]);
-            }
-            
             if (hex.Length != 6) return 0;
-            
-            // Convert hex to RGB
             var r = Convert.ToInt32(hex.Substring(0, 2), 16);
             var g = Convert.ToInt32(hex.Substring(2, 2), 16);
             var b = Convert.ToInt32(hex.Substring(4, 2), 16);
-            
-            // Calculate perceived brightness using standard formula
-            // Human eye perceives green more than red, and red more than blue
-            return (0.299 * r + 0.587 * g + 0.114 * b);
+            return 0.299 * r + 0.587 * g + 0.114 * b;
         }
-        catch
-        {
-            return 0;
-        }
+        catch { return 0; }
     }
 
     private void ToggleLowFilter()
@@ -256,13 +329,6 @@
         FilterFilaments();
     }
 
-    private void OpenDetail(Filament filament)
-    {
-        selectedFilament = filament;
-    }
-
-    private void CloseDetail()
-    {
-        selectedFilament = null;
-    }
+    private void OpenDetail(Filament filament) => selectedFilament = filament;
+    private void CloseDetail() => selectedFilament = null;
 }

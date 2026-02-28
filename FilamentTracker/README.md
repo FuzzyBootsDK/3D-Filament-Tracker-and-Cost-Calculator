@@ -7,6 +7,7 @@ A Blazor Server web app for tracking 3D printer filament inventory, managing spo
 ## ✨ Features
 
 ### Inventory
+
 - 📦 Multi-spool tracking — multiple spools per filament colour
 - ⚠️ Configurable low/critical stock warnings
 - 🔄 Reusable spool management with automatic in-use tracking
@@ -17,6 +18,7 @@ A Blazor Server web app for tracking 3D printer filament inventory, managing spo
 - 📝 Per-spool usage recording
 
 ### Print Cost Calculator
+
 - 🧮 Full cost breakdown — material, labour, machine, electricity, depreciation
 - 🖨️ Bambu Lab printer profiles (X1C, P1S, A1, A1 mini, H2S, H2D, H2C)
 - 🎨 Multi-material support
@@ -28,12 +30,12 @@ A Blazor Server web app for tracking 3D printer filament inventory, managing spo
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Blazor Server (.NET 8) |
-| Database | SQLite + Entity Framework Core |
-| CSV | CsvHelper |
-| Container | Docker |
+| Layer     | Technology                     |
+|-----------|--------------------------------|
+| Framework | Blazor Server (.NET 8)         |
+| Database  | SQLite + Entity Framework Core |
+| CSV       | CsvHelper                      |
+| Container | Docker                         |
 
 ---
 
@@ -70,11 +72,12 @@ Bambu Lab,PLA,Matte,Charcoal,#000000,1000,1000,1,spool,plastic,Yes,1.75,Shelf A,
 ```
 
 ### Field notes
-| Field | Values |
-|---|---|
-| Spool Type | `spool` or `refill` |
-| Spool Material | `plastic`, `cardboard`, `none` |
-| Reusable Spool | `Yes` or `No` |
+
+| Field                 | Values                                  |
+|-----------------------|-----------------------------------------|
+| Spool Type            | `spool` or `refill`                     |
+| Spool Material        | `plastic`, `cardboard`, `none`          |
+| Reusable Spool        | `Yes` or `No`                           |
 | Purchase Price Per Kg | Optional — defaults to `149` if missing |
 
 Download a pre-filled template from **Settings → Download CSV Template**.
@@ -144,10 +147,12 @@ See [DOCKER-README.md](DOCKER-README.md) for the full deployment guide including
 ## 💾 Backup & Restore
 
 **CSV (recommended):**
+
 - Export: Settings → Export to CSV
 - Import: Settings → Import CSV
 
 **Docker volume backup:**
+
 ```bash
 # Backup
 docker run --rm \
@@ -166,13 +171,13 @@ docker run --rm \
 
 ## 🔧 Troubleshooting
 
-| Problem | Fix |
-|---|---|
-| Port 5500 in use | Change `5500:5000` in `docker-compose.yml` |
-| Can't access from phone | Use your PC's IP — `http://192.168.x.x:5500` |
-| Container won't start | `docker logs filament-tracker` |
-| Reset database | Delete the Docker volume: `docker volume rm filament-tracker-data` |
-| Local build fails | `dotnet clean && dotnet restore && dotnet build` |
+| Problem                 | Fix                                                                |
+|-------------------------|--------------------------------------------------------------------|
+| Port 5500 in use        | Change `5500:5000` in `docker-compose.yml`                         |
+| Can't access from phone | Use your PC's IP — `http://192.168.x.x:5500`                       |
+| Container won't start   | `docker logs filament-tracker`                                     |
+| Reset database          | Delete the Docker volume: `docker volume rm filament-tracker-data` |
+| Local build fails       | `dotnet clean && dotnet restore && dotnet build`                   |
 
 ---
 

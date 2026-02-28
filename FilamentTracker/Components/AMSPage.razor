@@ -1,18 +1,41 @@
-@using FilamentTracker.Models
 @inject FilamentService FilamentService
 @inject BambuLabService BambuLabService
+@using System.Text
+@using FilamentTracker.Models
 @implements IDisposable
 
 @code {
+    // ── State ──────────────────────────────────────────────────────────────────
     private List<Filament> _inventory = new();
-    private bool _amsAttached = false;
+    private bool _amsAttached;
     private List<AMSUnit> _amsUnits = new();
 
-    protected override void OnInitialized()
+    // Per-slot: linked spool id (0 = none), save-status message
+    private readonly Dictionary<string, int> _slotSpoolMap = new();      // key = slotKey
+    private readonly Dictionary<string, string?> _slotSaveMsg = new();   // key = slotKey
+    private readonly Dictionary<string, bool> _slotSaving = new();
+
+    protected override async Task OnInitializedAsync()
     {
+        _inventory = await FilamentService.GetAllFilamentsAsync();
         RefreshFromStatus(BambuLabService.GetCurrentStatus());
-        _inventory = FilamentService.GetAllFilaments();
+        await AutoMatchSlotsAsync();
         BambuLabService.OnStatusUpdated += HandleStatusUpdated;
+        BambuLabService.OnAmsWeightUpdated += HandleAmsWeightUpdated;
+    }
+
+    private void HandleAmsWeightUpdated()
+    {
+        // Reload inventory from DB so spool weights in dropdown and linked label are fresh
+        InvokeAsync(async () =>
+        {
+            try
+            {
+                _inventory = await FilamentService.GetAllFilamentsAsync();
+                StateHasChanged();
+            }
+            catch { /* disposed */ }
+        });
     }
 
     private void HandleStatusUpdated(PrintStatus status)
@@ -20,64 +43,146 @@
         try
         {
             RefreshFromStatus(status);
-            InvokeAsync(() =>
+            InvokeAsync(async () =>
             {
-                try { StateHasChanged(); }
-                catch { /* component may have been disposed */ }
+                try
+                {
+                    await AutoMatchSlotsAsync();
+                    // Always reload inventory so weight changes from auto-update are visible
+                    _inventory = await FilamentService.GetAllFilamentsAsync();
+                    StateHasChanged();
+                }
+                catch { /* disposed */ }
             });
         }
-        catch { /* swallow to protect MQTT background thread */ }
+        catch { /* protect MQTT thread */ }
     }
 
     private void RefreshFromStatus(PrintStatus status)
     {
-        _amsAttached = status.AMSUnits != null && status.AMSUnits.Count > 0;
-        _amsUnits = status.AMSUnits ?? new List<AMSUnit>();
+        _amsAttached = status.AMSUnits is { Count: > 0 };
+        _amsUnits = status.AMSUnits ?? new();
+    }
+
+    /// Auto-match every slot that has a tray_uuid or tag_uid against saved spool links.
+    private async Task AutoMatchSlotsAsync()
+    {
+        foreach (var unit in _amsUnits)
+        foreach (var slot in unit.Slots)
+        {
+            var key = SlotKey(unit, slot);
+            // Skip only if already successfully matched (don't skip unmatched — keep retrying)
+            if (_slotSpoolMap.TryGetValue(key, out var existing) && existing > 0) continue;
+
+            var spool = await FilamentService.FindSpoolByAmsIdAsync(slot.TrayUuid, slot.TagUid);
+            if (spool != null)
+                _slotSpoolMap[key] = spool.Id;
+        }
     }
 
     public void Dispose()
     {
         BambuLabService.OnStatusUpdated -= HandleStatusUpdated;
+        BambuLabService.OnAmsWeightUpdated -= HandleAmsWeightUpdated;
     }
+
+    // ── Helpers ────────────────────────────────────────────────────────────────
+    private static string SlotKey(AMSUnit unit, AMSSlot slot) =>
+        $"{unit.AMSId}_{slot.Id}";
+
+    private bool HasRfid(AMSSlot slot) =>
+        !string.IsNullOrEmpty(slot.TrayUuid) && slot.TrayUuid.Replace("0", "").Length > 0;
 
     private string FormatSlotType(string? trayType, string? traySubBrands)
     {
         var type = (trayType ?? "").Trim();
-        var sub = (traySubBrands ?? "").Trim();
-
+        var sub  = (traySubBrands ?? "").Trim();
         if (string.IsNullOrEmpty(type) && string.IsNullOrEmpty(sub)) return "";
         if (string.IsNullOrEmpty(sub)) return type;
         if (string.IsNullOrEmpty(type)) return sub;
-
-        // If identical (case-insensitive), show only one
-        if (sub.Equals(type, StringComparison.OrdinalIgnoreCase))
-            return type;
-
-        // If sub already starts with the type (e.g. "PLA Matte" starts with "PLA"), just show sub
-        if (sub.StartsWith(type, StringComparison.OrdinalIgnoreCase))
-            return sub;
-
-        // If type already starts with sub, just show type
-        if (type.StartsWith(sub, StringComparison.OrdinalIgnoreCase))
-            return type;
-
+        if (sub.Equals(type, StringComparison.OrdinalIgnoreCase)) return type;
+        if (sub.StartsWith(type, StringComparison.OrdinalIgnoreCase)) return sub;
+        if (type.StartsWith(sub, StringComparison.OrdinalIgnoreCase)) return type;
         return $"{type} · {sub}";
     }
 
     private string FormatFilamentOption(Filament f)
     {
-        var parts = new System.Text.StringBuilder();
-        parts.Append(f.Brand);
-        parts.Append(" · ");
-        parts.Append(f.Type);
-        if (!string.IsNullOrWhiteSpace(f.Finish))
+        var sb = new StringBuilder();
+        sb.Append(f.Brand).Append(" · ").Append(f.Type);
+        if (!string.IsNullOrWhiteSpace(f.Finish)) sb.Append(' ').Append(f.Finish);
+        sb.Append(" · ").Append(f.ColorName);
+        return sb.ToString();
+    }
+
+    private string? GetLinkedLabel(string key)
+    {
+        if (!_slotSpoolMap.TryGetValue(key, out var spoolId) || spoolId == 0)
+            return null;
+        foreach (var f in _inventory)
+        foreach (var s in f.Spools ?? new List<Spool>())
+            if (s.Id == spoolId)
+                return $"{f.Brand} · {f.Type}{(string.IsNullOrWhiteSpace(f.Finish) ? "" : " " + f.Finish)} · {f.ColorName}";
+        return null;
+    }
+
+    /// Returns the current WeightRemaining from the linked inventory spool (null if not linked).
+    private decimal? GetLinkedWeight(string key)
+    {
+        if (!_slotSpoolMap.TryGetValue(key, out var spoolId) || spoolId == 0)
+            return null;
+        foreach (var f in _inventory)
+        foreach (var s in f.Spools ?? new List<Spool>())
+            if (s.Id == spoolId)
+                return s.WeightRemaining;
+        return null;
+    }
+
+    private int GetSelectedSpoolId(string key) =>
+        _slotSpoolMap.TryGetValue(key, out var id) ? id : 0;
+
+    private void OnSpoolSelected(string key, ChangeEventArgs e)
+    {
+        var raw = e.Value?.ToString();
+        _slotSpoolMap[key] = int.TryParse(raw, out var id) ? id : 0;
+        _slotSaveMsg[key] = null; // clear previous message
+    }
+
+    private async Task SaveLink(AMSUnit unit, AMSSlot slot)
+    {
+        var key = SlotKey(unit, slot);
+        _slotSaving[key] = true;
+        _slotSaveMsg[key] = null;
+        StateHasChanged();
+
+        try
         {
-            parts.Append(' ');
-            parts.Append(f.Finish);
+            var spoolId = GetSelectedSpoolId(key);
+            if (spoolId == 0)
+            {
+                // Unlink: clear RFID on whatever spool was previously linked
+                var old = await FilamentService.FindSpoolByAmsIdAsync(slot.TrayUuid, slot.TagUid);
+                if (old != null)
+                    await FilamentService.LinkSpoolToAmsSlotAsync(old.Id, null, null);
+                _slotSaveMsg[key] = "Unlinked.";
+            }
+            else
+            {
+                await FilamentService.LinkSpoolToAmsSlotAsync(spoolId, slot.TrayUuid, slot.TagUid);
+                _slotSaveMsg[key] = HasRfid(slot)
+                    ? "✅ Saved — will auto-match next time."
+                    : "✅ Saved (no RFID chip — won't auto-match).";
+            }
         }
-        parts.Append(" · ");
-        parts.Append(f.ColorName);
-        return parts.ToString();
+        catch (Exception ex)
+        {
+            _slotSaveMsg[key] = $"❌ Error: {ex.Message}";
+        }
+        finally
+        {
+            _slotSaving[key] = false;
+            StateHasChanged();
+        }
     }
 }
 
@@ -91,35 +196,92 @@ else
     {
         <div class="panel amsPanel">
             <div class="amsHeader">
-                <span class="amsId">AMS ID: @ams.AMSId</span>
-                @if (ams.Temperature.HasValue && ams.Humidity.HasValue)
+                <span class="amsId">AMS @ams.AMSId</span>
+                @if (ams is { Temperature: not null, Humidity: not null })
                 {
-                    <span class="amsEnv">Temp: @ams.Temperature.Value.ToString("F1")°C, Humidity: @ams.Humidity.Value% </span>
+                    <span class="amsEnv">@ams.Temperature.Value.ToString("F1")°C · @ams.Humidity.Value% RH</span>
                 }
             </div>
             <div class="amsSlotsGrid">
                 @foreach (var slot in ams.Slots)
                 {
-                    var slotTypeLabel = FormatSlotType(slot.TrayType, slot.TraySubBrands);
+                    var key = SlotKey(ams, slot);
+                    var typeLabel = FormatSlotType(slot.TrayType, slot.TraySubBrands);
+                    var linkedLabel = GetLinkedLabel(key);
+                    var linkedWeight = GetLinkedWeight(key);
+                    var selectedId = GetSelectedSpoolId(key);
+                    var hasRfid = HasRfid(slot);
+                    var saveMsg = _slotSaveMsg.TryGetValue(key, out var m) ? m : null;
+                    var saving = _slotSaving.TryGetValue(key, out var sv) && sv;
+
                     <div class="amsSlot">
-                        <div class="amsSlotCircle" style="background: @(slot.ColorHex ?? ("#" + slot.TrayColor))"></div>
+                        <div class="amsSlotCircle" style="background: @(slot.ColorHex ?? "#" + slot.TrayColor)"></div>
                         <div class="amsSlotLabel">Slot @slot.Index</div>
-                        @if (!string.IsNullOrEmpty(slotTypeLabel))
+
+                        @if (!string.IsNullOrEmpty(typeLabel))
                         {
                             <div class="amsSlotType">
-                                <span class="amsSlotTypePill">@slotTypeLabel</span>
+                                <span class="amsSlotTypePill">@typeLabel</span>
                             </div>
                         }
-                        <div class="amsSlotRemain">Remaining: @(slot.Remain.HasValue ? $"{slot.Remain}%" : "—")</div>
+
+                        <div class="amsSlotRemain">
+                            AMS: @(slot.Remain.HasValue ? $"{slot.Remain}%" : "—")
+                            @if (linkedWeight.HasValue)
+                            {
+                                <span style="color: var(--muted);"> · Inventory: @Math.Round(linkedWeight.Value, 0)g</span>
+                            }
+                        </div>
+
+                        @* RFID badge *@
+                        <div style="font-size: 11px; color: var(--muted);">
+                            @if (hasRfid)
+                            {
+                                <span title="tray_uuid: @slot.TrayUuid&#10;tag_uid: @slot.TagUid"
+                                      style="color:#10b981; cursor:default;">🔖 BambuLab RFID</span>
+                            }
+                            else
+                            {
+                                <span style="color:var(--muted);">⬜ No RFID chip</span>
+                            }
+                        </div>
+
+                        @* Currently linked indicator *@
+                        @if (linkedLabel != null)
+                        {
+                            <div class="amsLinkedBadge">📦 @linkedLabel</div>
+                        }
+
+                        @* Dropdown + Save *@
                         <div class="amsSlotSelect">
-                            <select class="input">
-                                <option value="">— Link to inventory —</option>
+                            <select class="input" value="@selectedId"
+                                    @onchange="e => OnSpoolSelected(key, e)">
+                                <option value="0">— Link to inventory spool —</option>
                                 @foreach (var filament in _inventory)
                                 {
-                                    <option value="@filament.Id">@FormatFilamentOption(filament)</option>
+                                    @foreach (var spool in (filament.Spools ?? new List<Spool>()))
+                                    {
+                                        <option value="@spool.Id">
+                                            @FormatFilamentOption(filament) (@spool.WeightRemaining g left)
+                                        </option>
+                                    }
                                 }
                             </select>
                         </div>
+
+                        <button class="btn primary" style="width:100%; margin-top:4px;"
+                                @onclick="() => SaveLink(ams, slot)"
+                                disabled="@saving">
+                            @(saving ? "Saving…" : "💾 Save Link")
+                        </button>
+
+                        @if (!string.IsNullOrEmpty(saveMsg))
+                        {
+                            <div style="font-size: 12px; margin-top: 4px;
+                                color: @(saveMsg.StartsWith("✅") ? "#10b981" : saveMsg == "Unlinked." ? "var(--muted)" : "#ef4444");">
+                                @saveMsg
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -128,91 +290,101 @@ else
 }
 
 <style>
-.amsPanel {
-    margin-top: 18px;
-    padding: 18px;
-    border-radius: 18px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-}
-.amsHeader {
-    display: flex;
-    gap: 18px;
-    align-items: center;
-    margin-bottom: 10px;
-    font-weight: 900;
-    color: var(--text);
-}
-.amsEnv {
-    font-size: 15px;
-    color: var(--muted);
-}
-.amsSlotsGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 18px;
-    margin-top: 10px;
-}
-.amsSlot {
-    background: rgba(255,255,255,.03);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 18px 14px 16px 14px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 8px 30px rgba(0,0,0,.08);
-}
-.light .amsSlot {
-    background: var(--panel2);
-}
-.amsSlotCircle {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,.18);
-    box-shadow: 0 0 0 1px rgba(0,0,0,.12);
-    margin-bottom: 6px;
-}
-.amsSlotLabel {
-    font-weight: 900;
-    font-size: 16px;
-    color: var(--text);
-    margin-bottom: 4px;
-}
-.amsSlotType {
-    font-size: 14px;
-    color: var(--muted);
-    margin-bottom: 2px;
-    text-align: center;
-}
-.amsSlotTypePill {
-    display: inline-block;
-    background: rgba(99,102,241,.15);
-    border: 1px solid rgba(99,102,241,.30);
-    border-radius: 8px;
-    padding: 2px 10px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: 0.03em;
-}
-.amsSlotRemain {
-    font-size: 13px;
-    color: var(--text);
-    margin-bottom: 6px;
-}
-.amsSlotSelect {
-    width: 100%;
-}
-.amsSlotSelect select {
-    width: 100%;
-    font-size: 15px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    background: var(--panel);
-    color: var(--text);
-    padding: 10px 12px;
-}
+    .amsPanel {
+        margin-top: 18px;
+        padding: 18px;
+        border-radius: 18px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+    }
+
+    .amsHeader {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        margin-bottom: 10px;
+        font-weight: 900;
+        color: var(--text);
+    }
+
+    .amsEnv {
+        font-size: 15px;
+        color: var(--muted);
+    }
+
+    .amsSlotsGrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 18px;
+        margin-top: 10px;
+    }
+
+    .amsSlot {
+        background: rgba(255, 255, 255, .03);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 14px 16px 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, .08);
+    }
+
+    .light .amsSlot { background: var(--panel2); }
+
+    .amsSlotCircle {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, .18);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, .12);
+    }
+
+    .amsSlotLabel {
+        font-weight: 900;
+        font-size: 16px;
+        color: var(--text);
+    }
+
+    .amsSlotType { font-size: 14px; color: var(--muted); text-align: center; }
+
+    .amsSlotTypePill {
+        display: inline-block;
+        background: rgba(99, 102, 241, .15);
+        border: 1px solid rgba(99, 102, 241, .30);
+        border-radius: 8px;
+        padding: 2px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: 0.03em;
+    }
+
+    .amsSlotRemain { font-size: 13px; color: var(--text); }
+
+    .amsLinkedBadge {
+        font-size: 12px;
+        font-weight: 700;
+        color: #10b981;
+        background: rgba(16, 185, 129, .10);
+        border: 1px solid rgba(16, 185, 129, .25);
+        border-radius: 8px;
+        padding: 4px 10px;
+        text-align: center;
+        width: 100%;
+        word-break: break-word;
+    }
+
+    .amsSlotSelect { width: 100%; }
+
+    .amsSlotSelect select {
+        width: 100%;
+        font-size: 13px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        color: var(--text);
+        padding: 8px 10px;
+    }
 </style>

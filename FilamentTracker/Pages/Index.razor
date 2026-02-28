@@ -1,284 +1,422 @@
 @page "/"
-@using FilamentTracker.Models
-@using FilamentTracker.Services
 @inject FilamentService FilamentService
 @inject BambuLabService BambuLabService
 @inject NavigationManager Navigation
+@using FilamentTracker.Models
 @implements IDisposable
 
 <PageTitle>Filament Inventory</PageTitle>
 
 <div class="wrap">
-<!-- Top Nav -->
-<div class="topRow"><div class="topnav">
-    <!-- Navigation buttons container -->
-    <div class="navButtons">
-        <!-- Row 1 -->
-        <button class="navbtn @(currentPage == "inventory" ? "active" : "")" @onclick='() => SetPage("inventory")'>
-            <span class="navicon">📦</span> Inventory
-        </button>
-        <button class="navbtn @(currentPage == "add" ? "active" : "")" @onclick='() => SetPage("add")'>
-            <span class="navicon">➕</span> Add Filament
-        </button>
-        <button class="navbtn @(currentPage == "spools" ? "active" : "")" @onclick='() => SetPage("spools")'>
-            <span class="navicon">🔁</span> Spools
-        </button>
+    <!-- Top Nav -->
+    <div class="topRow">
+        <div class="topnav">
+            <!-- Navigation buttons container -->
+            <div class="navButtons">
+                <!-- Row 1 -->
+                <button class="navbtn @(currentPage == "inventory" ? "active" : "")"
+                        @onclick='() => SetPage("inventory")'>
+                    <span class="navicon">📦</span> Inventory
+                </button>
+                <button class="navbtn @(currentPage == "add" ? "active" : "")" @onclick='() => SetPage("add")'>
+                    <span class="navicon">➕</span> Add Filament
+                </button>
+                <button class="navbtn @(currentPage == "spools" ? "active" : "")" @onclick='() => SetPage("spools")'>
+                    <span class="navicon">🔁</span> Spools
+                </button>
 
-        <!-- Row 2 -->
-        <button class="navbtn @(currentPage == "ams" ? "active" : "")" @onclick='() => SetPage("ams")'>
-            <span class="navicon">🗄️</span> AMS
-        </button>
-        <button class="navbtn @(currentPage == "calculator" ? "active" : "")" @onclick='() => SetPage("calculator")'>
-            <span class="navicon">🧮</span> Calculator
-        </button>
-        <button class="navbtn @(currentPage == "help" ? "active" : "")" @onclick='() => SetPage("help")'>
-            <span class="navicon">❓</span> Help
-        </button>
+                <!-- Row 2 -->
+                <button class="navbtn @(currentPage == "ams" ? "active" : "")" @onclick='() => SetPage("ams")'>
+                    <span class="navicon">🗄️</span> AMS
+                </button>
+                <button class="navbtn @(currentPage == "calculator" ? "active" : "")"
+                        @onclick='() => SetPage("calculator")'>
+                    <span class="navicon">🧮</span> Calculator
+                </button>
+                <button class="navbtn @(currentPage == "help" ? "active" : "")" @onclick='() => SetPage("help")'>
+                    <span class="navicon">❓</span> Help
+                </button>
 
-        <!-- Row 3 -->
-        <button class="navbtn @(currentPage == "settings" ? "active" : "")" @onclick='() => SetPage("settings")'>
-            <span class="navicon">⚙️</span> Settings
-        </button>
-    </div>
-
-<style>
-/* Scrolling filename marquee for live activity */
-.scrollingWrap {
-    width: 220px; /* reasonable fixed width in widget */
-    overflow: hidden;
-    white-space: nowrap;
-    display: inline-block;
-    vertical-align: middle;
-}
-.scrollingText {
-    display: inline-block;
-    padding-left: 100%; /* start off-screen to the right */
-    animation: scroll-left 24s linear infinite; /* slowed to half speed */
-}
-@@keyframes scroll-left {
-    0% { transform: translateX(0%); }
-    100% { transform: translateX(-100%); }
-}
-
-/* Slightly reduce animation on hover to allow reading */
-.scrollingWrap:hover .scrollingText {
-    animation-play-state: paused;
-}
-/* Slightly reduce animation on hover to allow reading */
-.scrollingWrap:hover .scrollingText {
-    animation-play-state: paused;
-}
-
-/* Small styled boxes for temps and fans */
-.tempGrid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    width: 100%;
-    margin-top: 8px;
-}
-.tempBox {
-    border-radius: 10px;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    min-height: 44px;
-    /* stronger border for contrast */
-    border: 1px solid rgba(255,255,255,0.08);
-    color: var(--text);
-}
-.light .tempBox { border-color: rgba(0,0,0,0.06); }
-.tempBox .boxLeft { display:flex; align-items:center; gap:8px; }
-.boxIcon {
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size: 18px;
-    color: #fff;
-    /* darker icon background for contrast */
-    background: rgba(0,0,0,0.22);
-}
-.light .boxIcon { background: rgba(0,0,0,0.06); }
-.boxLabel { font-size: 12px; color: var(--text); font-weight: 800; opacity: 0.95; }
-.boxValue { font-weight: 900; font-size: 15px; color: var(--text); }
-
-/* Per-box color schemes */
-.tempBox.nozzle { background: linear-gradient(135deg,#4f46e5,#7c3aed); border-color: rgba(79,70,229,0.35); }
-.tempBox.nozzle .boxIcon { background: rgba(255,255,255,0.12); }
-.tempBox.bed { background: linear-gradient(135deg,#10b981,#06b6d4); border-color: rgba(16,185,129,0.28); }
-.tempBox.bed .boxIcon { background: rgba(255,255,255,0.08); }
-.tempBox.fan { background: linear-gradient(135deg,#f59e0b,#ef4444); border-color: rgba(245,158,11,0.28); }
-.tempBox.fan .boxIcon { background: rgba(255,255,255,0.08); }
-.light .tempBox.nozzle, .light .tempBox.bed, .light .tempBox.fan { background: var(--panel2); }
-
-</style>
-<style>
-.topRow {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    margin-bottom: 12px;
-}
-.topRow .topnav { flex: 1 1 auto; }
-.topRow .liveTracker { width: 360px; max-width: 40%; }
-
-@@media (max-width: 980px) {
-    .topRow { flex-direction: column; }
-    .topRow .liveTracker { width: 100%; max-width: 100%; }
-}
-
-/* Live tracker header and compact layout */
-.liveTrackerHeader { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
-.liveHeaderLeft { display:flex; align-items:center; gap:10px; }
-.liveHeaderRight { display:flex; align-items:center; gap:10px; }
-
-.progressRow { display:flex; align-items:center; gap:10px; padding: 10px 12px; }
-.progressRow .progressBar { flex: 1; height: 10px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; border: 1px solid var(--border); }
-.progressRow .progressFill { height: 100%; background: linear-gradient(90deg, rgb(59,130,246), rgb(99,102,241)); transition: width 0.25s ease; }
-.progressRow .progressText { min-width: 48px; text-align: right; font-weight: 900; font-size: 14px; }
-
-.liveDetailsGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 8px 12px 12px 12px; }
-.infoBox { border: 1px solid var(--border); background: rgba(255,255,255,0.03); padding: 8px; border-radius: 10px; display:flex; flex-direction:column; gap:6px; }
-.light .infoBox { background: var(--panel2); }
-.infoLabel { font-size: 12px; color: var(--muted); font-weight: 800; }
-.infoValue { font-weight: 900; color: var(--text); font-size: 14px; }
-</style>
-</div>
-
-    <!-- Live Tracking Widget -->
-    <div class="liveTracker">
-        <div class="liveTrackerHeader">
-            <div class="liveHeaderLeft">
-                <span class="liveIcon">🖨️</span>
-                <span class="liveTitle">Live Tracking</span>
+                <!-- Row 3 -->
+                <button class="navbtn @(currentPage == "settings" ? "active" : "")"
+                        @onclick='() => SetPage("settings")'>
+                    <span class="navicon">⚙️</span> Settings
+                </button>
             </div>
-            <div class="liveHeaderRight">
-                @if (isConnected)
-                {
-                    <div class="statusIndicator connected">
-                        <span class="statusDot"></span>
-                        <span>Connected</span>
-                        @if (currentPrint != null && !string.IsNullOrEmpty(currentPrint.WifiSignal))
-                        {
-                            var connBars = GetWifiBars(currentPrint.WifiSignal);
-                            <span class="wifiBars connWifi" title="@currentPrint.WifiSignal">
+
+            <style>
+                /* Scrolling filename marquee for live activity */
+                .scrollingWrap {
+                    width: 220px; /* reasonable fixed width in widget */
+                    overflow: hidden;
+                    white-space: nowrap;
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+
+                .scrollingText {
+                    display: inline-block;
+                    padding-left: 100%; /* start off-screen to the right */
+                    animation: scroll-left 24s linear infinite; /* slowed to half speed */
+                }
+
+                @@keyframes scroll-left {
+                    0% {
+                        transform: translateX(0%);
+                    }
+                    100% {
+                        transform: translateX(-100%);
+                    }
+                }
+
+                /* Slightly reduce animation on hover to allow reading */
+                .scrollingWrap:hover .scrollingText {
+                    animation-play-state: paused;
+                }
+
+                /* Slightly reduce animation on hover to allow reading */
+                .scrollingWrap:hover .scrollingText {
+                    animation-play-state: paused;
+                }
+
+                /* Small styled boxes for temps and fans */
+                .tempGrid {
+                    display: grid;
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                    gap: 8px;
+                    width: 100%;
+                    margin-top: 8px;
+                }
+
+                .tempBox {
+                    border-radius: 10px;
+                    padding: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 8px;
+                    min-height: 44px;
+                    /* stronger border for contrast */
+                    border: 1px solid rgba(255, 255, 255, 0.08);
+                    color: var(--text);
+                }
+
+                .light .tempBox {
+                    border-color: rgba(0, 0, 0, 0.06);
+                }
+
+                .tempBox .boxLeft {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                .boxIcon {
+                    width: 34px;
+                    height: 34px;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 18px;
+                    color: #fff;
+                    /* darker icon background for contrast */
+                    background: rgba(0, 0, 0, 0.22);
+                }
+
+                .light .boxIcon {
+                    background: rgba(0, 0, 0, 0.06);
+                }
+
+                .boxLabel {
+                    font-size: 12px;
+                    color: var(--text);
+                    font-weight: 800;
+                    opacity: 0.95;
+                }
+
+                .boxValue {
+                    font-weight: 900;
+                    font-size: 15px;
+                    color: var(--text);
+                }
+
+                /* Per-box color schemes */
+                .tempBox.nozzle {
+                    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+                    border-color: rgba(79, 70, 229, 0.35);
+                }
+
+                .tempBox.nozzle .boxIcon {
+                    background: rgba(255, 255, 255, 0.12);
+                }
+
+                .tempBox.bed {
+                    background: linear-gradient(135deg, #10b981, #06b6d4);
+                    border-color: rgba(16, 185, 129, 0.28);
+                }
+
+                .tempBox.bed .boxIcon {
+                    background: rgba(255, 255, 255, 0.08);
+                }
+
+                .tempBox.fan {
+                    background: linear-gradient(135deg, #f59e0b, #ef4444);
+                    border-color: rgba(245, 158, 11, 0.28);
+                }
+
+                .tempBox.fan .boxIcon {
+                    background: rgba(255, 255, 255, 0.08);
+                }
+
+                .light .tempBox.nozzle, .light .tempBox.bed, .light .tempBox.fan {
+                    background: var(--panel2);
+                }
+
+            </style>
+            <style>
+                .topRow {
+                    display: flex;
+                    gap: 12px;
+                    align-items: flex-start;
+                    margin-bottom: 12px;
+                }
+
+                .topRow .topnav {
+                    flex: 1 1 auto;
+                }
+
+                .topRow .liveTracker {
+                    width: 360px;
+                    max-width: 40%;
+                }
+
+                @@media (max-width: 980px) {
+                    .topRow {
+                        flex-direction: column;
+                    }
+
+                    .topRow .liveTracker {
+                        width: 100%;
+                        max-width: 100%;
+                    }
+                }
+
+                /* Live tracker header and compact layout */
+                .liveTrackerHeader {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    padding: 10px 12px;
+                    border-bottom: 1px solid var(--border);
+                }
+
+                .liveHeaderLeft {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                .liveHeaderRight {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                .progressRow {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 10px 12px;
+                }
+
+                .progressRow .progressBar {
+                    flex: 1;
+                    height: 10px;
+                    background: rgba(255, 255, 255, 0.06);
+                    border-radius: 999px;
+                    overflow: hidden;
+                    border: 1px solid var(--border);
+                }
+
+                .progressRow .progressFill {
+                    height: 100%;
+                    background: linear-gradient(90deg, rgb(59, 130, 246), rgb(99, 102, 241));
+                    transition: width 0.25s ease;
+                }
+
+                .progressRow .progressText {
+                    min-width: 48px;
+                    text-align: right;
+                    font-weight: 900;
+                    font-size: 14px;
+                }
+
+                .liveDetailsGrid {
+                    display: grid;
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                    gap: 8px;
+                    padding: 8px 12px 12px 12px;
+                }
+
+                .infoBox {
+                    border: 1px solid var(--border);
+                    background: rgba(255, 255, 255, 0.03);
+                    padding: 8px;
+                    border-radius: 10px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 6px;
+                }
+
+                .light .infoBox {
+                    background: var(--panel2);
+                }
+
+                .infoLabel {
+                    font-size: 12px;
+                    color: var(--muted);
+                    font-weight: 800;
+                }
+
+                .infoValue {
+                    font-weight: 900;
+                    color: var(--text);
+                    font-size: 14px;
+                }
+            </style>
+        </div>
+
+        <!-- Live Tracking Widget -->
+        <div class="liveTracker">
+            <div class="liveTrackerHeader">
+                <div class="liveHeaderLeft">
+                    <span class="liveIcon">🖨️</span>
+                    <span class="liveTitle">Live Tracking</span>
+                </div>
+                <div class="liveHeaderRight">
+                    @if (isConnected)
+                    {
+                        <div class="statusIndicator connected">
+                            <span class="statusDot"></span>
+                            <span>Connected</span>
+                            @if (currentPrint != null && !string.IsNullOrEmpty(currentPrint.WifiSignal))
+                            {
+                                var connBars = GetWifiBars(currentPrint.WifiSignal);
+                                <span class="wifiBars connWifi" title="@currentPrint.WifiSignal">
                                 <span class="wifiBar @(connBars >= 1 ? "active" : "")"></span>
                                 <span class="wifiBar @(connBars >= 2 ? "active" : "")"></span>
                                 <span class="wifiBar @(connBars >= 3 ? "active" : "")"></span>
                                 <span class="wifiBar @(connBars >= 4 ? "active" : "")"></span>
                                 <span class="wifiBar @(connBars >= 5 ? "active" : "")"></span>
                             </span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="statusIndicator disconnected">
+                            <span class="statusDot"></span>
+                            <span>Disconnected</span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="liveTrackerBody">
+                @if (isConnected && currentPrint is { IsPrinting: true })
+                {
+                    <div class="progressRow">
+                        <div class="progressBar">
+                            <div class="progressFill" style="width: @(currentPrint.Progress)%"></div>
+                        </div>
+                        <div class="progressText">@currentPrint.Progress%</div>
+                    </div>
+
+                    <div class="liveDetailsGrid">
+                        <div class="infoBox">
+                            <div class="infoLabel">⏱️ Time</div>
+                            <div class="infoValue">@currentPrint.TimeElapsed / @currentPrint.TimeRemaining</div>
+                        </div>
+                        <div class="infoBox">
+                            <div class="infoLabel">📏 Layer</div>
+                            <div class="infoValue">@currentPrint.CurrentLayer / @currentPrint.TotalLayers</div>
+                        </div>
+                        <div class="infoBox">
+                            <div class="infoLabel">🌡️ Nozzle</div>
+                            <div class="infoValue">@currentPrint.NozzleTemperature°C</div>
+                        </div>
+                        <div class="infoBox">
+                            <div class="infoLabel">🛏️ Bed</div>
+                            <div class="infoValue">@currentPrint.BedTemperature°C</div>
+                        </div>
+                    </div>
+                }
+                else if (isConnected)
+                {
+                    <div class="idleState">
+                        <div class="idleIcon">💤</div>
+                        <div class="idleText">Printer Idle</div>
+                        @if (currentPrint != null && (currentPrint.NozzleTemperature > 0 || currentPrint.BedTemperature > 0))
+                        {
+                            <div class="idleTemps">
+                                <span class="idleTempItem">🌡️ @currentPrint.NozzleTemperature°C</span>
+                                <span class="idleTempItem">🛏️ @currentPrint.BedTemperature°C</span>
+                            </div>
                         }
                     </div>
                 }
                 else
                 {
-                    <div class="statusIndicator disconnected">
-                        <span class="statusDot"></span>
-                        <span>Disconnected</span>
+                    <div class="disconnectedMessage">
+                        Configure in Settings
                     </div>
                 }
             </div>
+
         </div>
-
-        <div class="liveTrackerBody">
-            @if (isConnected && currentPrint != null && currentPrint.IsPrinting)
-            {
-                <div class="progressRow">
-                    <div class="progressBar">
-                        <div class="progressFill" style="width: @(currentPrint.Progress)%"></div>
-                    </div>
-                    <div class="progressText">@currentPrint.Progress%</div>
-                </div>
-
-                <div class="liveDetailsGrid">
-                    <div class="infoBox">
-                        <div class="infoLabel">⏱️ Time</div>
-                        <div class="infoValue">@currentPrint.TimeElapsed / @currentPrint.TimeRemaining</div>
-                    </div>
-                    <div class="infoBox">
-                        <div class="infoLabel">📏 Layer</div>
-                        <div class="infoValue">@currentPrint.CurrentLayer / @currentPrint.TotalLayers</div>
-                    </div>
-                    <div class="infoBox">
-                        <div class="infoLabel">🌡️ Nozzle</div>
-                        <div class="infoValue">@currentPrint.NozzleTemperature°C</div>
-                    </div>
-                    <div class="infoBox">
-                        <div class="infoLabel">🛏️ Bed</div>
-                        <div class="infoValue">@currentPrint.BedTemperature°C</div>
-                    </div>
-                </div>
-            }
-            else if (isConnected)
-            {
-                <div class="idleState">
-                    <div class="idleIcon">💤</div>
-                    <div class="idleText">Printer Idle</div>
-                    @if (currentPrint != null && (currentPrint.NozzleTemperature > 0 || currentPrint.BedTemperature > 0))
-                    {
-                        <div class="idleTemps">
-                            <span class="idleTempItem">🌡️ @currentPrint.NozzleTemperature°C</span>
-                            <span class="idleTempItem">🛏️ @currentPrint.BedTemperature°C</span>
-                        </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <div class="disconnectedMessage">
-                    Configure in Settings
-                </div>
-            }
-        </div>
-
-    </div>
     </div>
     @if (currentPage == "inventory")
     {
-        <InventoryPage />
+        <InventoryPage/>
     }
     else if (currentPage == "add")
     {
-        <AddFilamentPage />
+        <AddFilamentPage/>
     }
     else if (currentPage == "spools")
     {
-        <SpoolsPage />
+        <SpoolsPage/>
     }
     else if (currentPage == "calculator")
     {
-        <PrintCalculatorPage />
+        <PrintCalculatorPage/>
     }
     else if (currentPage == "help")
     {
-        <HelpPage />
+        <HelpPage/>
     }
     else if (currentPage == "settings")
     {
-        <SettingsPage />
+        <SettingsPage/>
     }
     else if (currentPage == "ams")
     {
-        <AMSPage />
+        <AMSPage/>
     }
 </div>
 
 @code {
     private string currentPage = "inventory";
-    private bool isConnected = false;
-    private PrintStatus? currentPrint = null;
+    private bool isConnected;
+    private PrintStatus? currentPrint;
 
     protected override void OnInitialized()
     {
         // Subscribe to BambuLab status updates
         BambuLabService.OnStatusUpdated += HandleStatusUpdate;
-        
+
         // Get initial status
         UpdateStatus(BambuLabService.GetCurrentStatus());
     }
@@ -294,10 +432,16 @@
                     UpdateStatus(status);
                     StateHasChanged();
                 }
-                catch { /* component may have been disposed */ }
+                catch
+                {
+                    /* component may have been disposed */
+                }
             });
         }
-        catch { /* swallow to protect MQTT background thread */ }
+        catch
+        {
+            /* swallow to protect the MQTT background thread */
+        }
     }
 
     private void UpdateStatus(PrintStatus status)
@@ -315,7 +459,7 @@
     {
         if (fileName.Length <= 20)
             return fileName;
-        
+
         return fileName.Substring(0, 17) + "...";
     }
 
@@ -327,8 +471,8 @@
     }
 
     /// <summary>
-    /// Converts a wifi signal string like "-59dBm" to a bar count 0-5.
-    /// ≥ -50 → 5, -51..-60 → 4, -61..-70 → 3, -71..-80 → 2, -81..-90 → 1, &lt; -90 → 0
+    ///     Converts a Wi-Fi signal string like "-59dBm" to a bar count 0-5.
+    ///     ≥ -50 → 5, -51.-60 → 4, -61.-70 → 3, -71.-80 → 2, -81.-90 → 1, &lt; -90 → 0
     /// </summary>
     private static int GetWifiBars(string? signal)
     {
@@ -347,4 +491,5 @@
     {
         BambuLabService.OnStatusUpdated -= HandleStatusUpdate;
     }
+
 }

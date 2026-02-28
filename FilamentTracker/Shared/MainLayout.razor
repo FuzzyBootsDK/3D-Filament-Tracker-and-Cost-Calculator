@@ -1,5 +1,4 @@
 @inherits LayoutComponentBase
-@using Microsoft.JSInterop
 @inject ThemeService ThemeService
 @inject IJSRuntime JS
 @implements IDisposable
@@ -9,6 +8,7 @@
 </div>
 
 @code {
+
     protected override void OnInitialized()
     {
         ThemeService.OnThemeChanged += OnThemeChangedHandler;
@@ -24,7 +24,7 @@
         await UpdateBodyClass();
         StateHasChanged();
     }
-    
+
     private async Task UpdateBodyClass()
     {
         try
@@ -41,4 +41,5 @@
     {
         ThemeService.OnThemeChanged -= OnThemeChangedHandler;
     }
+
 }

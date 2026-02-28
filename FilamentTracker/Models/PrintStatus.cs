@@ -13,7 +13,7 @@ public class PrintStatus
     public string? CurrentFile { get; set; }
     public int BedTemperature { get; set; }
     public int NozzleTemperature { get; set; }
-    
+
     public string Status { get; set; } = "idle"; // idle, printing, paused, finished
     public string? WifiSignal { get; set; } // e.g. "-59dBm"
 
@@ -23,23 +23,28 @@ public class PrintStatus
 
 public class AMSUnit
 {
-    public string AMSId { get; set; } = string.Empty;
+    public string AMSId { get; init; } = string.Empty;
     public string ChipId { get; set; } = string.Empty;
-    public int? Humidity { get; set; }
-    public double? Temperature { get; set; }
-    public List<AMSSlot> Slots { get; set; } = new();
+    public int? Humidity { get; init; }
+    public double? Temperature { get; init; }
+    public List<AMSSlot> Slots { get; set; } = [];
 }
 
 public class AMSSlot
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
     public int? State { get; set; }
-    public int? Remain { get; set; }
-    public string? TrayType { get; set; }
-    public string? TrayColor { get; set; }
+    public int? Remain { get; init; }
+    public string? TrayType { get; init; }
+    public string? TrayColor { get; init; }
     public string? TrayIdName { get; set; }
-    public string? TraySubBrands { get; set; }
+
+    public string? TraySubBrands { get; init; }
+
     // Added properties for AMS integration
-    public int? Index { get; set; }
-    public string? ColorHex { get; set; }
+    public int? Index { get; init; }
+    public string? ColorHex { get; init; }
+    // RFID identifiers from BambuLab AMS (used for auto-matching to inventory)
+    public string? TrayUuid { get; init; }
+    public string? TagUid { get; init; }
 }

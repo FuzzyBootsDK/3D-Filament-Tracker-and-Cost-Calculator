@@ -1,92 +1,128 @@
 <section>
-<div class="pageHeader">
-    <h1>Help & Documentation</h1>
-    <div class="sub">Learn how to use the Filament Tracker app</div>
-</div>
+    <div class="pageHeader">
+        <h1>Help & Documentation</h1>
+        <div class="sub">Learn how to use the Filament Tracker app</div>
+    </div>
 
-<!-- Quick Navigation -->
-<div class="formCard" style="border-color: rgba(99,102,241,.40); background: rgba(99,102,241,.05); margin-top: 14px;">
-    <h2 style="margin-top: 0;">📑 Quick Navigation</h2>
-    <div style="color: var(--muted); line-height: 1.8;">
-        <p style="margin-bottom: 12px;">Jump directly to a section:</p>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 8px;">
-            <a href="#overview" class="helpNavLink">🚀 What Can This App Do?</a>
-            <a href="#inventory" class="helpNavLink">📦 Inventory Overview</a>
-            <a href="#adding" class="helpNavLink">➕ Adding New Filaments</a>
-            <a href="#spools" class="helpNavLink">🔁 Managing Reusable Spools</a>
-            <a href="#calculator" class="helpNavLink">🧮 Print Cost Calculator</a>
-            <a href="#usage" class="helpNavLink">📊 Recording Usage</a>
-            <a href="#pricing" class="helpNavLink">💰 Weighted Average Pricing</a>
-            <a href="#settings" class="helpNavLink">⚙️ Settings</a>
-            <a href="#tips" class="helpNavLink">💡 Tips & Best Practices</a>
-            <a href="#livetracker" class="helpNavLink">🖨️ BambuLab Live Tracking</a>
-            <a href="#ams" class="helpNavLink">🎞️ AMS Slot Management</a>
-            <a href="#mqttterminal" class="helpNavLink">📡 MQTT Message Log</a>
-            <a href="#quickactions" class="helpNavLink">⚡ Quick Actions & Workflows</a>
-            <a href="#faq" class="helpNavLink">❓ Troubleshooting & FAQ</a>
+    <!-- Quick Navigation -->
+    <div class="formCard"
+         style="border-color: rgba(99,102,241,.40); background: rgba(99,102,241,.05); margin-top: 14px;">
+        <h2 style="margin-top: 0;">📑 Quick Navigation</h2>
+        <div style="color: var(--muted); line-height: 1.8;">
+            <p style="margin-bottom: 12px;">Jump directly to a section:</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 8px;">
+                <a href="#overview" class="helpNavLink">🚀 What Can This App Do?</a>
+                <a href="#inventory" class="helpNavLink">📦 Inventory Overview</a>
+                <a href="#adding" class="helpNavLink">➕ Adding New Filaments</a>
+                <a href="#spools" class="helpNavLink">🔁 Managing Reusable Spools</a>
+                <a href="#calculator" class="helpNavLink">🧮 Print Cost Calculator</a>
+                <a href="#usage" class="helpNavLink">📊 Recording Usage</a>
+                <a href="#pricing" class="helpNavLink">💰 Weighted Average Pricing</a>
+                <a href="#settings" class="helpNavLink">⚙️ Settings</a>
+                <a href="#tips" class="helpNavLink">💡 Tips & Best Practices</a>
+                <a href="#livetracker" class="helpNavLink">🖨️ BambuLab Live Tracking</a>
+                <a href="#ams" class="helpNavLink">🎞️ AMS Slot Management</a>
+                <a href="#mqttterminal" class="helpNavLink">📡 MQTT Message Log</a>
+                <a href="#quickactions" class="helpNavLink">⚡ Quick Actions & Workflows</a>
+                <a href="#faq" class="helpNavLink">❓ Troubleshooting & FAQ</a>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="formCard" id="overview" style="border-color: rgba(59,130,246,.40); background: rgba(59,130,246,.05); scroll-margin-top: 20px;">
+    <div class="formCard" id="overview"
+         style="border-color: rgba(59,130,246,.40); background: rgba(59,130,246,.05); scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">🚀 What Can This App Do?</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
-                <strong>Filament Tracker v2.0</strong> is a comprehensive inventory management system for 3D printing enthusiasts. 
+                <strong>Filament Tracker v2.0</strong> is a comprehensive inventory management system for 3D printing
+                enthusiasts.
                 Here's what makes it powerful:
             </p>
-            
+
             <h3>📊 Core Features:</h3>
             <ul>
-                <li><strong>Multi-Spool Tracking</strong> - Track multiple spools of the same filament color. If you have 3 spools of "Matte Black PLA", they're grouped together automatically</li>
-                <li><strong>Smart Status Warnings</strong> - Visual indicators (green/yellow/red) show stock levels at a glance with customizable thresholds</li>
+                <li><strong>Multi-Spool Tracking</strong> - Track multiple spools of the same filament color. If you
+                    have 3 spools of "Matte Black PLA", they're grouped together automatically
+                </li>
+                <li><strong>Smart Status Warnings</strong> - Visual indicators (green/yellow/red) show stock levels at a
+                    glance with customizable thresholds
+                </li>
                 <li><strong>Usage Recording</strong> - Track how much filament you use per print or over time</li>
-                <li><strong>Reusable Spool Management</strong> - Automatic tracking of reusable spools (Bambu Lab, third-party) as they empty and become available for refills</li>
-                <li><strong>Brand Management</strong> - Organized dropdown with your filament brands, easily add custom brands on-the-fly</li>
+                <li><strong>Reusable Spool Management</strong> - Automatic tracking of reusable spools (Bambu Lab,
+                    third-party) as they empty and become available for refills
+                </li>
+                <li><strong>Brand Management</strong> - Organized dropdown with your filament brands, easily add custom
+                    brands on-the-fly
+                </li>
             </ul>
-            
+
             <h3>🎨 Organization Tools:</h3>
             <ul>
-                <li><strong>Advanced Search & Filtering</strong> - Find filaments by brand, color, type, finish, or filter by stock level</li>
-                <li><strong>Multiple Sort Options</strong> - Sort by date, weight, name, or color brightness (darkest to lightest)</li>
-                <li><strong>Color Brightness Sorting</strong> - Intelligently sorts filaments by how dark/light they appear</li>
-                <li><strong>Type Filtering</strong> - Quickly view only PLA, PETG, ASA, ABS, TPU, or NYLON filaments</li>
+                <li><strong>Advanced Search & Filtering</strong> - Find filaments by brand, color, type, finish, or
+                    filter by stock level
+                </li>
+                <li><strong>Multiple Sort Options</strong> - Sort by date, weight, name, or color brightness (darkest to
+                    lightest)
+                </li>
+                <li><strong>Color Brightness Sorting</strong> - Intelligently sorts filaments by how dark/light they
+                    appear
+                </li>
+                <li><strong>Type Filtering</strong> - Quickly view only PLA, PETG, ASA, ABS, TPU, or NYLON filaments
+                </li>
             </ul>
-            
+
             <h3>⚙️ Customization & Data:</h3>
             <ul>
-                <li><strong>Configurable Thresholds</strong> - Set your own Low and Critical warning levels based on your printing habits</li>
+                <li><strong>Configurable Thresholds</strong> - Set your own Low and Critical warning levels based on
+                    your printing habits
+                </li>
                 <li><strong>Dark/Light Themes</strong> - Choose your preferred visual theme</li>
                 <li><strong>CSV Import/Export</strong> - Backup your data or migrate from other systems</li>
-                <li><strong>Offline & Private</strong> - All data stored locally on your computer, no cloud sync required</li>
+                <li><strong>Offline & Private</strong> - All data stored locally on your computer, no cloud sync
+                    required
+                </li>
             </ul>
-            
+
             <h3>💪 Advanced Capabilities:</h3>
             <ul>
                 <li><strong>Bulk Operations</strong> - Add multiple spools at once with the Quantity field</li>
-                <li><strong>Detailed Record Keeping</strong> - Track storage location, purchase dates, notes, and more</li>
-                <li><strong>Automatic Grouping</strong> - Spools with matching properties automatically group together</li>
+                <li><strong>Detailed Record Keeping</strong> - Track storage location, purchase dates, notes, and more
+                </li>
+                <li><strong>Automatic Grouping</strong> - Spools with matching properties automatically group together
+                </li>
                 <li><strong>Real-Time Updates</strong> - Changes reflect immediately across the entire app</li>
             </ul>
-            
+
             <h3>🧮 Print Cost Calculator:</h3>
             <ul>
-                <li><strong>Professional Cost Estimation</strong> - Calculate accurate 3D print costs including materials, labor, machine costs, and more</li>
-                <li><strong>Bambu Lab Printer Profiles</strong> - Pre-configured settings for popular Bambu Lab printers (X1C, P1S, A1, H2 series)</li>
+                <li><strong>Professional Cost Estimation</strong> - Calculate accurate 3D print costs including
+                    materials, labor, machine costs, and more
+                </li>
+                <li><strong>Bambu Lab Printer Profiles</strong> - Pre-configured settings for popular Bambu Lab printers
+                    (X1C, P1S, A1, H2 series)
+                </li>
                 <li><strong>Multi-Material Support</strong> - Track costs for prints using multiple filament types</li>
-                <li><strong>PDF Export</strong> - Generate professional quotes for clients with detailed cost breakdowns</li>
+                <li><strong>PDF Export</strong> - Generate professional quotes for clients with detailed cost breakdowns
+                </li>
             </ul>
-            
+
             <h3>🖨️ BambuLab Live Integration:</h3>
             <ul>
-                <li><strong>Real-Time Print Monitoring</strong> - Live progress, layer count, time remaining via direct MQTT connection</li>
-                <li><strong>AMS Slot Tracking</strong> - See all AMS slots with color, filament type, and sub-brand at a glance</li>
-                <li><strong>MQTT Message Log</strong> - Built-in terminal showing the last 50 incoming raw MQTT messages for diagnostics</li>
+                <li><strong>Real-Time Print Monitoring</strong> - Live progress, layer count, time remaining via direct
+                    MQTT connection
+                </li>
+                <li><strong>AMS Slot Tracking</strong> - See all AMS slots with color, filament type, and sub-brand at a
+                    glance
+                </li>
+                <li><strong>MQTT Message Log</strong> - Built-in terminal showing the last 50 incoming raw MQTT messages
+                    for diagnostics
+                </li>
                 <li><strong>Inventory Linking</strong> - Match AMS slots to your tracked inventory filaments</li>
             </ul>
-            
+
             <p style="margin-top: 16px;">
-                <em>💡 New to the app? Start by reading the "Adding New Filaments" section below, then explore the other features!</em>
+                <em>💡 New to the app? Start by reading the "Adding New Filaments" section below, then explore the other
+                    features!</em>
             </p>
         </div>
     </div>
@@ -95,21 +131,33 @@
         <h2 style="margin-top: 0;">📦 Inventory Overview</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
-                The <strong>Inventory</strong> page is your main dashboard for tracking all your 3D printer filaments. 
+                The <strong>Inventory</strong> page is your main dashboard for tracking all your 3D printer filaments.
                 Here's what you can do:
             </p>
             <ul>
-                <li><strong>View all filaments</strong> - Each card represents a unique filament (brand, type, color combination)</li>
-                <li><strong>Multiple spools</strong> - If you have multiple spools of the same filament, they're grouped together with a "×N" badge</li>
+                <li><strong>View all filaments</strong> - Each card represents a unique filament (brand, type, color
+                    combination)
+                </li>
+                <li><strong>Multiple spools</strong> - If you have multiple spools of the same filament, they're grouped
+                    together with a "×N" badge
+                </li>
                 <li><strong>Status indicators</strong>:
                     <ul>
-                        <li><span style="color: var(--ok);">✓ Green (OK)</span> - Above your Low threshold (default: 500g)</li>
-                        <li><span style="color: var(--warn);">⚡ Yellow (Low)</span> - Below Low threshold but above Critical threshold (default: 250g-500g)</li>
-                        <li><span style="color: var(--danger);">⚠️ Red (Critical)</span> - Below your Critical threshold (default: 250g)</li>
+                        <li><span style="color: var(--ok);">✓ Green (OK)</span> - Above your Low threshold (default:
+                            500g)
+                        </li>
+                        <li><span style="color: var(--warn);">⚡ Yellow (Low)</span> - Below Low threshold but above
+                            Critical threshold (default: 250g-500g)
+                        </li>
+                        <li><span style="color: var(--danger);">⚠️ Red (Critical)</span> - Below your Critical threshold
+                            (default: 250g)
+                        </li>
                         <li>💡 <em>You can customize these thresholds in Settings!</em></li>
                     </ul>
                 </li>
-                <li><strong>Search & Filter</strong> - Use the search box to find filaments by brand, color, type, or finish. Toggle "Low Only" to show just low and critical stock</li>
+                <li><strong>Search & Filter</strong> - Use the search box to find filaments by brand, color, type, or
+                    finish. Toggle "Low Only" to show just low and critical stock
+                </li>
                 <li><strong>Sort options</strong> - Multiple sorting choices:
                     <ul>
                         <li><em>Newest First</em> (default) - Most recently added filaments at the top</li>
@@ -142,22 +190,26 @@
             </p>
             <h3>Required Fields:</h3>
             <ul>
-                <li><strong>Brand</strong> - Select from your saved brands or choose "➕ Other (Add Custom)" to add a new brand
+                <li><strong>Brand</strong> - Select from your saved brands or choose "➕ Other (Add Custom)" to add a new
+                    brand
                     <ul>
                         <li>New brands are automatically saved and will appear in the dropdown for future use</li>
                         <li>Manage your brand list in the Settings page</li>
                     </ul>
                 </li>
                 <li><strong>Type</strong> - Material type (PLA, PETG, ASA, ABS, TPU, NYLON)</li>
-                <li><strong>Color Name</strong> - Descriptive name for the color (e.g., "Jeans Blue", "Forest Green")</li>
+                <li><strong>Color Name</strong> - Descriptive name for the color (e.g., "Jeans Blue", "Forest Green")
+                </li>
                 <li><strong>Color Code</strong> - Hex color code (e.g., #FF0000 for red) - shows a preview</li>
                 <li><strong>Total Weight</strong> - Full weight of the spool in grams (typically 1000g)</li>
-                <li><strong>Weight Remaining</strong> - Current weight remaining (start with full weight for new spools)</li>
+                <li><strong>Weight Remaining</strong> - Current weight remaining (start with full weight for new spools)
+                </li>
             </ul>
-            
+
             <h3>Optional Fields:</h3>
             <ul>
-                <li><strong>Finish/Variant</strong> - Special characteristics like Matte, Silk, Carbon Fiber, Wood, etc.</li>
+                <li><strong>Finish/Variant</strong> - Special characteristics like Matte, Silk, Carbon Fiber, Wood, etc.
+                </li>
                 <li><strong>Quantity</strong> - Add multiple identical spools at once</li>
                 <li><strong>Spool Type</strong>:
                     <ul>
@@ -171,7 +223,7 @@
                 <li><strong>Storage Location</strong> - Where you keep this filament (e.g., "Shelf A", "Drawer 2")</li>
                 <li><strong>Notes</strong> - Any additional information</li>
             </ul>
-            
+
             <h3>Example Scenarios:</h3>
             <p><strong>Scenario 1: Bambu Lab PLA Matte with 3 refills and 1 on reusable spool</strong></p>
             <ol>
@@ -179,7 +231,7 @@
                 <li>Set Quantity to 4 (3 refills + 1 spool)</li>
                 <li>Later, you can manage each spool individually in the detail view</li>
             </ol>
-            
+
             <p><strong>Scenario 2: Adding a refill to existing filament (Restocking)</strong></p>
             <ol>
                 <li>Go to the Inventory page</li>
@@ -189,11 +241,11 @@
                 <li>Click "Add Spool" to add it to the existing filament</li>
                 <li>Your new spool will be grouped with the existing ones</li>
             </ol>
-            
+
             <p>
-                <em>Tip: When you restock a filament with the same brand, type, finish, and color, 
-                always add it through the detail modal to keep everything grouped together. This way 
-                you can track multiple spools of the same filament and see your total remaining stock.</em>
+                <em>Tip: When you restock a filament with the same brand, type, finish, and color,
+                    always add it through the detail modal to keep everything grouped together. This way
+                    you can track multiple spools of the same filament and see your total remaining stock.</em>
             </p>
         </div>
     </div>
@@ -210,21 +262,27 @@
                 <li>Third-party reusable spools</li>
                 <li>Empty spools from previous filaments that can be refilled</li>
             </ul>
-            
+
             <h3>How It Works (Automatic Tracking):</h3>
             <p>The app automatically tracks reusable spools for you:</p>
             <ul>
-                <li><strong>When you add a filament</strong> and check "Reusable Spool" → The app automatically marks a spool as "In Use"</li>
-                <li><strong>When you use up a filament</strong> (weight reaches 0g) → The app automatically marks the spool as "Available"</li>
-                <li><strong>When you import CSV</strong> with reusable spools → They're automatically added to your spool inventory</li>
+                <li><strong>When you add a filament</strong> and check "Reusable Spool" → The app automatically marks a
+                    spool as "In Use"
+                </li>
+                <li><strong>When you use up a filament</strong> (weight reaches 0g) → The app automatically marks the
+                    spool as "Available"
+                </li>
+                <li><strong>When you import CSV</strong> with reusable spools → They're automatically added to your
+                    spool inventory
+                </li>
             </ul>
-            
+
             <h3>Status Tracking:</h3>
             <ul>
                 <li><strong>Available</strong> - Empty spools ready to accept a refill</li>
                 <li><strong>In Use</strong> - Currently has filament loaded (automatically set)</li>
             </ul>
-            
+
             <h3>Manual Management:</h3>
             <p>You can also manually add reusable spools to your inventory:</p>
             <ol>
@@ -233,11 +291,11 @@
                 <li>Select the material type and quantity</li>
                 <li>These will be marked as "Available" until you load filament on them</li>
             </ol>
-            
+
             <p>
-                <em>Tip: Keep track of your reusable spools so you know how many refills you can use before 
-                needing to empty a spool or buy more reusable spools. The app handles the "In Use" status 
-                automatically based on your filament inventory.</em>
+                <em>Tip: Keep track of your reusable spools so you know how many refills you can use before
+                    needing to empty a spool or buy more reusable spools. The app handles the "In Use" status
+                    automatically based on your filament inventory.</em>
             </p>
         </div>
     </div>
@@ -246,20 +304,30 @@
         <h2 style="margin-top: 0;">🧮 Print Cost Calculator</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
-                The <strong>Calculator</strong> page helps you estimate costs for 3D printing projects and create professional quotes.
+                The <strong>Calculator</strong> page helps you estimate costs for 3D printing projects and create
+                professional quotes.
                 Perfect for hobbyists pricing their prints or businesses quoting clients.
             </p>
-            
+
             <h3>Key Features:</h3>
             <ul>
-                <li><strong>Comprehensive Cost Breakdown</strong> - Tracks materials, labor, machine depreciation, electricity, hardware, and packaging</li>
-                <li><strong>Printer Profiles</strong> - Pre-configured settings for Bambu Lab printers with accurate depreciation and power consumption</li>
-                <li><strong>Multi-Material Projects</strong> - Add multiple filaments with different colors and types</li>
-                <li><strong>Inventory Integration</strong> - The filament dropdown shows <strong>Brand · Type · Sub-Brand · Color</strong> so you can identify exactly which spool you're costing</li>
-                <li><strong>Pricing Presets</strong> - Quick pricing with margins: Competitive (25%), Standard (40%), Premium (60%), Luxury (80%), or Custom</li>
+                <li><strong>Comprehensive Cost Breakdown</strong> - Tracks materials, labor, machine depreciation,
+                    electricity, hardware, and packaging
+                </li>
+                <li><strong>Printer Profiles</strong> - Pre-configured settings for Bambu Lab printers with accurate
+                    depreciation and power consumption
+                </li>
+                <li><strong>Multi-Material Projects</strong> - Add multiple filaments with different colors and types
+                </li>
+                <li><strong>Inventory Integration</strong> - The filament dropdown shows <strong>Brand · Type ·
+                        Sub-Brand · Color</strong> so you can identify exactly which spool you're costing
+                </li>
+                <li><strong>Pricing Presets</strong> - Quick pricing with margins: Competitive (25%), Standard (40%),
+                    Premium (60%), Luxury (80%), or Custom
+                </li>
                 <li><strong>PDF Export</strong> - Generate professional quotes to share with clients</li>
             </ul>
-            
+
             <h3>Setting Up a Cost Estimate:</h3>
             <ol>
                 <li><strong>Project Details</strong>
@@ -274,12 +342,14 @@
                         <li><strong>Batch Size</strong> - Number of parts in this run</li>
                     </ul>
                 </li>
-                
+
                 <li><strong>Materials (Multi-Material)</strong>
                     <ul>
                         <li><strong>Inventory Integration:</strong> Select filaments directly from your inventory
                             <ul>
-                                <li>Dropdown shows: <strong>"Brand · Type · Sub-Brand - Color Name"</strong> (e.g., "Bambu Lab · PLA · Matte - Charcoal")</li>
+                                <li>Dropdown shows: <strong>"Brand · Type · Sub-Brand - Color Name"</strong> (e.g.,
+                                    "Bambu Lab · PLA · Matte - Charcoal")
+                                </li>
                                 <li>Prices auto-fill from your purchase history (weighted average)</li>
                                 <li>If no price is set, defaults to 149 per kg (editable)</li>
                             </ul>
@@ -296,15 +366,18 @@
                         <li>Each material can be from inventory or manual entry</li>
                     </ul>
                 </li>
-                
-                
+
+
                 <li><strong>Advanced Settings</strong>
                     <ul>
                         <li><strong>Hourly Rate</strong> - Your labor cost per hour (default: 200 DKK/hr)</li>
-                        <li><strong>Material Factor</strong> - Multiplier for waste/failed prints (default: 1.1 = 10% extra)</li>
+                        <li><strong>Material Factor</strong> - Multiplier for waste/failed prints (default: 1.1 = 10%
+                            extra)
+                        </li>
                         <li><strong>Printer Price</strong> - Original cost of your printer</li>
                         <li><strong>Estimated Lifetime</strong> - Years you expect the printer to last</li>
-                        <li><strong>Uptime Percent</strong> - How much of the time your printer is actively printing</li>
+                        <li><strong>Uptime Percent</strong> - How much of the time your printer is actively printing
+                        </li>
                         <li><strong>Annual Maintenance</strong> - Yearly cost for replacement parts</li>
                         <li><strong>Power Consumption</strong> - Watts used during printing</li>
                         <li><strong>Electricity Price</strong> - Cost per kWh (default: 0.2 DKK/kWh)</li>
@@ -312,18 +385,19 @@
                     </ul>
                 </li>
             </ol>
-            
+
             <h3>Understanding the Pricing:</h3>
             <p>The calculator shows several pricing options based on your unit cost:</p>
             <ul>
-                <li><strong>Konkurrencedygtig (25% margin)</strong> - Competitive pricing for price-sensitive markets</li>
+                <li><strong>Konkurrencedygtig (25% margin)</strong> - Competitive pricing for price-sensitive markets
+                </li>
                 <li><strong>Standard (40% margin)</strong> - Balanced pricing for most situations</li>
                 <li><strong>Premium (60% margin)</strong> - Higher pricing for specialized or high-quality work</li>
                 <li><strong>Luksus (80% margin)</strong> - Premium pricing for exclusive or custom pieces</li>
                 <li><strong>Tilpasset</strong> - Custom margin using the slider (10-150%)</li>
             </ul>
             <p>Click any pricing row to select it. The selected price will be used in your PDF export.</p>
-            
+
             <h3>Cost Breakdown:</h3>
             <p>View detailed per-unit costs for:</p>
             <ul>
@@ -333,7 +407,7 @@
                 <li>Hardware (screws, inserts, etc.)</li>
                 <li>Packaging (shipping materials)</li>
             </ul>
-            
+
             <h3>Exporting Quotes:</h3>
             <ol>
                 <li>Configure all your project details</li>
@@ -342,7 +416,7 @@
                 <li>A printable quote opens in a new window</li>
                 <li>Use your browser's Print function to save as PDF</li>
             </ol>
-            
+
             <h3>Printer Profile Benefits:</h3>
             <p>When you select a Bambu printer profile, the calculator automatically configures:</p>
             <ul>
@@ -354,7 +428,7 @@
                 <li>Optimized material and buffer factors</li>
                 <li>Print time multipliers for speed comparisons</li>
             </ul>
-            
+
             <p>
                 <em>💡 Pro Tips:</em>
             </p>
@@ -372,7 +446,7 @@
         <h2 style="margin-top: 0;">📊 Recording Usage</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>Track how much filament you've used with the improved usage recording system:</p>
-            
+
             <h3>How to Record Usage:</h3>
             <ol>
                 <li>Click on a filament card in the Inventory</li>
@@ -386,16 +460,18 @@
                 </li>
                 <li>Updates happen <strong>immediately</strong> - no need to close the modal!</li>
             </ol>
-            
+
             <h3>Smart Spool Ordering:</h3>
             <p>The spool list automatically organizes your spools in priority order:</p>
             <ul>
                 <li><strong>▶ "Next to use"</strong> indicator shows which spool should be used first</li>
-                <li><strong>Partially-used spools</strong> appear at the top (finish opened spools before starting new ones)</li>
+                <li><strong>Partially-used spools</strong> appear at the top (finish opened spools before starting new
+                    ones)
+                </li>
                 <li><strong>Full spools</strong> ordered by age (oldest first - FIFO inventory management)</li>
                 <li><strong>Empty spools</strong> shown at the bottom</li>
             </ul>
-            
+
             <h3>Automatic Updates:</h3>
             <p>The app automatically updates:</p>
             <ul>
@@ -405,7 +481,7 @@
                 <li>Progress bars and percentages</li>
                 <li>The "Next to use" indicator if the spool is emptied</li>
             </ul>
-            
+
             <h3>Adding More Spools (Restocking):</h3>
             <p>When you buy more of the same filament color:</p>
             <ol>
@@ -415,11 +491,11 @@
                 <li><strong>Optional:</strong> Enter the purchase price per kg (used for cost calculator)</li>
                 <li>The new spool will be added to the same grouped filament</li>
             </ol>
-            
+
             <p>
-                <em>Pro tip: After each print, weigh your spool and calculate the difference, 
-                or use your slicer's estimated filament usage. The visual "Next to use" indicator 
-                helps you follow FIFO inventory practices automatically!</em>
+                <em>Pro tip: After each print, weigh your spool and calculate the difference,
+                    or use your slicer's estimated filament usage. The visual "Next to use" indicator
+                    helps you follow FIFO inventory practices automatically!</em>
             </p>
         </div>
     </div>
@@ -428,10 +504,11 @@
         <h2 style="margin-top: 0;">💰 Weighted Average Pricing</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
-                The app now features <strong>intelligent weighted average pricing</strong> for accurate cost calculations 
+                The app now features <strong>intelligent weighted average pricing</strong> for accurate cost
+                calculations
                 that reflect your actual purchase prices over time.
             </p>
-            
+
             <h3>How It Works:</h3>
             <p>Each spool can have its own purchase price per kilogram:</p>
             <ul>
@@ -439,7 +516,7 @@
                 <li><strong>When adding new spools:</strong> Each spool can have a different purchase price</li>
                 <li><strong>In the calculator:</strong> The app uses the weighted average of all spool prices</li>
             </ul>
-            
+
             <h3>Example Scenario:</h3>
             <p>You have PLA Matte Black with 4 spools purchased at different times:</p>
             <ul>
@@ -450,7 +527,7 @@
             </ul>
             <p><strong>Calculated Average:</strong> (120 + 120 + 180 + 200) / 4 = <strong>155 DKK/kg</strong></p>
             <p>This average is automatically used in the Print Cost Calculator!</p>
-            
+
             <h3>Adding Prices to Existing Filaments:</h3>
             <ol>
                 <li>Click on any filament in Inventory</li>
@@ -459,7 +536,7 @@
                 <li>Enter the price and click "Save All Changes"</li>
                 <li>The calculated average updates <strong>immediately</strong></li>
             </ol>
-            
+
             <h3>Price Display:</h3>
             <p>In the filament detail modal, you'll see:</p>
             <ul>
@@ -471,9 +548,10 @@
                         <li>"Default price" - Fallback if no prices are set (149 DKK/kg)</li>
                     </ul>
                 </li>
-                <li><strong>Manual Price Override</strong> - Option to set a fixed price that ignores spool averages</li>
+                <li><strong>Manual Price Override</strong> - Option to set a fixed price that ignores spool averages
+                </li>
             </ul>
-            
+
             <h3>Calculator Integration:</h3>
             <p>When using the Print Cost Calculator:</p>
             <ul>
@@ -482,7 +560,7 @@
                 <li>No need to look up prices - always accurate!</li>
                 <li>Reflects your actual costs including bulk discounts and price changes</li>
             </ul>
-            
+
             <h3>Benefits:</h3>
             <ul>
                 <li>✅ <strong>Accurate costing</strong> - Uses real purchase prices</li>
@@ -491,11 +569,11 @@
                 <li>✅ <strong>Flexible</strong> - Can override with manual price if needed</li>
                 <li>✅ <strong>Backward compatible</strong> - Works without prices (uses default)</li>
             </ul>
-            
+
             <p>
-                <em>💡 Pro tip: When restocking, always enter the purchase price for new spools. 
-                Over time, this builds an accurate picture of your true filament costs, making 
-                your print cost estimates much more reliable!</em>
+                <em>💡 Pro tip: When restocking, always enter the purchase price for new spools.
+                    Over time, this builds an accurate picture of your true filament costs, making
+                    your print cost estimates much more reliable!</em>
             </p>
         </div>
     </div>
@@ -504,14 +582,14 @@
         <h2 style="margin-top: 0;">⚙️ Settings</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>The Settings page provides important maintenance and customization options:</p>
-            
+
             <h3>Theme Toggle</h3>
             <ul>
                 <li><strong>Dark Mode</strong> (default) - Comfortable for extended use with dark backgrounds</li>
                 <li><strong>Light Mode</strong> - Bright theme for well-lit environments</li>
                 <li>Theme preference persists across sessions</li>
             </ul>
-            
+
             <h3>💱 Currency Selection</h3>
             <p>Choose your preferred currency for the Print Cost Calculator:</p>
             <ul>
@@ -526,11 +604,13 @@
                         <li>And 18 more world currencies</li>
                     </ul>
                 </li>
-                <li><strong>Automatic formatting</strong> - All prices in the calculator display in your selected currency</li>
+                <li><strong>Automatic formatting</strong> - All prices in the calculator display in your selected
+                    currency
+                </li>
                 <li><strong>Saved to database</strong> - Your preference persists across sessions</li>
                 <li><strong>Click "Save Currency"</strong> to apply changes</li>
             </ul>
-            
+
             <h3>⚖️ Stock Thresholds (Customizable!)</h3>
             <p>Configure when filaments should be marked as "Low" or "Critical" based on your needs:</p>
             <ul>
@@ -552,20 +632,22 @@
                 <li><strong>Changes apply immediately</strong> - The inventory view updates in real-time</li>
                 <li><strong>Saved to database</strong> - Your preferences persist across app restarts</li>
             </ul>
-            
-            <p><em>💡 Tip: If you mainly print large objects, set higher thresholds (e.g., Low: 700g, Critical: 400g). 
-            For small prints, lower thresholds work well (e.g., Low: 300g, Critical: 150g).</em></p>
-            
+
+            <p><em>💡 Tip: If you mainly print large objects, set higher thresholds (e.g., Low: 700g, Critical: 400g).
+                    For small prints, lower thresholds work well (e.g., Low: 300g, Critical: 150g).</em></p>
+
             <h3>Data Import/Export</h3>
             <ul>
-                <li><strong>Export to CSV</strong> - Download all your filament data as a CSV file for backup or analysis
+                <li><strong>Export to CSV</strong> - Download all your filament data as a CSV file for backup or
+                    analysis
                     <ul>
                         <li>Includes all filament details and spool information</li>
                         <li>File named with current date: <code>filament-inventory-YYYY-MM-DD.csv</code></li>
                         <li>Compatible with Excel, Google Sheets, and other spreadsheet applications</li>
                     </ul>
                 </li>
-                <li><strong>Download CSV Template</strong> - Get a properly formatted CSV template to ensure correct import format
+                <li><strong>Download CSV Template</strong> - Get a properly formatted CSV template to ensure correct
+                    import format
                     <ul>
                         <li>Shows all required and optional columns</li>
                         <li>Includes sample data for reference</li>
@@ -579,7 +661,7 @@
                     </ul>
                 </li>
             </ul>
-            
+
             <h3>🏷️ Brand Management</h3>
             <p>Manage the brands that appear in the dropdown when adding filaments:</p>
             <ul>
@@ -597,13 +679,17 @@
                         <li>They instantly appear in the dropdown for future filaments</li>
                     </ul>
                 </li>
-                <li><strong>Popular brands built-in</strong> - The dropdown includes common brands like Bambu Lab, Polymaker, eSUN, and more</li>
+                <li><strong>Popular brands built-in</strong> - The dropdown includes common brands like Bambu Lab,
+                    Polymaker, eSUN, and more
+                </li>
             </ul>
-            
-            <p><em>💡 Tip: Keep your brand list clean by deleting brands you no longer use. This makes the dropdown easier to navigate.</em></p>
+
+            <p><em>💡 Tip: Keep your brand list clean by deleting brands you no longer use. This makes the dropdown
+                    easier to navigate.</em></p>
 
             <h3>🖨️ BambuLab MQTT Live Tracking</h3>
-            <p>See the <a href="#livetracker">BambuLab Live Tracking section</a> below for full setup instructions. Within Settings you can:</p>
+            <p>See the <a href="#livetracker">BambuLab Live Tracking section</a> below for full setup instructions.
+                Within Settings you can:</p>
             <ul>
                 <li>Enable / disable live tracking</li>
                 <li>Enter your printer IP, Access Code, and Serial Number</li>
@@ -613,8 +699,9 @@
             </ul>
 
             <h3>📡 MQTT Message Log</h3>
-            <p>A built-in diagnostic terminal displays the last 50 raw MQTT messages received from your printer in real time. See the <a href="#mqttterminal">MQTT Message Log section</a> for details.</p>
-            
+            <p>A built-in diagnostic terminal displays the last 50 raw MQTT messages received from your printer in real
+                time. See the <a href="#mqttterminal">MQTT Message Log section</a> for details.</p>
+
             <h3>Database Management</h3>
             <ul>
                 <li><strong>Purge Database</strong> - Delete ALL filaments from the database
@@ -632,11 +719,21 @@
         <h2 style="margin-top: 0;">💡 Tips & Best Practices</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <ul>
-                <li><strong>Regular updates</strong> - Update your filament usage regularly for accurate tracking. After each print, record the weight used</li>
-                <li><strong>Use the search</strong> - When you have many filaments, search is your friend. Search works on brand, color, type, and finish</li>
-                <li><strong>Watch the warnings</strong> - When a filament shows as "Low" (yellow), consider ordering more. When "Critical" (red), order immediately!</li>
-                <li><strong>Customize thresholds</strong> - Adjust the Low and Critical thresholds in Settings to match your printing habits and typical project sizes</li>
-                <li><strong>Color codes</strong> - Use manufacturer's color codes when available for accurate colors. If unknown, use a color picker tool or estimate with hex codes</li>
+                <li><strong>Regular updates</strong> - Update your filament usage regularly for accurate tracking. After
+                    each print, record the weight used
+                </li>
+                <li><strong>Use the search</strong> - When you have many filaments, search is your friend. Search works
+                    on brand, color, type, and finish
+                </li>
+                <li><strong>Watch the warnings</strong> - When a filament shows as "Low" (yellow), consider ordering
+                    more. When "Critical" (red), order immediately!
+                </li>
+                <li><strong>Customize thresholds</strong> - Adjust the Low and Critical thresholds in Settings to match
+                    your printing habits and typical project sizes
+                </li>
+                <li><strong>Color codes</strong> - Use manufacturer's color codes when available for accurate colors. If
+                    unknown, use a color picker tool or estimate with hex codes
+                </li>
                 <li><strong>Color sorting</strong> - Use the color brightness sort to:
                     <ul>
                         <li>Find dark colors for functional prints</li>
@@ -644,7 +741,9 @@
                         <li>Organize your physical filament storage by brightness</li>
                     </ul>
                 </li>
-                <li><strong>Storage locations</strong> - Label your physical storage to match the app. This helps you quickly locate filaments</li>
+                <li><strong>Storage locations</strong> - Label your physical storage to match the app. This helps you
+                    quickly locate filaments
+                </li>
                 <li><strong>Notes field</strong> - Record important details like:
                     <ul>
                         <li>Print temperature recommendations (nozzle/bed)</li>
@@ -653,10 +752,18 @@
                         <li>Purchase date or supplier information</li>
                     </ul>
                 </li>
-                <li><strong>Backup regularly</strong> - Export your data occasionally as a backup. Store it in cloud storage or email it to yourself</li>
-                <li><strong>Reusable spools</strong> - The app automatically tracks reusable spools. When a filament with a reusable spool empties (hits 0g), the spool becomes available for refills</li>
-                <li><strong>Group by filament type</strong> - Use the Type filter to quickly find all your PLA, PETG, or specialty filaments</li>
-                <li><strong>Brand consistency</strong> - When adding new spools of existing filaments, use the "Add New Spool" button in the detail view instead of creating a new filament entry</li>
+                <li><strong>Backup regularly</strong> - Export your data occasionally as a backup. Store it in cloud
+                    storage or email it to yourself
+                </li>
+                <li><strong>Reusable spools</strong> - The app automatically tracks reusable spools. When a filament
+                    with a reusable spool empties (hits 0g), the spool becomes available for refills
+                </li>
+                <li><strong>Group by filament type</strong> - Use the Type filter to quickly find all your PLA, PETG, or
+                    specialty filaments
+                </li>
+                <li><strong>Brand consistency</strong> - When adding new spools of existing filaments, use the "Add New
+                    Spool" button in the detail view instead of creating a new filament entry
+                </li>
             </ul>
         </div>
     </div>
@@ -665,34 +772,42 @@
         <h2 style="margin-top: 0;">🖨️ BambuLab Live Tracking</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
-                The <strong>Live Tracking</strong> widget in the navigation bar provides real-time monitoring of your BambuLab 3D printer status. 
+                The <strong>Live Tracking</strong> widget in the navigation bar provides real-time monitoring of your
+                BambuLab 3D printer status.
                 See print progress, time remaining, and layer information at a glance without opening Bambu Studio!
             </p>
-            
+
             <h3>Features:</h3>
             <ul>
-                <li><strong>Real-Time Updates</strong> - Direct MQTT connection to your printer for instant status updates</li>
+                <li><strong>Real-Time Updates</strong> - Direct MQTT connection to your printer for instant status
+                    updates
+                </li>
                 <li><strong>Print Progress</strong> - Large percentage display with animated progress bar</li>
                 <li><strong>Time Tracking</strong> - See both time elapsed and time remaining</li>
                 <li><strong>Layer Counter</strong> - Current layer / Total layers display</li>
                 <li><strong>File Name</strong> - Shows the current G-code file being printed</li>
-                <li><strong>AMS Overview</strong> - All AMS slots shown with color swatch, filament type, and sub-brand (e.g. "PLA · Matte")</li>
+                <li><strong>AMS Overview</strong> - All AMS slots shown with color swatch, filament type, and sub-brand
+                    (e.g. "PLA · Matte")
+                </li>
                 <li><strong>Connection Status</strong> - Visual indicator (green pulsing dot) when connected</li>
                 <li><strong>Idle Detection</strong> - Shows "Printer Idle" when connected but not printing</li>
                 <li><strong>Always Visible</strong> - Widget stays in the navigation bar on all pages</li>
             </ul>
-            
+
             <h3>Setting Up Live Tracking:</h3>
             <ol>
                 <li><strong>Find Your Printer Information</strong>
                     <ul>
                         <li>On your BambuLab printer touchscreen, go to <strong>Settings → Network</strong></li>
                         <li>Note your printer's <strong>IP Address</strong> (e.g., 192.168.1.100)</li>
-                        <li>Find your <strong>Access Code</strong> (8-digit code under Settings → Network → Access Code)</li>
-                        <li>Go to <strong>Settings → Device</strong> to find your <strong>Serial Number</strong> (starts with 01S00C or 01P00A)</li>
+                        <li>Find your <strong>Access Code</strong> (8-digit code under Settings → Network → Access Code)
+                        </li>
+                        <li>Go to <strong>Settings → Device</strong> to find your <strong>Serial Number</strong> (starts
+                            with 01S00C or 01P00A)
+                        </li>
                     </ul>
                 </li>
-                
+
                 <li><strong>Configure in Filament Tracker</strong>
                     <ul>
                         <li>Click the <strong>⚙️ Settings</strong> button in the navigation bar</li>
@@ -705,7 +820,7 @@
                         <li>Click <strong>"💾 Save & Connect"</strong> to save settings and start tracking</li>
                     </ul>
                 </li>
-                
+
                 <li><strong>Verify Connection</strong>
                     <ul>
                         <li>Look at the Live Tracking widget in the navigation bar</li>
@@ -715,14 +830,14 @@
                     </ul>
                 </li>
             </ol>
-            
+
             <h3>Understanding the Display:</h3>
             <p><strong>When Connected and Idle:</strong></p>
             <ul>
                 <li>Green pulsing dot + "Connected" text</li>
                 <li>💤 "Printer Idle" message</li>
             </ul>
-            
+
             <p><strong>When Printing:</strong></p>
             <ul>
                 <li>Green pulsing dot + "Connected" text</li>
@@ -732,13 +847,13 @@
                 <li><strong>📏 Layer:</strong> Shows "142 / 387" (current / total)</li>
                 <li><strong>📄 File:</strong> Shows the G-code filename (truncated if long)</li>
             </ul>
-            
+
             <p><strong>When Disconnected:</strong></p>
             <ul>
                 <li>Gray dot + "Disconnected" text</li>
                 <li>"Configure in Settings" message</li>
             </ul>
-            
+
             <h3>Connection Requirements:</h3>
             <ul>
                 <li><strong>Network Access</strong> - Your computer/server and printer must be on the same network</li>
@@ -746,7 +861,7 @@
                 <li><strong>Local Mode</strong> - Printer must be accessible via local IP (LAN mode enabled)</li>
                 <li><strong>Access Code</strong> - Must be enabled on the printer (Settings → Network)</li>
             </ul>
-            
+
             <h3>Troubleshooting:</h3>
             <p><strong>Problem: Connection fails with "BadUserNameOrPassword"</strong></p>
             <ul>
@@ -754,7 +869,7 @@
                 <li>Verify Access Code is enabled on the printer</li>
                 <li>Try regenerating the Access Code on the printer and updating in settings</li>
             </ul>
-            
+
             <p><strong>Problem: Connection timeout or "Connection failed"</strong></p>
             <ul>
                 <li>Verify printer IP address is correct (check printer network settings)</li>
@@ -763,14 +878,14 @@
                 <li>Check if firewall is blocking port 8883</li>
                 <li>Try restarting the printer's network connection</li>
             </ul>
-            
+
             <p><strong>Problem: Wrong serial number</strong></p>
             <ul>
                 <li>Serial number format should be 01S00C... (X1C) or 01P00A... (P1/A1 series)</li>
                 <li>Check Settings → Device on the printer touchscreen</li>
                 <li>Serial number is case-sensitive - copy it exactly</li>
             </ul>
-            
+
             <p><strong>Problem: Connection drops frequently</strong></p>
             <ul>
                 <li>Check WiFi signal strength on printer</li>
@@ -778,17 +893,20 @@
                 <li>Router may be dropping idle connections - configure longer timeout</li>
                 <li>The app will auto-reconnect every 5 seconds after disconnect</li>
             </ul>
-            
+
             <h3>Technical Details:</h3>
             <ul>
                 <li><strong>Protocol:</strong> MQTT over TLS (port 8883)</li>
-                <li><strong>Updates:</strong> Real-time as printer reports (typically every 1-2 seconds during print)</li>
-                <li><strong>Security:</strong> Encrypted connection with self-signed certificates (standard for BambuLab)</li>
+                <li><strong>Updates:</strong> Real-time as printer reports (typically every 1-2 seconds during print)
+                </li>
+                <li><strong>Security:</strong> Encrypted connection with self-signed certificates (standard for
+                    BambuLab)
+                </li>
                 <li><strong>Connection Type:</strong> Direct local connection (no cloud required)</li>
                 <li><strong>Auto-Reconnect:</strong> Attempts reconnection every 5 seconds if disconnected</li>
                 <li><strong>Persistence:</strong> Settings saved to database, auto-connects on app startup</li>
             </ul>
-            
+
             <h3>Supported Printers:</h3>
             <p>The Live Tracking feature works with all BambuLab printers that support MQTT:</p>
             <ul>
@@ -799,26 +917,28 @@
                 <li>✅ A1 Series</li>
                 <li>✅ A1 Mini</li>
             </ul>
-            
+
             <h3>Privacy & Security:</h3>
             <ul>
                 <li><strong>Local Connection Only</strong> - All communication stays on your local network</li>
-                <li><strong>No Cloud Services</strong> - Does not connect to BambuLab cloud or any external services</li>
+                <li><strong>No Cloud Services</strong> - Does not connect to BambuLab cloud or any external services
+                </li>
                 <li><strong>Secure Storage</strong> - Access code encrypted in local SQLite database</li>
                 <li><strong>Read-Only</strong> - Cannot send commands or control your printer</li>
                 <li><strong>No Data Collection</strong> - Print data stays on your device</li>
             </ul>
-            
+
             <h3>Benefits:</h3>
             <ul>
                 <li>✅ <strong>Monitor from anywhere</strong> - Check print status without going to the printer</li>
-                <li>✅ <strong>Multi-page tracking</strong> - Progress visible while browsing inventory or calculator</li>
+                <li>✅ <strong>Multi-page tracking</strong> - Progress visible while browsing inventory or calculator
+                </li>
                 <li>✅ <strong>No browser required</strong> - Better than opening Bambu Studio web interface</li>
                 <li>✅ <strong>Lightweight</strong> - Minimal network overhead</li>
                 <li>✅ <strong>Reliable</strong> - Direct MQTT connection, no polling delays</li>
                 <li>✅ <strong>Always up-to-date</strong> - Real-time updates as printer reports status</li>
             </ul>
-            
+
             <p>
                 <em>💡 Pro Tips:</em>
             </p>
@@ -836,22 +956,29 @@
         <h2 style="margin-top: 0;">🎞️ AMS Slot Management</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
-                When your printer is connected via MQTT, the app automatically reads the state of all 
+                When your printer is connected via MQTT, the app automatically reads the state of all
                 <strong>AMS (Automatic Material System)</strong> slots and displays them in the Live Tracking widget.
             </p>
 
             <h3>What is Shown per AMS Slot:</h3>
             <ul>
-                <li><strong>Color Swatch</strong> - A live color preview pulled directly from the printer's reported RRGGBB value</li>
-                <li><strong>Filament Type</strong> - The material type reported by the spool tag (e.g., PLA, PETG, ABS, TPU)</li>
-                <li><strong>Sub-Brand / Variant</strong> - The filament sub-brand or finish reported by the tag (e.g., Matte, Silk, CF, Basic)</li>
+                <li><strong>Color Swatch</strong> - A live color preview pulled directly from the printer's reported
+                    RRGGBB value
+                </li>
+                <li><strong>Filament Type</strong> - The material type reported by the spool tag (e.g., PLA, PETG, ABS,
+                    TPU)
+                </li>
+                <li><strong>Sub-Brand / Variant</strong> - The filament sub-brand or finish reported by the tag (e.g.,
+                    Matte, Silk, CF, Basic)
+                </li>
                 <li><strong>Remaining %</strong> - Approximate percentage of filament left on the spool</li>
             </ul>
 
             <h3>How the Type / Sub-Brand is Displayed:</h3>
             <p>
-                Each slot shows the type and sub-brand on separate lines so you can immediately see exactly what is loaded — 
-                for example <em>"PLA"</em> on the first line and <em>"Matte"</em> on the second, rather than the 
+                Each slot shows the type and sub-brand on separate lines so you can immediately see exactly what is
+                loaded —
+                for example <em>"PLA"</em> on the first line and <em>"Matte"</em> on the second, rather than the
                 previously incorrect "PLA PLA" display.
             </p>
             <ul>
@@ -861,9 +988,9 @@
 
             <h3>Matching AMS Slots to Your Inventory:</h3>
             <p>
-                You can use the AMS color and type information to quickly identify which spool in your inventory 
-                is currently loaded. The dropdown in AMS-aware views shows 
-                <strong>"Brand · Type · Sub-Brand - Color Name"</strong> so you can match it precisely to what the 
+                You can use the AMS color and type information to quickly identify which spool in your inventory
+                is currently loaded. The dropdown in AMS-aware views shows
+                <strong>"Brand · Type · Sub-Brand - Color Name"</strong> so you can match it precisely to what the
                 printer reports.
             </p>
 
@@ -875,7 +1002,9 @@
 
             <h3>Tips for AMS Use:</h3>
             <ul>
-                <li>Always use NFC-tagged Bambu Lab spools or properly tag refill spools for accurate type/sub-brand reporting</li>
+                <li>Always use NFC-tagged Bambu Lab spools or properly tag refill spools for accurate type/sub-brand
+                    reporting
+                </li>
                 <li>Non-tagged spools may show empty type/sub-brand fields</li>
                 <li>The remaining % is an estimate from the spool tag — weigh spools manually for precision</li>
             </ul>
@@ -886,7 +1015,7 @@
         <h2 style="margin-top: 0;">📡 MQTT Message Log</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
-                The <strong>MQTT Message Log</strong> in Settings is a built-in diagnostic terminal that 
+                The <strong>MQTT Message Log</strong> in Settings is a built-in diagnostic terminal that
                 shows the last 50 raw JSON messages received from your BambuLab printer in real time.
             </p>
 
@@ -909,20 +1038,30 @@
             <h3>Controls:</h3>
             <ul>
                 <li><strong>🔄 Refresh</strong> - Manually fetch the latest messages from the service</li>
-                <li><strong>🗑️ Clear Display</strong> - Clears the on-screen list (does not clear the service buffer)</li>
+                <li><strong>🗑️ Clear Display</strong> - Clears the on-screen list (does not clear the service buffer)
+                </li>
                 <li><strong>● Connected / ○ Not connected</strong> - Real-time connection status badge</li>
             </ul>
 
             <h3>Use Cases:</h3>
             <ul>
-                <li><strong>Debugging AMS data</strong> - Verify that tray color, type, and sub-brand are being reported correctly by the printer</li>
-                <li><strong>Confirming connectivity</strong> - See messages flowing in real time to confirm the MQTT link is live</li>
-                <li><strong>Understanding printer state</strong> - Inspect raw gcode_state, temperatures, and layer info</li>
-                <li><strong>Troubleshooting</strong> - If something looks wrong in the UI, check the raw messages to see what the printer is actually sending</li>
+                <li><strong>Debugging AMS data</strong> - Verify that tray color, type, and sub-brand are being reported
+                    correctly by the printer
+                </li>
+                <li><strong>Confirming connectivity</strong> - See messages flowing in real time to confirm the MQTT
+                    link is live
+                </li>
+                <li><strong>Understanding printer state</strong> - Inspect raw gcode_state, temperatures, and layer info
+                </li>
+                <li><strong>Troubleshooting</strong> - If something looks wrong in the UI, check the raw messages to see
+                    what the printer is actually sending
+                </li>
             </ul>
 
             <p>
-                <em>💡 Tip: The log auto-scrolls to the bottom on every new message. If you want to read older messages without them scrolling away, use the 🗑️ Clear Display button to freeze the view, then re-enable with 🔄 Refresh when you're done.</em>
+                <em>💡 Tip: The log auto-scrolls to the bottom on every new message. If you want to read older messages
+                    without them scrolling away, use the 🗑️ Clear Display button to freeze the view, then re-enable with
+                    🔄 Refresh when you're done.</em>
             </p>
         </div>
     </div>
@@ -931,14 +1070,14 @@
         <h2 style="margin-top: 0;">⚡ Quick Actions & Workflows</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <h3>Common Tasks Made Easy:</h3>
-            
+
             <p><strong>🎯 Find a specific filament quickly:</strong></p>
             <ol>
                 <li>Go to Inventory page</li>
                 <li>Start typing in the search box (searches brand, color, type, finish)</li>
                 <li>Click the filament card to open details</li>
             </ol>
-            
+
             <p><strong>📝 Record usage after a print:</strong></p>
             <ol>
                 <li>Click the filament card in Inventory</li>
@@ -946,7 +1085,7 @@
                 <li>Use quick buttons (-25g, -50g, -100g) or enter exact amount</li>
                 <li>Click "Record" - done!</li>
             </ol>
-            
+
             <p><strong>📦 Add a refill of existing filament:</strong></p>
             <ol>
                 <li>Click the filament in Inventory</li>
@@ -954,7 +1093,7 @@
                 <li>Fill in spool details (weight, type, etc.)</li>
                 <li>Click "Add Spool" - it groups automatically!</li>
             </ol>
-            
+
             <p><strong>🔍 Check what's running low:</strong></p>
             <ol>
                 <li>Go to Inventory page</li>
@@ -962,21 +1101,21 @@
                 <li>See all filaments with yellow or red status</li>
                 <li>Sort by "Remaining ↑" to see lowest first</li>
             </ol>
-            
+
             <p><strong>🎨 Find a specific color shade:</strong></p>
             <ol>
                 <li>Sort by "Color (Dark→Light)" or "Color (Light→Dark)"</li>
                 <li>Visually scan the color swatches</li>
                 <li>Or search by color name if you know it</li>
             </ol>
-            
+
             <p><strong>💾 Create a backup before major changes:</strong></p>
             <ol>
                 <li>Go to Settings page</li>
                 <li>Click "📥 Export to CSV"</li>
                 <li>Save the file to your cloud storage or backup location</li>
             </ol>
-            
+
             <p><strong>⚖️ Adjust warning levels to your needs:</strong></p>
             <ol>
                 <li>Go to Settings → Stock Thresholds</li>
@@ -1000,78 +1139,91 @@
         <div style="color: var(--muted); line-height: 1.8;">
             <p><strong>Q: My filaments aren't showing up</strong></p>
             <p>A: Check your filters and search. You might have:</p>
-                <ul>
-                    <li>A search term active - clear the search box</li>
-                    <li>A type filter active (e.g., showing only PLA) - select "All Types"</li>
-                    <li>"Low Only" enabled - toggle it off to see all filaments</li>
-                </ul>
-            
+            <ul>
+                <li>A search term active - clear the search box</li>
+                <li>A type filter active (e.g., showing only PLA) - select "All Types"</li>
+                <li>"Low Only" enabled - toggle it off to see all filaments</li>
+            </ul>
+
             <p><strong>Q: The colors don't match my actual filament</strong></p>
             <p>A: Edit the filament and update the color code. You can:</p>
-                <ul>
-                    <li>Find hex codes online or use a color picker tool</li>
-                    <li>Take a photo and use an online hex color picker</li>
-                    <li>Check the manufacturer's website for official color codes</li>
-                </ul>
-            
+            <ul>
+                <li>Find hex codes online or use a color picker tool</li>
+                <li>Take a photo and use an online hex color picker</li>
+                <li>Check the manufacturer's website for official color codes</li>
+            </ul>
+
             <p><strong>Q: I accidentally deleted a filament</strong></p>
             <p>A: Unfortunately, deletions are permanent. However:</p>
-                <ul>
-                    <li>If you have a CSV export backup, you can re-import it</li>
-                    <li>Tip: Export your data regularly as a safety backup</li>
-                </ul>
-            
+            <ul>
+                <li>If you have a CSV export backup, you can re-import it</li>
+                <li>Tip: Export your data regularly as a safety backup</li>
+            </ul>
+
             <p><strong>Q: Multiple spools aren't grouping together</strong></p>
             <p>A: They only group if ALL these fields are EXACTLY the same:</p>
-                <ul>
-                    <li>Brand (case-sensitive)</li>
-                    <li>Type (PLA, PETG, etc.)</li>
-                    <li>Finish/Variant (Matte, Silk, etc.)</li>
-                    <li>Color Name</li>
-                    <li>Color Code</li>
-                </ul>
-                <p>Check for typos, extra spaces, or different capitalization. To fix, edit one filament to match the other exactly.</p>
-            
+            <ul>
+                <li>Brand (case-sensitive)</li>
+                <li>Type (PLA, PETG, etc.)</li>
+                <li>Finish/Variant (Matte, Silk, etc.)</li>
+                <li>Color Name</li>
+                <li>Color Code</li>
+            </ul>
+            <p>Check for typos, extra spaces, or different capitalization. To fix, edit one filament to match the other
+                exactly.</p>
+
             <p><strong>Q: How do I change the warning thresholds?</strong></p>
             <p>A: Go to Settings → Stock Thresholds section:</p>
-                <ul>
-                    <li>Enter your desired Low Threshold (yellow warning)</li>
-                    <li>Enter your desired Critical Threshold (red alert)</li>
-                    <li>Critical must be less than Low</li>
-                    <li>Click "Save Thresholds" - changes apply immediately!</li>
-                </ul>
-            
+            <ul>
+                <li>Enter your desired Low Threshold (yellow warning)</li>
+                <li>Enter your desired Critical Threshold (red alert)</li>
+                <li>Critical must be less than Low</li>
+                <li>Click "Save Thresholds" - changes apply immediately!</li>
+            </ul>
+
             <p><strong>Q: My brand doesn't appear in the dropdown</strong></p>
-            <p>A: Select "➕ Other (Add Custom)" at the bottom of the Brand dropdown, then type your custom brand name. It will be saved automatically and appear in the dropdown for future use.</p>
-            
+            <p>A: Select "➕ Other (Add Custom)" at the bottom of the Brand dropdown, then type your custom brand name.
+                It will be saved automatically and appear in the dropdown for future use.</p>
+
             <p><strong>Q: Can I delete a brand without deleting my filaments?</strong></p>
-            <p>A: Yes! Go to Settings → Manage Brands section. Deleting a brand only removes it from the dropdown menu. Your existing filaments with that brand remain untouched.</p>
-            
+            <p>A: Yes! Go to Settings → Manage Brands section. Deleting a brand only removes it from the dropdown menu.
+                Your existing filaments with that brand remain untouched.</p>
+
             <p><strong>Q: What happens when a reusable spool empties?</strong></p>
-            <p>A: When a filament's weight reaches 0g and it's marked as reusable, the app automatically marks that spool as "Available" in your Spools page. You can then use it for refills!</p>
-            
+            <p>A: When a filament's weight reaches 0g and it's marked as reusable, the app automatically marks that
+                spool as "Available" in your Spools page. You can then use it for refills!</p>
+
             <p><strong>Q: How does the color brightness sort work?</strong></p>
-            <p>A: The app analyzes the hex color code and calculates perceived brightness using the standard RGB formula (accounting for how human eyes perceive different colors). Dark→Light shows blacks first, Light→Dark shows whites first.</p>
-            
+            <p>A: The app analyzes the hex color code and calculates perceived brightness using the standard RGB formula
+                (accounting for how human eyes perceive different colors). Dark→Light shows blacks first, Light→Dark
+                shows whites first.</p>
+
             <p><strong>Q: Can I track filaments by weight other than grams?</strong></p>
             <p>A: Currently the app only supports grams. If you have weights in other units:</p>
-                <ul>
-                    <li>Ounces to grams: multiply by 28.35</li>
-                    <li>Pounds to grams: multiply by 453.59</li>
-                    <li>Kilograms to grams: multiply by 1000</li>
-                </ul>
-            
+            <ul>
+                <li>Ounces to grams: multiply by 28.35</li>
+                <li>Pounds to grams: multiply by 453.59</li>
+                <li>Kilograms to grams: multiply by 1000</li>
+            </ul>
+
             <p><strong>Q: Where is my data stored?</strong></p>
-            <p>A: All data is stored in a local SQLite database file on your computer. Nothing is sent to the cloud unless you manually export a CSV file. Your data is completely private and offline.</p>
+            <p>A: All data is stored in a local SQLite database file on your computer. Nothing is sent to the cloud
+                unless you manually export a CSV file. Your data is completely private and offline.</p>
 
             <p><strong>Q: The AMS slots show "PLA PLA" or repeat the type twice</strong></p>
-            <p>A: This was a display issue in earlier versions where the type and sub-brand fields were concatenated incorrectly. The app now shows them on separate lines — type on one line and sub-brand/variant on the next — so each value is clear and distinct.</p>
+            <p>A: This was a display issue in earlier versions where the type and sub-brand fields were concatenated
+                incorrectly. The app now shows them on separate lines — type on one line and sub-brand/variant on the
+                next — so each value is clear and distinct.</p>
 
             <p><strong>Q: The AMS slot dropdown only shows Brand and Color — where is the type?</strong></p>
-            <p>A: The filament selection dropdown now includes the full <strong>Brand · Type · Sub-Brand - Color Name</strong> format so you can always identify exactly which filament variant is loaded in each slot.</p>
+            <p>A: The filament selection dropdown now includes the full <strong>Brand · Type · Sub-Brand - Color
+                    Name</strong> format so you can always identify exactly which filament variant is loaded in each
+                slot.</p>
 
             <p><strong>Q: The MQTT log is empty even though I'm connected</strong></p>
-            <p>A: The log only fills once the printer sends a message. Try clicking 🔄 Refresh after a few seconds. If the printer is idle it may only send occasional heartbeat messages. Start a print to see continuous updates.</p>
+            <p>A: The log only fills once the printer sends a message. Try clicking 🔄 Refresh after a few seconds. If
+                the printer is idle it may only send occasional heartbeat messages. Start a print to see continuous
+                updates.</p>
         </div>
     </div>
 </section>

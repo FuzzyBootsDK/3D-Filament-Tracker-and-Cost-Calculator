@@ -3,28 +3,28 @@
 // User can then "Save as PDF" in browser.
 
 function buildOfferHtml(state) {
-  const {
-    partName,
-    unitCost,
-    selectedPrice,
-    selectedMargin,
-    batchSize,
-    costBreakdown,
-    batchTable,
-  } = state;
+    const {
+        partName,
+        unitCost,
+        selectedPrice,
+        selectedMargin,
+        batchSize,
+        costBreakdown,
+        batchTable,
+    } = state;
 
-  const rows = batchTable
-    .map(
-      (row) => `
+    const rows = batchTable
+        .map(
+            (row) => `
       <tr>
         <td>${row.qty}</td>
         <td>${row.unitCost}</td>
         <td>${row.price}</td>
       </tr>`
-    )
-    .join("");
+        )
+        .join("");
 
-  return `
+    return `
   <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -95,32 +95,32 @@ function buildOfferHtml(state) {
 }
 
 function exportOfferToPdf(state) {
-  const html = buildOfferHtml(state);
-  const win = window.open("", "_blank");
-  if (!win) return;
-  win.document.open();
-  win.document.write(html);
-  win.document.close();
-  win.focus();
-  win.print();
+    const html = buildOfferHtml(state);
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    win.print();
 }
 
 function attachPdfExportHandler() {
-  const btn = document.getElementById("exportPdfBtn");
-  if (!btn) return;
-  btn.addEventListener("click", () => {
-    if (typeof collectExportState === "function") {
-      const state = collectExportState();
-      exportOfferToPdf(state);
-    }
-  });
+    const btn = document.getElementById("exportPdfBtn");
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+        if (typeof collectExportState === "function") {
+            const state = collectExportState();
+            exportOfferToPdf(state);
+        }
+    });
 }
 
 // Only initialize if we're on calculator page
 if (document.getElementById("exportPdfBtn")) {
-  if (document.readyState === 'loading') {
-    document.addEventListener("DOMContentLoaded", attachPdfExportHandler);
-  } else {
-    attachPdfExportHandler();
-  }
+    if (document.readyState === 'loading') {
+        document.addEventListener("DOMContentLoaded", attachPdfExportHandler);
+    } else {
+        attachPdfExportHandler();
+    }
 }

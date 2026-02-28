@@ -1,7 +1,6 @@
 @using FilamentTracker.Models
-@using FilamentTracker.Services
 @inject FilamentService FilamentService
-@inject Microsoft.JSInterop.IJSRuntime JS
+@inject IJSRuntime JS
 
 <section>
     <div class="pageHeader">
@@ -11,7 +10,8 @@
 
     @if (!string.IsNullOrEmpty(message))
     {
-        <div class="strip" style="margin-top: 14px; @(messageIsError ? "border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12);" : "border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.12);")">
+        <div class="strip"
+             style="margin-top: 14px; @(messageIsError ? "border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12);" : "border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.12);")">
             <div>@message</div>
         </div>
     }
@@ -26,7 +26,7 @@
                 </div>
                 <div class="modalBody">
                     <label>Brand Name</label>
-                    <input class="input" @bind="customBrandName" placeholder="Enter brand name..." />
+                    <input class="input" @bind="customBrandName" placeholder="Enter brand name..."/>
                 </div>
                 <div class="modalFooter">
                     <button class="btn primary" @onclick="SaveCustomBrand">Add Brand</button>
@@ -38,8 +38,8 @@
 
     <div class="formCard">
         <EditForm Model="@newFilament" OnValidSubmit="HandleSubmit">
-            <DataAnnotationsValidator />
-            
+            <DataAnnotationsValidator/>
+
             <div class="formGrid">
                 <div>
                     <label class="req">Brand</label>
@@ -51,7 +51,7 @@
                         }
                         <option value="__OTHER__">➕ Other (Add Custom)</option>
                     </InputSelect>
-                    <ValidationMessage For="@(() => newFilament.Brand)" />
+                    <ValidationMessage For="@(() => newFilament.Brand)"/>
                 </div>
 
                 <div>
@@ -65,7 +65,7 @@
                         <option>TPU</option>
                         <option>NYLON</option>
                     </InputSelect>
-                    <ValidationMessage For="@(() => newFilament.Type)" />
+                    <ValidationMessage For="@(() => newFilament.Type)"/>
                 </div>
 
                 <div>
@@ -90,35 +90,36 @@
 
                 <div>
                     <label class="req">Color Name</label>
-                    <InputText class="input" @bind-Value="newFilament.ColorName" placeholder="e.g., Jeans Blue" />
-                    <ValidationMessage For="@(() => newFilament.ColorName)" />
+                    <InputText class="input" @bind-Value="newFilament.ColorName" placeholder="e.g., Jeans Blue"/>
+                    <ValidationMessage For="@(() => newFilament.ColorName)"/>
                 </div>
 
                 <div class="colSpan2">
                     <label class="req">Color Code</label>
                     <div class="colorRow">
-                        <InputText class="input" @bind-Value="newFilament.ColorCode" placeholder="e.g., FF0000" />
+                        <InputText class="input" @bind-Value="newFilament.ColorCode" placeholder="e.g., FF0000"/>
                         <div class="colorPreview" style="background: @GetColorWithHash();" title="Color preview"></div>
                     </div>
-                    <ValidationMessage For="@(() => newFilament.ColorCode)" />
-                    <small style="color: var(--muted); font-size: 11px; margin-top: 4px; display: block;"># is automatically added</small>
+                    <ValidationMessage For="@(() => newFilament.ColorCode)"/>
+                    <small style="color: var(--muted); font-size: 11px; margin-top: 4px; display: block;"># is
+                        automatically added</small>
                 </div>
 
                 <div>
                     <label class="req">Total Weight (g)</label>
-                    <InputNumber class="input" @bind-Value="newSpool.TotalWeight" min="1" step="1" />
-                    <ValidationMessage For="@(() => newSpool.TotalWeight)" />
+                    <InputNumber class="input" @bind-Value="newSpool.TotalWeight" min="1" step="1"/>
+                    <ValidationMessage For="@(() => newSpool.TotalWeight)"/>
                 </div>
 
                 <div>
                     <label class="req">Weight Remaining (g)</label>
-                    <InputNumber class="input" @bind-Value="newSpool.WeightRemaining" min="0" step="1" />
-                    <ValidationMessage For="@(() => newSpool.WeightRemaining)" />
+                    <InputNumber class="input" @bind-Value="newSpool.WeightRemaining" min="0" step="1"/>
+                    <ValidationMessage For="@(() => newSpool.WeightRemaining)"/>
                 </div>
 
                 <div>
                     <label class="req">Quantity</label>
-                    <InputNumber class="input" @bind-Value="spoolQuantity" min="1" step="1" />
+                    <InputNumber class="input" @bind-Value="spoolQuantity" min="1" step="1"/>
                 </div>
 
                 <div>
@@ -141,7 +142,7 @@
                 <div>
                     <label>&nbsp;</label>
                     <div class="checkRow">
-                        <InputCheckbox @bind-Value="newSpool.IsReusable" id="addReusable" />
+                        <InputCheckbox @bind-Value="newSpool.IsReusable" id="addReusable"/>
                         <label for="addReusable" style="margin: 0; cursor: pointer;">Reusable Spool</label>
                     </div>
                 </div>
@@ -156,18 +157,20 @@
 
                 <div>
                     <label>Purchase Price Per Kg (optional)</label>
-                    <InputNumber class="input" @bind-Value="newSpool.PurchasePricePerKg" min="0" step="0.01" placeholder="e.g., 149.00" />
-                    <small style="color: var(--muted); font-size: 11px; margin-top: 4px; display: block;">Price for these spool(s) - used for weighted average</small>
+                    <InputNumber class="input" @bind-Value="newSpool.PurchasePricePerKg" min="0" step="0.01"
+                                 placeholder="e.g., 149.00"/>
+                    <small style="color: var(--muted); font-size: 11px; margin-top: 4px; display: block;">Price for
+                        these spool(s) - used for weighted average</small>
                 </div>
 
                 <div class="colSpan2">
                     <label>Storage Location</label>
-                    <InputText class="input" @bind-Value="newFilament.Location" placeholder="e.g., Shelf A, Box 1" />
+                    <InputText class="input" @bind-Value="newFilament.Location" placeholder="e.g., Shelf A, Box 1"/>
                 </div>
 
                 <div class="colSpan4">
                     <label>Notes</label>
-                    <InputTextArea @bind-Value="newFilament.Notes" placeholder="Additional information..." />
+                    <InputTextArea @bind-Value="newFilament.Notes" placeholder="Additional information..."/>
                 </div>
             </div>
 
@@ -186,11 +189,11 @@
     private string spoolTypeString = "spool";
     private string diameterString = "1.75";
     private string message = "";
-    private bool messageIsError = false;
-    
+    private bool messageIsError;
+
     private List<Brand> brands = new();
     private string selectedBrandValue = "";
-    private bool showCustomBrandDialog = false;
+    private bool showCustomBrandDialog;
     private string customBrandName = "";
 
     protected override async Task OnInitializedAsync()
@@ -199,12 +202,12 @@
         await FilamentService.SeedDefaultBrandsAsync();
         await LoadBrands();
     }
-    
+
     private async Task LoadBrands()
     {
         brands = await FilamentService.GetBrandsAsync();
     }
-    
+
     private void HandleBrandChange()
     {
         if (selectedBrandValue == "__OTHER__")
@@ -217,7 +220,7 @@
             newFilament.Brand = selectedBrandValue;
         }
     }
-    
+
     private async Task SaveCustomBrand()
     {
         if (!string.IsNullOrWhiteSpace(customBrandName))
@@ -235,11 +238,11 @@
     {
         if (string.IsNullOrWhiteSpace(newFilament.ColorCode))
             return "#000000";
-        
+
         var color = newFilament.ColorCode.Trim();
         if (!color.StartsWith("#"))
             color = "#" + color;
-        
+
         return color;
     }
 
@@ -252,12 +255,12 @@
             {
                 newFilament.ColorCode = "#" + newFilament.ColorCode.Trim();
             }
-            
+
             newFilament.Diameter = decimal.Parse(diameterString);
             newSpool.IsRefill = spoolTypeString == "refill";
-            
+
             // Create multiple spools if quantity > 1
-            for (int i = 0; i < spoolQuantity; i++)
+            for (var i = 0; i < spoolQuantity; i++)
             {
                 newFilament.Spools.Add(new Spool
                 {
@@ -269,14 +272,14 @@
                     DateAdded = DateTime.Now
                 });
             }
-            
+
             await FilamentService.AddFilamentAsync(newFilament);
-            
+
             message = $"Successfully added {newFilament.Brand} {newFilament.ColorName} with {spoolQuantity} spool(s)!";
             messageIsError = false;
-            
+
             ResetForm();
-            
+
             // Clear message after 5 seconds
             _ = Task.Delay(5000).ContinueWith(_ =>
             {
@@ -300,4 +303,5 @@
         diameterString = "1.75";
         selectedBrandValue = "";
     }
+
 }

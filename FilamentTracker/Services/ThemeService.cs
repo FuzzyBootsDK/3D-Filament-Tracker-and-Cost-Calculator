@@ -2,21 +2,19 @@ namespace FilamentTracker.Services;
 
 public class ThemeService
 {
-    private bool _isDarkMode = true;
-    
+    public bool IsDarkMode { get; private set; } = true;
+
     public event Action? OnThemeChanged;
-    
-    public bool IsDarkMode => _isDarkMode;
-    
+
     public void ToggleTheme()
     {
-        _isDarkMode = !_isDarkMode;
+        IsDarkMode = !IsDarkMode;
         OnThemeChanged?.Invoke();
     }
-    
+
     public void SetDarkMode(bool isDark)
     {
-        _isDarkMode = isDark;
+        IsDarkMode = isDark;
         OnThemeChanged?.Invoke();
     }
 }
