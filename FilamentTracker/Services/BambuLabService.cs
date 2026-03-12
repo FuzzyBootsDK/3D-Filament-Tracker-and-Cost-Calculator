@@ -334,15 +334,15 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
             {
                 if (slot.Remain == null) continue;
 
-                var hasUuid = !string.IsNullOrEmpty(slot.TrayUuid) && slot.TrayUuid.Replace("0", "").Length > 0;
-                var hasTag  = !string.IsNullOrEmpty(slot.TagUid)  && slot.TagUid.Replace("0", "").Length > 0;
-                if (!hasUuid && !hasTag) continue;
+                // Only auto-update when the slot reports a real RFID tag UID.
+                // Do not auto-match based on tray UUID alone (weak/location id).
+                var hasTag = !string.IsNullOrEmpty(slot.TagUid) && slot.TagUid.Replace("0", "").Length > 0;
+                if (!hasTag) continue;
 
                 var spool = await context.Spools
                     .Include(s => s.Filament)
                     .Where(s => s.DateEmptied == null && s.WeightRemaining > 0)
-                    .Where(s => (hasUuid && s.AmsTrayUuid == slot.TrayUuid) ||
-                                (hasTag  && s.AmsTagUid   == slot.TagUid))
+                    .Where(s => s.AmsTagUid == slot.TagUid)
                     .FirstOrDefaultAsync();
 
                 if (spool == null) continue;

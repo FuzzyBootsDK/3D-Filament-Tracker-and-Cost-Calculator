@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  filament-tracker-dev:
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+    container_name: filament-tracker-dev
+    working_dir: /src
+    command: bash -lc "dotnet restore && dotnet watch run --project ./FilamentTracker.csproj --urls http://0.0.0.0:5000"
+    volumes:
+      - ../FilamentTracker:/src:delegated
+      - filament-tracker-data:/src/data
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    tty: true
+    stdin_open: true
+
+volumes:
+  filament-tracker-data:
+    name: filament-tracker-data

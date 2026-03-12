@@ -1,0 +1,19 @@
+@using Microsoft.AspNetCore.Components
+@inherits ErrorBoundary
+@inject ILogger<LoggingErrorBoundary> Logger
+
+<ErrorBoundary>
+    @ChildContent
+</ErrorBoundary>
+
+@code {
+    protected override async Task OnErrorAsync(Exception exception)
+    {
+        try
+        {
+            Logger?.LogError(exception, "Unhandled component exception caught by LoggingErrorBoundary");
+        }
+        catch { }
+        await base.OnErrorAsync(exception);
+    }
+}

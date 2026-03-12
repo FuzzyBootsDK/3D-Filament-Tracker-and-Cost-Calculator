@@ -296,3 +296,8 @@ For issues or questions:
 - **Database:** SQLite (file-based)
 - **Framework:** Blazor Server (.NET 8)
 - **Port:** 5000 (HTTP)
+ - **Base Image:** mcr.microsoft.com/dotnet/aspnet:10.0
+ - **SDK Image:** mcr.microsoft.com/dotnet/sdk:10.0
+ - **Database:** SQLite (file-based)
+ - **Framework:** Blazor Server (.NET 10)
+ - **Port:** 5000 (HTTP)

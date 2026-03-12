@@ -1,0 +1,205 @@
+@using System.Globalization
+@using Microsoft.AspNetCore.Components
+@inject IJSRuntime JS
+
+@code {
+    [Parameter] public string? Color { get; set; }
+    [Parameter] public string? Variant { get; set; } // e.g., "metal", "silk", "marble", "cf", null
+    [Parameter] public int Size { get; set; } = 72;
+    [Parameter] public EventCallback<(string color, string variant)> OnChange { get; set; }
+
+    private string bgRgba = "rgba(0,0,0,1)";
+    private int alphaPercent = 100;
+    private string variantClass = string.Empty;
+    private string overlayDataUrl = string.Empty;
+    private bool showModal = false;
+    private string borderCss = "";
+    private int parsedR, parsedG, parsedB;
+
+    // Editor fields
+    private string editHex = string.Empty;
+    private int editAlpha = 100;
+    private string editVariant = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        ParseAndSet(Color, Variant);
+        await EnsureOverlayAsync();
+    }
+
+    private void ParseAndSet(string? color, string? variant)
+    {
+        var (r, g, b, a) = ParseHexWithAlpha(color);
+        parsedR = r; parsedG = g; parsedB = b;
+        // Use invariant culture for alpha to ensure decimal uses dot, not comma
+        bgRgba = $"rgba({r},{g},{b},{a.ToString(System.Globalization.CultureInfo.InvariantCulture)})";
+        alphaPercent = (int)Math.Round(a * 100);
+        variantClass = !string.IsNullOrEmpty(variant) ? $"swatch--{variant}" : string.Empty;
+        editHex = To6Or8Hex(color);
+        editAlpha = alphaPercent;
+        editVariant = variant ?? string.Empty;
+
+        // compute border for visibility: light colors need dark border and vice versa
+        var brightness = (0.299 * r + 0.587 * g + 0.114 * b);
+        if (brightness > 220)
+        {
+            borderCss = "inset 0 0 0 1px rgba(0,0,0,0.18)";
+        }
+        else if (brightness > 160)
+        {
+            borderCss = "inset 0 0 0 1px rgba(0,0,0,0.12)";
+        }
+        else
+        {
+            borderCss = "inset 0 0 0 1px rgba(255,255,255,0.10)";
+        }
+    }
+
+    private static string To6Or8Hex(string? hex)
+    {
+        if (string.IsNullOrWhiteSpace(hex)) return "000000FF";
+        hex = hex.Trim().TrimStart('#');
+        if (hex.Length == 6) return hex.ToUpper() + "FF";
+        if (hex.Length == 8) return hex.ToUpper();
+        return "000000FF";
+    }
+
+    private static (int r,int g,int b,double a) ParseHexWithAlpha(string? hex)
+    {
+        if (string.IsNullOrWhiteSpace(hex)) return (0,0,0,1);
+        hex = hex.Trim();
+        if (hex.StartsWith("#")) hex = hex.Substring(1);
+        try
+        {
+            if (hex.Length == 8)
+            {
+                var r = int.Parse(hex.Substring(0,2), NumberStyles.HexNumber);
+                var g = int.Parse(hex.Substring(2,2), NumberStyles.HexNumber);
+                var b = int.Parse(hex.Substring(4,2), NumberStyles.HexNumber);
+                var a = int.Parse(hex.Substring(6,2), NumberStyles.HexNumber) / 255.0;
+                return (r,g,b,a);
+            }
+            if (hex.Length == 6)
+            {
+                var r = int.Parse(hex.Substring(0,2), NumberStyles.HexNumber);
+                var g = int.Parse(hex.Substring(2,2), NumberStyles.HexNumber);
+                var b = int.Parse(hex.Substring(4,2), NumberStyles.HexNumber);
+                return (r,g,b,1.0);
+            }
+        }
+        catch { }
+        return (0,0,0,1);
+    }
+
+    private async Task EnsureOverlayAsync()
+    {
+        // Only generate canvas overlays for metallic or marble variants
+        var v = (editVariant ?? Variant ?? string.Empty).ToLower();
+        if (v == "metal" || v == "marble")
+        {
+            try
+            {
+                // pass hex without # and size
+                var hex = editHex ?? To6Or8Hex(Color);
+                overlayDataUrl = await JS.InvokeAsync<string>("swatch.generateTexture", v, hex, Size, Size);
+            }
+            catch
+            {
+                overlayDataUrl = string.Empty;
+            }
+        }
+        else
+        {
+            overlayDataUrl = string.Empty;
+        }
+    }
+
+    private async Task ToggleModal()
+    {
+        showModal = !showModal;
+        if (showModal)
+        {
+            // ensure editor fields reflect current values
+            editHex = To6Or8Hex(Color);
+            editAlpha = alphaPercent;
+            editVariant = Variant ?? string.Empty;
+        }
+        await Task.CompletedTask;
+    }
+
+    private async Task SaveModal()
+    {
+        // Build color string from hex+alpha
+        var hexOnly = (editHex ?? "").Trim().TrimStart('#');
+        if (hexOnly.Length == 6) hexOnly = hexOnly + ToHexByte(editAlpha);
+        if (hexOnly.Length != 8) hexOnly = "000000FF";
+        Color = hexOnly;
+        Variant = editVariant;
+        ParseAndSet(Color, Variant);
+        await EnsureOverlayAsync();
+        showModal = false;
+        if (OnChange.HasDelegate)
+        {
+            await OnChange.InvokeAsync((Color, Variant));
+        }
+    }
+
+    private static string ToHexByte(int percent)
+    {
+        var v = (int)Math.Round(Math.Max(0, Math.Min(100, percent)) * 2.55);
+        return v.ToString("X2");
+    }
+}
+
+<div class="color-swatch @(variantClass)" style="width:@(Size)px; height:@(Size)px; cursor:pointer;" @onclick="ToggleModal">
+    <div class="checkerboard" aria-hidden="true"></div>
+    <div class="swatch-fill" style="--swatch-color: @bgRgba; box-shadow: @borderCss"></div>
+    <div class="swatch-overlays">
+        @if (!string.IsNullOrEmpty(overlayDataUrl))
+        {
+            <div class="overlay-variant" style="background-image: url('@overlayDataUrl'); background-size: cover;"></div>
+        }
+        else if (!string.IsNullOrEmpty(variantClass))
+        {
+            <div class="overlay-variant"></div>
+        }
+    </div>
+    <div class="alpha-label">@alphaPercent% </div>
+</div>
+
+@if (showModal)
+{
+    <div class="backdrop show" @onclick="ToggleModal">
+        <div class="modal" style="max-width:420px;" @onclick:stopPropagation="true">
+            <div class="modalHeader">
+                <h2 style="margin:0;">Swatch Preview & Edit</h2>
+                <button class="iconBtn" @onclick="ToggleModal">✕</button>
+            </div>
+            <div class="modalBody">
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <div style="flex:0 0 auto;"><div style="width:80px; height:80px;" class="color-swatch"><div class="checkerboard"></div><div class="swatch-fill" style="background:@bgRgba"></div></div></div>
+                    <div style="flex:1 1 auto;">
+                        <label>Hex (RRGGBB)</label>
+                        <input class="input" @bind="editHex" />
+                        <label style="margin-top:8px;">Alpha (%)</label>
+                        <input type="range" min="0" max="100" @bind="editAlpha" /> <span style="font-weight:900; margin-left:8px;">@editAlpha%</span>
+                        <label style="margin-top:8px;">Variant</label>
+                        <select class="input" @bind="editVariant">
+                            <option value="">Plain</option>
+                            <option value="metal">Metal</option>
+                            <option value="silk">Silk</option>
+                            <option value="marble">Marble</option>
+                            <option value="cf">CF / Speckle</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modalFooter">
+                <div style="display:flex; gap:10px;">
+                    <button class="btn primary" @onclick="SaveModal">Save</button>
+                    <button class="btn" @onclick="ToggleModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

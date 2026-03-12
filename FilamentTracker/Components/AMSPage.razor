@@ -77,6 +77,10 @@
     /// Auto-match every slot that has a tray_uuid or tag_uid against saved spool links.
     private async Task AutoMatchSlotsAsync()
     {
+        // Track which spool IDs we've already assigned during this pass so one spool
+        // is not auto-matched to multiple AMS slots in the UI.
+        var assigned = new HashSet<int>(_slotSpoolMap.Values.Where(id => id > 0));
+
         foreach (var unit in _amsUnits)
         foreach (var slot in unit.Slots)
         {
@@ -85,8 +89,11 @@
             if (_slotSpoolMap.TryGetValue(key, out var existing) && existing > 0) continue;
 
             var spool = await FilamentService.FindSpoolByAmsIdAsync(slot.TrayUuid, slot.TagUid);
-            if (spool != null)
+            if (spool != null && !assigned.Contains(spool.Id))
+            {
                 _slotSpoolMap[key] = spool.Id;
+                assigned.Add(spool.Id);
+            }
         }
     }
 
@@ -104,7 +111,19 @@
 
     private bool HasRfid(AMSSlot slot)
     {
-        return !string.IsNullOrEmpty(slot.TrayUuid) && slot.TrayUuid.Replace("0", "").Length > 0;
+        // Consider a slot to have an RFID when a non-placeholder tag UID is present.
+        return !string.IsNullOrEmpty(slot.TagUid) && slot.TagUid.Replace("0", "").Length > 0;
+    }
+
+    private bool IsTaggedButMissingUid(AMSSlot slot)
+    {
+        // If the slot reports type/sub-brand or other metadata that typically comes from
+        // a BambuLab tag but the tag UID itself is missing/placeholder, show a gentle warning
+        // to the user so they can link manually. We treat tray-type/sub-brand as an indicator
+        // that the printer recognized a BambuLab spool even if the UID wasn't read.
+        var hasUid = !string.IsNullOrEmpty(slot.TagUid) && slot.TagUid.Replace("0", "").Length > 0;
+        var hasMeta = !string.IsNullOrEmpty(slot.TrayType) || !string.IsNullOrEmpty(slot.TraySubBrands);
+        return !hasUid && hasMeta;
     }
 
     private string FormatSlotType(string? trayType, string? traySubBrands)
@@ -176,8 +195,9 @@
             var spoolId = GetSelectedSpoolId(key);
             if (spoolId == 0)
             {
-                // Unlink: clear RFID on whatever spool was previously linked
-                var old = await FilamentService.FindSpoolByAmsIdAsync(slot.TrayUuid, slot.TagUid);
+                // Unlink: clear RFID on whatever spool was previously linked.
+                // Use exact-match lookup so placeholder all-zero UUIDs are handled correctly.
+                var old = await FilamentService.FindSpoolByExactAmsIdAsync(slot.TrayUuid, slot.TagUid);
                 if (old != null)
                     await FilamentService.LinkSpoolToAmsSlotAsync(old.Id, null, null);
                 _slotSaveMsg[key] = "Unlinked.";
@@ -197,7 +217,28 @@
         finally
         {
             _slotSaving[key] = false;
-            StateHasChanged();
+                // Ensure UI mapping uniqueness: a spool should only be shown as linked to one slot.
+                var savedId = GetSelectedSpoolId(key);
+                if (savedId > 0)
+                {
+                    var keysToClear = _slotSpoolMap.Where(kv => kv.Key != key && kv.Value == savedId)
+                        .Select(kv => kv.Key)
+                        .ToList();
+                    foreach (var k in keysToClear)
+                        _slotSpoolMap[k] = 0;
+                }
+
+                // If we unlinked, clear any UI entries that referenced that spool id
+                if (GetSelectedSpoolId(key) == 0)
+                {
+                    // attempt to clear any map entries that still point to the old spool id
+                    // (FindSpoolByExactAmsIdAsync returned the old spool that was unlinked)
+                    // We don't have old.Id here, but the DB unlink cleared the mapping so
+                    // AutoMatchSlotsAsync or a refresh will re-sync. Force a quick inventory reload.
+                    _inventory = await FilamentService.GetAllFilamentsAsync();
+                }
+
+                StateHasChanged();
         }
     }
 
@@ -257,6 +298,11 @@ else
                             {
                                 <span title="tray_uuid: @slot.TrayUuid&#10;tag_uid: @slot.TagUid"
                                       style="color:#10b981; cursor:default;">🔖 BambuLab RFID</span>
+                            }
+                            else if (IsTaggedButMissingUid(slot))
+                            {
+                                <span title="This slot reports BambuLab metadata but no RFID UID was read"
+                                      style="color:#f59e0b; cursor:default;">⚠️ BambuLab metadata detected — UID missing</span>
                             }
                             else
                             {

@@ -242,22 +242,21 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
     /// Returns null when no match (i.e. first time this spool is seen).
     public async Task<Spool?> FindSpoolByAmsIdAsync(string? trayUuid, string? tagUid)
     {
-        if (string.IsNullOrEmpty(trayUuid) && string.IsNullOrEmpty(tagUid))
+        // Auto-matching should only occur on the persistent RFID tag (tagUid).
+        // Treat trayUuid as a weak/location identifier and do not auto-match on it
+        // because it can cause false positives when an untagged spool is placed
+        // into a slot that previously held a different spool.
+        if (string.IsNullOrEmpty(tagUid))
             return null;
 
-        // Ignore the all-zeros placeholder UUID that BambuLab uses for untagged/third-party spools
-        var isPlaceholderUuid = string.IsNullOrEmpty(trayUuid) ||
-                                trayUuid.Replace("0", "").Length == 0;
-        var isPlaceholderTag = string.IsNullOrEmpty(tagUid) ||
-                               tagUid.Replace("0", "").Length == 0;
+        var isPlaceholderTag = tagUid.Replace("0", "").Length == 0;
+        if (isPlaceholderTag) return null;
 
         await using var context = await contextFactory.CreateDbContextAsync();
         return await context.Spools
             .Include(s => s.Filament)
             .Where(s => s.DateEmptied == null && s.WeightRemaining > 0)
-            .Where(s =>
-                (!isPlaceholderUuid && s.AmsTrayUuid == trayUuid) ||
-                (!isPlaceholderTag && s.AmsTagUid == tagUid))
+            .Where(s => s.AmsTagUid == tagUid)
             .OrderByDescending(s => s.DateAdded)
             .FirstOrDefaultAsync();
     }
@@ -265,12 +264,51 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
     /// Persist the AMS RFID ids onto a spool so it auto-matches next time.
     public async Task LinkSpoolToAmsSlotAsync(int spoolId, string? trayUuid, string? tagUid)
     {
+        // Normalize placeholders: treat all-zero UUIDs as null so we don't persist meaningless IDs
+        static string? Normalize(string? s) => string.IsNullOrEmpty(s) || s.Replace("0", "").Length == 0 ? null : s;
+        var nTray = Normalize(trayUuid);
+        var nTag = Normalize(tagUid);
+
         await using var context = await contextFactory.CreateDbContextAsync();
+
+        // Clear same identifiers from any other spool to keep mapping unique.
+        if (!string.IsNullOrEmpty(trayUuid) || !string.IsNullOrEmpty(tagUid))
+        {
+            var conflicts = await context.Spools
+                .Where(s => s.Id != spoolId &&
+                            ((trayUuid != null && s.AmsTrayUuid == trayUuid) ||
+                             (tagUid  != null && s.AmsTagUid   == tagUid)))
+                .ToListAsync();
+            foreach (var other in conflicts)
+            {
+                other.AmsTrayUuid = null;
+                other.AmsTagUid = null;
+                context.Spools.Update(other);
+            }
+        }
+
         var spool = await context.Spools.FindAsync(spoolId);
         if (spool == null) return;
-        spool.AmsTrayUuid = trayUuid;
-        spool.AmsTagUid = tagUid;
+        spool.AmsTrayUuid = nTray;
+        spool.AmsTagUid = nTag;
+        context.Spools.Update(spool);
         await context.SaveChangesAsync();
+    }
+
+    /// Find spool by exact AMS identifiers (does not treat all-zero UUID as special).
+    /// Used for explicit unlink operations where the slot may contain a placeholder UUID.
+    public async Task<Spool?> FindSpoolByExactAmsIdAsync(string? trayUuid, string? tagUid)
+    {
+        if (string.IsNullOrEmpty(trayUuid) && string.IsNullOrEmpty(tagUid))
+            return null;
+
+        await using var context = await contextFactory.CreateDbContextAsync();
+        return await context.Spools
+            .Include(s => s.Filament)
+            .Where(s => s.DateEmptied == null && s.WeightRemaining > 0)
+            .Where(s => (trayUuid != null && s.AmsTrayUuid == trayUuid) || (tagUid != null && s.AmsTagUid == tagUid))
+            .OrderByDescending(s => s.DateAdded)
+            .FirstOrDefaultAsync();
     }
 
     public async Task SeedDefaultBrandsAsync()

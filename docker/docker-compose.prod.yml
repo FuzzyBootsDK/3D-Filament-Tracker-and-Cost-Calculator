@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  filament-tracker:
+    build:
+      context: ../FilamentTracker
+      dockerfile: Dockerfile
+    container_name: filament-tracker-prod
+    restart: unless-stopped
+    ports:
+      - "${PORT:-5000}:5000"
+    volumes:
+      - filament-tracker-data:/app/data
+    environment:
+      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_ENVIRONMENT=Production
+    healthcheck:
+      test: ["CMD-SHELL","curl -f http://localhost:5000/ || exit 1"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  filament-tracker-data:
+    name: filament-tracker-data

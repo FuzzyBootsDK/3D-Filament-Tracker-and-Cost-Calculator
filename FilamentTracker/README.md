@@ -4,6 +4,16 @@ A Blazor Server web app for tracking 3D printer filament inventory, managing spo
 
 ---
 
+## Changelog
+
+- 2026-02-16 — Updated to .NET 10; base/SDK images and docs updated.
+- 2026-02-16 — AMS auto-matching now uses NFC/RFID `tag_uid` only (prevents false matches when an
+  untagged spool is placed into a slot that previously held a different spool).
+- 2026-02-16 — UI: warning badge added on AMS page when a slot reports BambuLab metadata but no UID
+  was read (prompts manual linking). The app still allows manual linking by tray when explicitly saved.
+- 2026-02-16 — Linking now clears conflicting mappings so each RFID/tag is unique in the DB.
+
+
 ## ✨ Features
 
 ### Inventory
@@ -32,7 +42,7 @@ A Blazor Server web app for tracking 3D printer filament inventory, managing spo
 
 | Layer     | Technology                     |
 |-----------|--------------------------------|
-| Framework | Blazor Server (.NET 8)         |
+| Framework | Blazor Server (.NET 10)        |
 | Database  | SQLite + Entity Framework Core |
 | CSV       | CsvHelper                      |
 | Container | Docker                         |

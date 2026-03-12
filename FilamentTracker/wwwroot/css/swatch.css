@@ -1,0 +1,34 @@
+.color-swatch { position: relative; border-radius: 8px; overflow: hidden; display:inline-block; vertical-align:middle; z-index: 10000; }
+.color-swatch .checkerboard { position:absolute; inset:0; background-image: linear-gradient(45deg,#d6d6d6 25%, transparent 25%), linear-gradient(-45deg,#d6d6d6 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #d6d6d6 75%), linear-gradient(-45deg, transparent 75%, #d6d6d6 75%); background-size: 8px 8px; background-position: 0 0, 0 4px, 4px -4px, -4px 0px; opacity:0.45; z-index: 0; }
+.light .color-swatch .checkerboard { background-image: linear-gradient(45deg,#f2f2f2 25%, transparent 25%), linear-gradient(-45deg,#f2f2f2 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f2f2f2 75%), linear-gradient(-45deg, transparent 75%, #f2f2f2 75%); opacity:0.35; }
+.color-swatch .swatch-fill { position:absolute; inset:0; z-index: 2; /* fallback to css var set inline */
+    background-color: var(--swatch-color, transparent) !important;
+    background-image: none !important;
+    opacity: 1 !important;
+}
+.color-swatch .alpha-label { position:absolute; right:6px; bottom:6px; background: rgba(0,0,0,0.45); color:#fff; font-size:11px; padding:2px 6px; border-radius:999px; font-weight:700; }
+.light .color-swatch .alpha-label { background: rgba(255,255,255,0.12); color:var(--text); }
+.color-swatch .swatch-overlays { position:absolute; inset:0; pointer-events:none; z-index:3; }
+
+/* Variant overlays */
+.swatch--metal .overlay-variant { background: linear-gradient(145deg, rgba(255,255,255,0.18), rgba(255,255,255,0.02) 30%, rgba(0,0,0,0.08) 70%); mix-blend-mode: overlay; opacity:0.9; }
+.swatch--silk .overlay-variant { background: linear-gradient(120deg, rgba(255,255,255,0.22), rgba(255,255,255,0.02) 40%, rgba(0,0,0,0.04) 80%); mix-blend-mode: soft-light; opacity:0.9; filter: blur(0.2px); }
+.swatch--marble .overlay-variant { background-image: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08) 0, transparent 20%), radial-gradient(circle at 75% 60%, rgba(0,0,0,0.06) 0, transparent 18%); mix-blend-mode: overlay; opacity:0.6; }
+.swatch--cf .overlay-variant { background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.06) 0 2px, rgba(255,255,255,0.02) 2px 6px); mix-blend-mode: multiply; opacity:0.6; z-index:3; }
+
+/* ensure parent tile gloss doesn't cover the swatch component */
+.swatch::after {
+    /* push the parent gloss behind child swatches to avoid occluding them */
+    z-index: -1;
+}
+
+/* ensure parent allows children to be visible outside its pseudo-element layering */
+.swatch { overflow: visible; }
+
+/* Small swatch helper for lists */
+.swatch-inline { width: 28px; height: 20px; display:inline-block; vertical-align:middle; margin-right:8px; }
+
+/* inventory layout for swatch + metadata */
+.swatchRow { display:flex; align-items:center; gap:10px; }
+.swatchMeta .brand { font-weight:700; }
+.swatchMeta .name { font-weight:900; }

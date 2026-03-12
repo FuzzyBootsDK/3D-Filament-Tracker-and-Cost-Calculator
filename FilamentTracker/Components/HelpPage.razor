@@ -1046,7 +1046,11 @@
                     inventory
                 </li>
                 <li>Click <strong>"💾 Save link"</strong> — the app stores the spool's RFID UUID so it
-                    recognises this spool automatically next time it is inserted
+                    recognises this spool automatically next time it is inserted.
+                    Important: automatic detection and AMS auto-weight updates are performed using the spool's
+                    RFID tag UID (`tag_uid`) only. The printer's `tray_uuid` is only a location identifier and is
+                    not used for automatic matching to inventory. This prevents incorrect matches when a new
+                    untagged spool is placed into a slot that previously had another spool linked.
                 </li>
             </ol>
             <p>
@@ -1108,7 +1112,9 @@
             <p>Every time the printer sends an AMS message the app:</p>
             <ol>
                 <li>Reads the <code>remain</code> value for each slot (0 – 100 %)</li>
-                <li>Looks up the linked spool in the inventory</li>
+                <li>Looks up the linked spool in the inventory. Note: lookup is performed by the spool's RFID
+                    <code>tag_uid</code> only; the printer's <code>tray_uuid</code> is not used for automatic
+                    matching.</li>
                 <li>Calculates: <strong>new weight = Total Weight × remain / 100</strong></li>
                 <li>If the difference from the current stored weight is ≥ 0.5 g, the inventory is updated</li>
             </ol>
