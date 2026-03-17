@@ -2,6 +2,7 @@
 @inject FilamentService FilamentService
 @inject ThresholdService ThresholdService
 @inject BambuLabService BambuLabService
+@inject EditStateService EditStateService
 @implements IDisposable
 
 <section>
@@ -188,6 +189,12 @@
 
     private void HandleAmsWeightUpdated()
     {
+        // Skip refresh if user is currently editing in the modal
+        if (EditStateService.IsEditing)
+        {
+            return;
+        }
+
         // Reload everything from DB so tile weights, bars and discrepancy badges update
         InvokeAsync(async () =>
         {

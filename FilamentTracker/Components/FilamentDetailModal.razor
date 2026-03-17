@@ -1,18 +1,19 @@
 @using FilamentTracker.Models
 @inject FilamentService FilamentService
 @inject ThresholdService ThresholdService
+@inject EditStateService EditStateService
 
-@if (Filament != null)
+@if (_workingFilament != null)
 {
     <div class="backdrop show" @onclick="HandleBackdropClick">
         <div class="modal" @onclick:stopPropagation="true">
             <div class="modalHeader">
                 <div class="modalTitle">
-                    <div class="modalSwatch" style="background: @Filament.ColorCode;"></div>
+                    <div class="modalSwatch" style="background: @_workingFilament.ColorCode;"></div>
                     <div>
-                        <h2>@Filament.Brand @Filament.ColorName</h2>
+                        <h2>@_workingFilament.Brand @_workingFilament.ColorName</h2>
                         <div
-                            class="sub">@Filament.Type@(!string.IsNullOrEmpty(Filament.Finish) ? $" • {Filament.Finish}" : "")</div>
+                            class="sub">@_workingFilament.Type@(!string.IsNullOrEmpty(_workingFilament.Finish) ? $" • {_workingFilament.Finish}" : "")</div>
                     </div>
                 </div>
                 <button class="iconBtn" @onclick="Close" aria-label="Close">✕</button>
@@ -22,22 +23,22 @@
                 <div class="twoCol">
                     <!-- Left: Spool list -->
                     <div class="panel">
-                        <div class="panelTitle">Spools (@Filament.SpoolCount)</div>
+                        <div class="panelTitle">Spools (@_workingFilament.SpoolCount)</div>
                         <div class="help">
-                            Total: @Math.Round(Filament.WeightRemaining, 0)g / @Math.Round(Filament.TotalWeight, 0)g
-                            (@Math.Round(Filament.PercentRemaining, 0)%)
+                            Total: @Math.Round(_workingFilament.WeightRemaining, 0)g / @Math.Round(_workingFilament.TotalWeight, 0)g
+                            (@Math.Round(_workingFilament.PercentRemaining, 0)%)
                         </div>
 
                         <div class="spoolList">
                             @{
                                 // Order spools: partially used first, then oldest first
-                                var orderedSpools = Filament.Spools
+                                var orderedSpools = _workingFilament.Spools
                                     .Where(s => s is { WeightRemaining: > 0, DateEmptied: null })
                                     .OrderBy(s => s.PercentRemaining == 100 ? 1 : 0)
                                     .ThenBy(s => s.DateAdded)
                                     .ToList();
 
-                                var emptySpools = Filament.Spools
+                                var emptySpools = _workingFilament.Spools
                                     .Where(s => s.WeightRemaining <= 0 || s.DateEmptied.HasValue)
                                     .OrderByDescending(s => s.DateEmptied ?? s.DateAdded)
                                     .ToList();
@@ -54,7 +55,7 @@
                                      @onclick="() => SelectSpool(spool)"
                                      style="@(isNextToUse ? "border-left: 3px solid var(--ok);" : "")">
                                     <div class="left">
-                                        <div class="miniSwatch" style="background: @Filament.ColorCode;"></div>
+                                        <div class="miniSwatch" style="background: @_workingFilament.ColorCode;"></div>
                                         <div style="min-width: 0;">
                                             <div class="title">
                                                 @if (isNextToUse)
@@ -138,8 +139,16 @@
                                         Spool</label>
                                 </div>
 
+                                <div style="margin-bottom: 10px;">
+                                    <label>Quantity</label>
+                                    <input class="input" type="number" @bind="_newSpoolQuantity" min="1" max="50" step="1"/>
+                                    <small style="color: var(--muted); font-size: 11px; margin-top: 4px; display: block;">
+                                        Add multiple identical spools at once
+                                    </small>
+                                </div>
+
                                 <button class="btn primary" style="width: 100%;" @onclick="AddNewSpool">
-                                    Add Spool
+                                    @(_newSpoolQuantity > 1 ? $"Add {_newSpoolQuantity} Spools" : "Add Spool")
                                 </button>
                             </div>
                         }
@@ -244,17 +253,17 @@
                             💰 Calculated Average Price for Calculator
                         </div>
                         <div style="font-size: 18px; font-weight: 700;">
-                            @Filament.CalculatedPricePerKg.ToString("F2") per kg
+                            @_workingFilament.CalculatedPricePerKg.ToString("F2") per kg
                         </div>
                         @{
-                            var spoolsWithPrices = Filament.Spools.Where(s => s.PurchasePricePerKg.HasValue).ToList();
+                            var spoolsWithPrices = _workingFilament.Spools.Where(s => s.PurchasePricePerKg.HasValue).ToList();
                             if (spoolsWithPrices.Any())
                             {
                                 <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">
                                     Average from @spoolsWithPrices.Count spool(s) with prices
                                 </div>
                             }
-                            else if (Filament.PricePerKg.HasValue)
+                            else if (_workingFilament.PricePerKg.HasValue)
                             {
                                 <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">
                                     Using manual override price
@@ -318,9 +327,13 @@
     [Parameter] public EventCallback OnClose { get; set; }
     [Parameter] public EventCallback OnUpdate { get; set; }
 
+    // Working copy that we use in the UI - prevents parent's stale data from overwriting our updates
+    private Filament? _workingFilament;
+
     private Spool? _selectedSpool;
     private decimal _gramsToSubtract = 50;
     private string _usageMessage = "";
+    private int? _lastLoadedFilamentId;
 
     // Edit fields
     private bool _editIsRefill;
@@ -342,19 +355,27 @@
     private string? _newSpoolMaterial = "";
     private bool _newSpoolIsReusable;
     private decimal? _newSpoolPurchasePrice;
+    private int _newSpoolQuantity = 1;
 
     protected override void OnParametersSet()
     {
-        if (Filament != null)
+        if (Filament != null && _lastLoadedFilamentId != Filament.Id)
         {
+            // Copy parameter to working copy - only on initial load or when switching to different filament
+            _workingFilament = Filament;
+
+            // Mark this filament as being edited to prevent MQTT updates from refreshing
+            EditStateService.BeginEditing(Filament.Id);
+            _lastLoadedFilamentId = Filament.Id;
+
             // Auto-select the spool that should be used next: partially used spools first,
             // then oldest added. Fall back to first spool when none match.
-            _selectedSpool = Filament.Spools
+            _selectedSpool = _workingFilament.Spools
                                 .Where(s => s is { WeightRemaining: > 0, DateEmptied: null })
                                 .OrderBy(s => s.PercentRemaining == 100 ? 1 : 0)
                                 .ThenBy(s => s.DateAdded)
                                 .FirstOrDefault()
-                            ?? Filament.Spools.FirstOrDefault();
+                            ?? _workingFilament.Spools.FirstOrDefault();
             LoadSpoolForEditing();
             LoadFilamentForEditing();
         }
@@ -382,12 +403,12 @@
 
     private void LoadFilamentForEditing()
     {
-        if (Filament != null)
+        if (_workingFilament != null)
         {
-            _editLocation = Filament.Location;
-            _editNotes = Filament.Notes;
-            _editDiameter = Filament.Diameter;
-            _editManualPrice = Filament.PricePerKg;
+            _editLocation = _workingFilament.Location;
+            _editNotes = _workingFilament.Notes;
+            _editDiameter = _workingFilament.Diameter;
+            _editManualPrice = _workingFilament.PricePerKg;
         }
     }
 
@@ -401,13 +422,13 @@
         await FilamentService.UpdateSpoolAsync(_selectedSpool);
 
         // Reload filament to ensure everything is in sync
-        if (Filament != null)
+        if (_workingFilament != null)
         {
-            var updated = await FilamentService.GetFilamentByIdAsync(Filament.Id);
+            var updated = await FilamentService.GetFilamentByIdAsync(_workingFilament.Id);
             if (updated != null)
             {
-                Filament = updated;
-                _selectedSpool = Filament.Spools.FirstOrDefault(s => s.Id == _selectedSpool.Id);
+                _workingFilament = updated;
+                _selectedSpool = _workingFilament.Spools.FirstOrDefault(s => s.Id == _selectedSpool.Id);
                 LoadSpoolForEditing();
             }
         }
@@ -432,7 +453,7 @@
 
     private async Task SaveChanges()
     {
-        if (Filament == null) return;
+        if (_workingFilament == null) return;
 
         // Update spool if selected
         if (_selectedSpool != null)
@@ -448,32 +469,41 @@
         }
 
         // Update filament
-        Filament.Location = _editLocation;
-        Filament.Notes = _editNotes;
-        Filament.Diameter = _editDiameter;
-        Filament.PricePerKg = _editManualPrice;
+        _workingFilament.Location = _editLocation;
+        _workingFilament.Notes = _editNotes;
+        _workingFilament.Diameter = _editDiameter;
+        _workingFilament.PricePerKg = _editManualPrice;
 
-        await FilamentService.UpdateFilamentAsync(Filament);
+        await FilamentService.UpdateFilamentAsync(_workingFilament);
 
         // Reload filament to get updated calculated price
-        var updated = await FilamentService.GetFilamentByIdAsync(Filament.Id);
+        var updated = await FilamentService.GetFilamentByIdAsync(_workingFilament.Id);
         if (updated != null)
         {
-            Filament = updated;
+            _workingFilament = updated;
             // Reselect the current spool if it still exists
             if (_selectedSpool != null)
             {
-                _selectedSpool = Filament.Spools.FirstOrDefault(s => s.Id == _selectedSpool.Id);
+                _selectedSpool = _workingFilament.Spools.FirstOrDefault(s => s.Id == _selectedSpool.Id);
                 LoadSpoolForEditing();
             }
 
             LoadFilamentForEditing();
+
+            // Force immediate UI update to show changes
+            StateHasChanged();
         }
 
         await OnUpdate.InvokeAsync();
-        StateHasChanged();
+
+        // End editing state after successful save
+        EditStateService.EndEditing();
+        _lastLoadedFilamentId = null;
 
         _usageMessage = "Changes saved successfully!";
+        // Update again to show success message
+        StateHasChanged();
+
         _ = Task.Delay(2000).ContinueWith(_ =>
         {
             _usageMessage = "";
@@ -488,19 +518,23 @@
         await FilamentService.DeleteSpoolAsync(_selectedSpool.Id);
 
         // Reload filament
-        if (Filament != null)
+        if (_workingFilament != null)
         {
-            var updated = await FilamentService.GetFilamentByIdAsync(Filament.Id);
+            var updated = await FilamentService.GetFilamentByIdAsync(_workingFilament.Id);
             if (updated != null && updated.Spools.Any())
             {
-                Filament = updated;
-                _selectedSpool = Filament.Spools.FirstOrDefault();
+                _workingFilament = updated;
+                _selectedSpool = _workingFilament.Spools.FirstOrDefault();
                 LoadSpoolForEditing();
+
+                // Force immediate UI update to show spool removal
+                StateHasChanged();
             }
             else
             {
                 // No spools left, close modal
                 await Close();
+                return;
             }
         }
 
@@ -509,15 +543,17 @@
 
     private async Task DeleteFilament()
     {
-        if (Filament == null) return;
+        if (_workingFilament == null) return;
 
-        await FilamentService.DeleteFilamentAsync(Filament.Id);
+        await FilamentService.DeleteFilamentAsync(_workingFilament.Id);
         await OnUpdate.InvokeAsync();
         await Close();
     }
 
     private async Task Close()
     {
+        EditStateService.EndEditing();
+        _lastLoadedFilamentId = null;
         await OnClose.InvokeAsync();
     }
 
@@ -561,43 +597,76 @@
             _newSpoolMaterial = "";
             _newSpoolIsReusable = false;
             _newSpoolPurchasePrice = null;
+            _newSpoolQuantity = 1;
         }
     }
 
     private async Task AddNewSpool()
     {
-        if (Filament == null) return;
+        if (_workingFilament == null) return;
 
-        var newSpool = new Spool
+        // Validate quantity
+        if (_newSpoolQuantity < 1 || _newSpoolQuantity > 50)
         {
-            FilamentId = Filament.Id,
-            IsRefill = _newSpoolIsRefill,
-            TotalWeight = _newSpoolTotalWeight,
-            WeightRemaining = _newSpoolWeightRemaining,
-            SpoolMaterial = string.IsNullOrWhiteSpace(_newSpoolMaterial) ? null : _newSpoolMaterial,
-            IsReusable = _newSpoolIsReusable,
-            PurchasePricePerKg = _newSpoolPurchasePrice,
-            DateAdded = DateTime.Now
-        };
-
-        await FilamentService.AddSpoolToFilamentAsync(Filament.Id, newSpool);
-
-        // Reload filament to get updated spools and calculated price
-        var updated = await FilamentService.GetFilamentByIdAsync(Filament.Id);
-        if (updated != null)
-        {
-            Filament = updated;
-            // Select the newly added spool
-            _selectedSpool = Filament.Spools.OrderByDescending(s => s.DateAdded).FirstOrDefault();
-            LoadSpoolForEditing();
-            LoadFilamentForEditing();
+            _usageMessage = "Quantity must be between 1 and 50";
+            _ = Task.Delay(3000).ContinueWith(_ =>
+            {
+                _usageMessage = "";
+                InvokeAsync(StateHasChanged);
+            });
+            return;
         }
 
+        // Add multiple spools with the same properties
+        for (int i = 0; i < _newSpoolQuantity; i++)
+        {
+            var newSpool = new Spool
+            {
+                FilamentId = _workingFilament.Id,
+                IsRefill = _newSpoolIsRefill,
+                TotalWeight = _newSpoolTotalWeight,
+                WeightRemaining = _newSpoolWeightRemaining,
+                SpoolMaterial = string.IsNullOrWhiteSpace(_newSpoolMaterial) ? null : _newSpoolMaterial,
+                IsReusable = _newSpoolIsReusable,
+                PurchasePricePerKg = _newSpoolPurchasePrice,
+                DateAdded = DateTime.Now.AddMilliseconds(i) // Add slight offset to preserve order
+            };
+
+            await FilamentService.AddSpoolToFilamentAsync(_workingFilament.Id, newSpool);
+        }
+
+        // Close the add form
         _showAddSpool = false;
+
+        // Reload filament to get updated spools and calculated price
+        var updated = await FilamentService.GetFilamentByIdAsync(_workingFilament.Id);
+        if (updated != null)
+        {
+            _workingFilament = updated;
+            // Select the first newly added spool
+            _selectedSpool = _workingFilament.Spools.OrderByDescending(s => s.DateAdded).FirstOrDefault();
+            LoadSpoolForEditing();
+            LoadFilamentForEditing();
+
+            // Force immediate UI update to show new spools
+            StateHasChanged();
+        }
+
+        // Notify parent to refresh (so inventory tiles update)
         await OnUpdate.InvokeAsync();
+
+        // DON'T clear edit state - keep the modal "locked" so parent can't overwrite our changes
+        // The edit state will be cleared when user clicks "Close" or "Save All Changes"
+
+        // Set success message
+        var successMessage = _newSpoolQuantity > 1 
+            ? $"{_newSpoolQuantity} new spools added successfully!" 
+            : "New spool added successfully!";
+        _usageMessage = successMessage;
+        // Update again to show success message
         StateHasChanged();
 
-        _usageMessage = "New spool added successfully!";
+        // Clear success message after delay
         _ = Task.Delay(3000).ContinueWith(_ =>
         {
             _usageMessage = "";

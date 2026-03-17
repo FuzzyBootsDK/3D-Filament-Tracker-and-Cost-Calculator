@@ -40,6 +40,7 @@ builder.Services.AddScoped<CsvService>();
 builder.Services.AddSingleton<ThemeService>();
 builder.Services.AddSingleton<ThresholdService>();
 builder.Services.AddSingleton<BambuLabService>();
+builder.Services.AddSingleton<EditStateService>();
 
 var app = builder.Build();
 
