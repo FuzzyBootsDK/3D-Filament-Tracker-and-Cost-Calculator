@@ -517,7 +517,7 @@
 
         await FilamentService.DeleteSpoolAsync(_selectedSpool.Id);
 
-        // Reload filament
+        // Reload filament to update _workingFilament
         if (_workingFilament != null)
         {
             var updated = await FilamentService.GetFilamentByIdAsync(_workingFilament.Id);
@@ -527,17 +527,19 @@
                 _selectedSpool = _workingFilament.Spools.FirstOrDefault();
                 LoadSpoolForEditing();
 
-                // Force immediate UI update to show spool removal
+                // Force immediate UI update to show spool removal in modal
                 StateHasChanged();
             }
             else
             {
                 // No spools left, close modal
+                await OnUpdate.InvokeAsync(); // Notify parent before closing
                 await Close();
                 return;
             }
         }
 
+        // Notify parent to refresh inventory page
         await OnUpdate.InvokeAsync();
     }
 
@@ -545,9 +547,18 @@
     {
         if (_workingFilament == null) return;
 
-        await FilamentService.DeleteFilamentAsync(_workingFilament.Id);
-        await OnUpdate.InvokeAsync();
-        await Close();
+        try
+        {
+            await FilamentService.DeleteFilamentAsync(_workingFilament.Id);
+            await OnUpdate.InvokeAsync();
+            await Close();
+        }
+        catch (Exception ex)
+        {
+            // Show error message to user - in production, use a toast/notification service
+            Console.WriteLine($"Error deleting filament: {ex.Message}");
+            // Optionally: Set an error message property and display it in the UI
+        }
     }
 
     private async Task Close()

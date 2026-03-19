@@ -340,5 +340,10 @@
     }
 
     private void OpenDetail(Filament filament) => _selectedFilament = filament;
-    private void CloseDetail() => _selectedFilament = null;
+
+    private void CloseDetail()
+    {
+        _selectedFilament = null;
+        StateHasChanged(); // Force immediate UI update when modal closes
+    }
 }

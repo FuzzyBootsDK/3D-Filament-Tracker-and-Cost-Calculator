@@ -32,7 +32,11 @@ var dbPath = builder.Configuration.GetConnectionString("DefaultConnection")
 
 // Add SQLite database
 builder.Services.AddDbContextFactory<FilamentContext>(options =>
-    options.UseSqlite(dbPath));
+    options.UseSqlite(dbPath, sqliteOptions =>
+    {
+        // Enable foreign key enforcement (required for cascade delete)
+        sqliteOptions.CommandTimeout(30);
+    }));
 
 // Add custom services
 builder.Services.AddScoped<FilamentService>();
@@ -168,6 +172,17 @@ using (var scope = app.Services.CreateScope())
         ");
         await context.Database.ExecuteSqlRawAsync(@"
             UPDATE AppSettings SET BambuLabEnabled = 0 WHERE BambuLabEnabled IS NULL
+        ");
+
+        // Enable foreign key enforcement (critical for cascade delete)
+        await context.Database.ExecuteSqlRawAsync("PRAGMA foreign_keys = ON");
+
+        // Clean up orphaned ReusableSpool records (where CurrentSpoolId references a deleted spool)
+        await context.Database.ExecuteSqlRawAsync(@"
+            UPDATE ReusableSpools 
+            SET CurrentSpoolId = NULL, InUse = 0 
+            WHERE CurrentSpoolId IS NOT NULL 
+            AND CurrentSpoolId NOT IN (SELECT Id FROM Spools)
         ");
 
         // Ensure default settings exist

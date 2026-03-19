@@ -25,6 +25,14 @@ public class FilamentContext : DbContext
             .HasForeignKey(s => s.FilamentId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // Configure ReusableSpool → Spool relationship
+        // When a Spool is deleted, set ReusableSpool.CurrentSpoolId to null
+        modelBuilder.Entity<ReusableSpool>()
+            .HasOne<Spool>()
+            .WithMany()
+            .HasForeignKey(rs => rs.CurrentSpoolId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         // Seed default brands if needed
         modelBuilder.Entity<Filament>()
             .Property(f => f.Diameter)

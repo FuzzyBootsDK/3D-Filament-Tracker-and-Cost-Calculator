@@ -63,12 +63,21 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
 
     public async Task DeleteFilamentAsync(int id)
     {
-        await using var context = await contextFactory.CreateDbContextAsync();
-        var filament = await context.Filaments.FindAsync(id);
-        if (filament != null)
+        try
         {
-            context.Filaments.Remove(filament);
-            await context.SaveChangesAsync();
+            await using var context = await contextFactory.CreateDbContextAsync();
+            var filament = await context.Filaments.FindAsync(id);
+            if (filament != null)
+            {
+                context.Filaments.Remove(filament);
+                await context.SaveChangesAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log the error - in production, use proper logging
+            Console.WriteLine($"Error deleting filament {id}: {ex.Message}");
+            throw; // Re-throw so the UI can handle it
         }
     }
 
