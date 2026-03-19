@@ -163,6 +163,11 @@ using (var scope = app.Services.CreateScope())
                 ALTER TABLE AppSettings ADD COLUMN AmsAutoUpdateOnlyDecrease INTEGER NOT NULL DEFAULT 1
             ");
 
+        if (!await ColumnExistsAsync("AppSettings", "TimeZoneId"))
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE AppSettings ADD COLUMN TimeZoneId TEXT NOT NULL DEFAULT 'Europe/Copenhagen'
+            ");
+
         // Backfill: existing rows that had the column added will have NULL — set them to sensible defaults
         await context.Database.ExecuteSqlRawAsync(@"
             UPDATE AppSettings SET AmsAutoUpdateOnlyDecrease = 1 WHERE AmsAutoUpdateOnlyDecrease IS NULL
@@ -172,6 +177,9 @@ using (var scope = app.Services.CreateScope())
         ");
         await context.Database.ExecuteSqlRawAsync(@"
             UPDATE AppSettings SET BambuLabEnabled = 0 WHERE BambuLabEnabled IS NULL
+        ");
+        await context.Database.ExecuteSqlRawAsync(@"
+            UPDATE AppSettings SET TimeZoneId = 'Europe/Copenhagen' WHERE TimeZoneId IS NULL OR TimeZoneId = ''
         ");
 
         // Enable foreign key enforcement (critical for cascade delete)

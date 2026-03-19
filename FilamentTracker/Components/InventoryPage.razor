@@ -109,7 +109,7 @@
                             <text>OK</text>
                         }
                     </div>
-                    @if (amsDiscrepancy.HasValue)
+                    @if (amsDiscrepancy.HasValue && BambuLabService.AmsAutoUpdateWeight)
                     {
                         <div class="amsMismatchBadge"
                              title="AMS reports @amsDiscrepancy.Value.amsRemain% remaining but inventory shows @amsDiscrepancy.Value.inventoryPct% — difference exceeds 5%">

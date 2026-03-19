@@ -27,4 +27,9 @@ public class AppSettings
     // When true, the auto-update only ever decreases weight (protects manually weighed values).
     // When false, AMS can also increase weight back (full two-way sync).
     public bool AmsAutoUpdateOnlyDecrease { get; set; } = true;
+
+    // Timezone ID for ETA calculations (uses IANA timezone database, e.g., "Europe/Copenhagen")
+    // Automatically handles daylight saving time transitions
+    [MaxLength(100)]
+    public string TimeZoneId { get; set; } = "Europe/Copenhagen";
 }

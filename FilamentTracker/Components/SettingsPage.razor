@@ -84,6 +84,78 @@
     </div>
 
     <div class="formCard">
+        <h2 style="margin-top: 0;">🌍 Timezone Settings</h2>
+        <div style="color: var(--muted); margin-bottom: 16px;">
+            Select your timezone for accurate ETA calculations. Daylight saving time is automatically handled.
+        </div>
+        <div style="margin-bottom: 16px;">
+            <label class="label">Timezone</label>
+            <select class="input" @bind="_selectedTimeZone">
+                <optgroup label="Europe">
+                    <option value="Europe/Copenhagen">Copenhagen (GMT+1/+2)</option>
+                    <option value="Europe/London">London (GMT/BST)</option>
+                    <option value="Europe/Paris">Paris (GMT+1/+2)</option>
+                    <option value="Europe/Berlin">Berlin (GMT+1/+2)</option>
+                    <option value="Europe/Amsterdam">Amsterdam (GMT+1/+2)</option>
+                    <option value="Europe/Stockholm">Stockholm (GMT+1/+2)</option>
+                    <option value="Europe/Oslo">Oslo (GMT+1/+2)</option>
+                    <option value="Europe/Helsinki">Helsinki (GMT+2/+3)</option>
+                    <option value="Europe/Rome">Rome (GMT+1/+2)</option>
+                    <option value="Europe/Madrid">Madrid (GMT+1/+2)</option>
+                    <option value="Europe/Zurich">Zurich (GMT+1/+2)</option>
+                    <option value="Europe/Vienna">Vienna (GMT+1/+2)</option>
+                    <option value="Europe/Prague">Prague (GMT+1/+2)</option>
+                    <option value="Europe/Warsaw">Warsaw (GMT+1/+2)</option>
+                    <option value="Europe/Budapest">Budapest (GMT+1/+2)</option>
+                    <option value="Europe/Athens">Athens (GMT+2/+3)</option>
+                    <option value="Europe/Istanbul">Istanbul (GMT+3)</option>
+                </optgroup>
+                <optgroup label="Americas">
+                    <option value="America/New_York">New York (EST/EDT)</option>
+                    <option value="America/Chicago">Chicago (CST/CDT)</option>
+                    <option value="America/Denver">Denver (MST/MDT)</option>
+                    <option value="America/Los_Angeles">Los Angeles (PST/PDT)</option>
+                    <option value="America/Toronto">Toronto (EST/EDT)</option>
+                    <option value="America/Vancouver">Vancouver (PST/PDT)</option>
+                    <option value="America/Mexico_City">Mexico City (CST/CDT)</option>
+                    <option value="America/Sao_Paulo">São Paulo (BRT)</option>
+                    <option value="America/Argentina/Buenos_Aires">Buenos Aires (ART)</option>
+                </optgroup>
+                <optgroup label="Asia & Pacific">
+                    <option value="Asia/Tokyo">Tokyo (JST)</option>
+                    <option value="Asia/Seoul">Seoul (KST)</option>
+                    <option value="Asia/Shanghai">Shanghai (CST)</option>
+                    <option value="Asia/Hong_Kong">Hong Kong (HKT)</option>
+                    <option value="Asia/Singapore">Singapore (SGT)</option>
+                    <option value="Asia/Bangkok">Bangkok (ICT)</option>
+                    <option value="Asia/Dubai">Dubai (GST)</option>
+                    <option value="Asia/Kolkata">Mumbai/Delhi (IST)</option>
+                    <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
+                    <option value="Australia/Melbourne">Melbourne (AEDT/AEST)</option>
+                    <option value="Australia/Perth">Perth (AWST)</option>
+                    <option value="Pacific/Auckland">Auckland (NZDT/NZST)</option>
+                </optgroup>
+                <optgroup label="Other">
+                    <option value="UTC">UTC (Coordinated Universal Time)</option>
+                </optgroup>
+            </select>
+            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                Used to display print completion times (ETA) in your local time
+            </div>
+        </div>
+        <button class="btn primary" @onclick="SaveTimeZone" disabled="@_isProcessing">
+            @if (_isProcessing)
+            {
+                <text>Saving...</text>
+            }
+            else
+            {
+                <text>💾 Save Timezone</text>
+            }
+        </button>
+    </div>
+
+    <div class="formCard">
         <h2 style="margin-top: 0;">⚖️ Stock Thresholds</h2>
         <div style="color: var(--muted); margin-bottom: 16px;">
             Configure when filaments should be marked as "Low" or "Critical" based on weight remaining.
@@ -450,6 +522,7 @@
     private int _lowThreshold = 500;
     private int _criticalThreshold = 250;
     private string _selectedCurrency = "DKK";
+    private string _selectedTimeZone = "Europe/Copenhagen";
 
     // BambuLab settings
     private bool _bambuLabEnabled;
@@ -574,6 +647,7 @@
         _lowThreshold = (int)settings.LowThreshold;
         _criticalThreshold = (int)settings.CriticalThreshold;
         _selectedCurrency = settings.Currency;
+        _selectedTimeZone = settings.TimeZoneId;
 
         // Load BambuLab settings
         _bambuLabEnabled = settings.BambuLabEnabled;
@@ -601,6 +675,42 @@
         catch (Exception ex)
         {
             ShowMessage($"Error saving currency: {ex.Message}", true);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
+    }
+
+    private async Task SaveTimeZone()
+    {
+        try
+        {
+            _isProcessing = true;
+            StateHasChanged();
+
+            // Validate timezone ID
+            try
+            {
+                TimeZoneInfo.FindSystemTimeZoneById(_selectedTimeZone);
+            }
+            catch
+            {
+                ShowMessage("Invalid timezone selection. Please try again.", true);
+                _isProcessing = false;
+                return;
+            }
+
+            var settings = await FilamentService.GetSettingsAsync();
+            settings.TimeZoneId = _selectedTimeZone;
+
+            await FilamentService.UpdateSettingsAsync(settings);
+
+            ShowMessage("Timezone saved successfully! ETA calculations will now use your local time.", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error saving timezone: {ex.Message}", true);
         }
         finally
         {

@@ -456,11 +456,24 @@
     private string currentPage = "inventory";
     private bool isConnected;
     private PrintStatus? currentPrint;
+    private string _userTimeZoneId = "Europe/Copenhagen";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         // Subscribe to BambuLab status updates
         BambuLabService.OnStatusUpdated += HandleStatusUpdate;
+
+        // Load user's timezone setting
+        try
+        {
+            var settings = await FilamentService.GetSettingsAsync();
+            _userTimeZoneId = settings.TimeZoneId;
+        }
+        catch
+        {
+            // Fallback to Copenhagen if settings can't be loaded
+            _userTimeZoneId = "Europe/Copenhagen";
+        }
 
         // Get initial status
         UpdateStatus(BambuLabService.GetCurrentStatus());
@@ -534,7 +547,8 @@
 
     /// <summary>
     ///     Calculates the estimated completion time based on time remaining.
-    ///     Parses "2h 34m" format and adds to current time.
+    ///     Parses "2h 34m" format and adds to current time, converting to user's local timezone.
+    ///     Automatically handles daylight saving time transitions.
     /// </summary>
     private string GetEstimatedCompletionTime(string timeRemaining)
     {
@@ -562,19 +576,35 @@
                 }
             }
 
-            // Calculate ETA
-            var eta = DateTime.Now.AddHours(hours).AddMinutes(minutes);
+            // Calculate ETA in server time
+            var serverEta = DateTime.Now.AddHours(hours).AddMinutes(minutes);
+
+            // Convert to user's timezone (automatically handles DST)
+            TimeZoneInfo userTimeZone;
+            try
+            {
+                userTimeZone = TimeZoneInfo.FindSystemTimeZoneById(_userTimeZoneId);
+            }
+            catch
+            {
+                // Fallback to Copenhagen if timezone is invalid
+                userTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Copenhagen");
+            }
+
+            var localEta = TimeZoneInfo.ConvertTime(serverEta, userTimeZone);
 
             // Format as "Today at HH:mm" or "Tomorrow at HH:mm"
-            var isToday = eta.Date == DateTime.Today;
-            var isTomorrow = eta.Date == DateTime.Today.AddDays(1);
+            // Compare dates in user's timezone
+            var localNow = TimeZoneInfo.ConvertTime(DateTime.Now, userTimeZone);
+            var isToday = localEta.Date == localNow.Date;
+            var isTomorrow = localEta.Date == localNow.Date.AddDays(1);
 
             if (isToday)
-                return $"Today at {eta:HH:mm}";
+                return $"Today at {localEta:HH:mm}";
             else if (isTomorrow)
-                return $"Tomorrow at {eta:HH:mm}";
+                return $"Tomorrow at {localEta:HH:mm}";
             else
-                return eta.ToString("ddd at HH:mm");
+                return localEta.ToString("ddd at HH:mm");
         }
         catch
         {
