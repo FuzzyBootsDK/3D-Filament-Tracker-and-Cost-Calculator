@@ -256,18 +256,21 @@
                 .liveDetailsGrid {
                     display: grid;
                     grid-template-columns: repeat(2, minmax(0, 1fr));
-                    gap: 8px;
-                    padding: 8px 12px 12px 12px;
+                    gap: 6px; /* Reduced from 8px */
+                    padding: 6px 10px 10px 10px; /* Reduced padding */
                 }
 
                 .infoBox {
                     border: 1px solid var(--border);
                     background: rgba(255, 255, 255, 0.03);
-                    padding: 8px;
-                    border-radius: 10px;
+                    padding: 6px 8px; /* Reduced from 8px */
+                    border-radius: 8px; /* Slightly smaller radius */
                     display: flex;
-                    flex-direction: column;
+                    flex-direction: row; /* Changed from column to row for single line */
                     gap: 6px;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
                 }
 
                 .light .infoBox {
@@ -278,12 +281,48 @@
                     font-size: 12px;
                     color: var(--muted);
                     font-weight: 800;
+                    white-space: nowrap; /* Prevent wrapping */
                 }
 
                 .infoValue {
                     font-weight: 900;
                     color: var(--text);
-                    font-size: 14px;
+                    font-size: 13px; /* Slightly smaller for compactness */
+                    white-space: nowrap; /* Prevent wrapping */
+                }
+
+                /* ETA section between progress bar and details */
+                .etaSection {
+                    text-align: center;
+                    padding: 8px 10px; /* Reduced from 10px 12px */
+                    margin: 6px 0; /* Reduced from 8px 0 */
+                    border: 1px solid rgba(59, 130, 246, 0.3);
+                    background: rgba(59, 130, 246, 0.08);
+                    border-radius: 8px; /* Match other elements */
+                }
+
+                .light .etaSection {
+                    border-color: rgba(59, 130, 246, 0.4);
+                    background: rgba(59, 130, 246, 0.12);
+                }
+
+                .etaLabel {
+                    font-size: 10px; /* Slightly smaller */
+                    color: var(--muted);
+                    font-weight: 800;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+
+                .etaTime {
+                    font-size: 15px; /* Slightly smaller from 16px */
+                    font-weight: 900;
+                    color: #3b82f6;
+                    margin-top: 3px; /* Reduced from 4px */
+                }
+
+                .light .etaTime {
+                    color: #2563eb;
                 }
             </style>
         </div>
@@ -332,6 +371,12 @@
                             <div class="progressFill" style="width: @(currentPrint.Progress)%"></div>
                         </div>
                         <div class="progressText">@currentPrint.Progress%</div>
+                    </div>
+
+                    <!-- ETA Section -->
+                    <div class="etaSection">
+                        <div class="etaLabel">🎯 Estimated Completion</div>
+                        <div class="etaTime">@GetEstimatedCompletionTime(currentPrint.TimeRemaining)</div>
                     </div>
 
                     <div class="liveDetailsGrid">
@@ -485,6 +530,56 @@
         if (dbm >= -80) return 2;
         if (dbm >= -90) return 1;
         return 0;
+    }
+
+    /// <summary>
+    ///     Calculates the estimated completion time based on time remaining.
+    ///     Parses "2h 34m" format and adds to current time.
+    /// </summary>
+    private string GetEstimatedCompletionTime(string timeRemaining)
+    {
+        if (string.IsNullOrEmpty(timeRemaining))
+            return "--:--";
+
+        try
+        {
+            // Parse format like "2h 34m" or "45m" or "1h 5m"
+            var hours = 0;
+            var minutes = 0;
+
+            var parts = timeRemaining.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var part in parts)
+            {
+                if (part.EndsWith("h"))
+                {
+                    if (int.TryParse(part.Replace("h", ""), out var h))
+                        hours = h;
+                }
+                else if (part.EndsWith("m"))
+                {
+                    if (int.TryParse(part.Replace("m", ""), out var m))
+                        minutes = m;
+                }
+            }
+
+            // Calculate ETA
+            var eta = DateTime.Now.AddHours(hours).AddMinutes(minutes);
+
+            // Format as "Today at HH:mm" or "Tomorrow at HH:mm"
+            var isToday = eta.Date == DateTime.Today;
+            var isTomorrow = eta.Date == DateTime.Today.AddDays(1);
+
+            if (isToday)
+                return $"Today at {eta:HH:mm}";
+            else if (isTomorrow)
+                return $"Tomorrow at {eta:HH:mm}";
+            else
+                return eta.ToString("ddd at HH:mm");
+        }
+        catch
+        {
+            return "--:--";
+        }
     }
 
     public void Dispose()
