@@ -844,7 +844,7 @@ body.light,
     padding: 14px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 1px;
     flex: 1;
 }
 
