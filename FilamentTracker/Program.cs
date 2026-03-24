@@ -44,6 +44,7 @@ builder.Services.AddScoped<CsvService>();
 builder.Services.AddSingleton<ThemeService>();
 builder.Services.AddSingleton<ThresholdService>();
 builder.Services.AddSingleton<BambuLabService>();
+builder.Services.AddSingleton<MqttRelayService>();
 builder.Services.AddSingleton<EditStateService>();
 
 var app = builder.Build();
@@ -168,6 +169,27 @@ using (var scope = app.Services.CreateScope())
                 ALTER TABLE AppSettings ADD COLUMN TimeZoneId TEXT NOT NULL DEFAULT 'Europe/Copenhagen'
             ");
 
+        // Add MQTT Relay columns
+        if (!await ColumnExistsAsync("AppSettings", "MqttRelayEnabled"))
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE AppSettings ADD COLUMN MqttRelayEnabled INTEGER NOT NULL DEFAULT 0
+            ");
+
+        if (!await ColumnExistsAsync("AppSettings", "MqttRelayPort"))
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE AppSettings ADD COLUMN MqttRelayPort INTEGER NOT NULL DEFAULT 1883
+            ");
+
+        if (!await ColumnExistsAsync("AppSettings", "MqttRelayUsername"))
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE AppSettings ADD COLUMN MqttRelayUsername TEXT
+            ");
+
+        if (!await ColumnExistsAsync("AppSettings", "MqttRelayPassword"))
+            await context.Database.ExecuteSqlRawAsync(@"
+                ALTER TABLE AppSettings ADD COLUMN MqttRelayPassword TEXT
+            ");
+
         // Backfill: existing rows that had the column added will have NULL — set them to sensible defaults
         await context.Database.ExecuteSqlRawAsync(@"
             UPDATE AppSettings SET AmsAutoUpdateOnlyDecrease = 1 WHERE AmsAutoUpdateOnlyDecrease IS NULL
@@ -180,6 +202,12 @@ using (var scope = app.Services.CreateScope())
         ");
         await context.Database.ExecuteSqlRawAsync(@"
             UPDATE AppSettings SET TimeZoneId = 'Europe/Copenhagen' WHERE TimeZoneId IS NULL OR TimeZoneId = ''
+        ");
+        await context.Database.ExecuteSqlRawAsync(@"
+            UPDATE AppSettings SET MqttRelayEnabled = 0 WHERE MqttRelayEnabled IS NULL
+        ");
+        await context.Database.ExecuteSqlRawAsync(@"
+            UPDATE AppSettings SET MqttRelayPort = 1883 WHERE MqttRelayPort IS NULL OR MqttRelayPort = 0
         ");
 
         // Enable foreign key enforcement (critical for cascade delete)
@@ -247,6 +275,43 @@ using (var scope = app.Services.CreateScope())
                     settingsChanged = true;
                 }
 
+                // MQTT Relay environment variable overrides
+                var envRelayEnabled = Environment.GetEnvironmentVariable("MQTT_RELAY_ENABLED");
+                var envRelayPort = Environment.GetEnvironmentVariable("MQTT_RELAY_PORT");
+                var envRelayUsername = Environment.GetEnvironmentVariable("MQTT_RELAY_USERNAME");
+                var envRelayPassword = Environment.GetEnvironmentVariable("MQTT_RELAY_PASSWORD");
+
+                if (!string.IsNullOrEmpty(envRelayEnabled) &&
+                    (envRelayEnabled == "1" || envRelayEnabled.Equals("true", StringComparison.OrdinalIgnoreCase)))
+                {
+                    if (!settings.MqttRelayEnabled)
+                    {
+                        settings.MqttRelayEnabled = true;
+                        settingsChanged = true;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(envRelayPort) && int.TryParse(envRelayPort, out var relayPort))
+                {
+                    if (settings.MqttRelayPort != relayPort)
+                    {
+                        settings.MqttRelayPort = relayPort;
+                        settingsChanged = true;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(envRelayUsername) && settings.MqttRelayUsername != envRelayUsername)
+                {
+                    settings.MqttRelayUsername = envRelayUsername;
+                    settingsChanged = true;
+                }
+
+                if (!string.IsNullOrEmpty(envRelayPassword) && settings.MqttRelayPassword != envRelayPassword)
+                {
+                    settings.MqttRelayPassword = envRelayPassword;
+                    settingsChanged = true;
+                }
+
                 // Save changes back to database if any environment overrides were applied
                 if (settingsChanged)
                 {
@@ -286,6 +351,30 @@ using (var scope = app.Services.CreateScope())
                     catch (Exception ex)
                     {
                         startupLogger.LogError(ex, "Failed to connect to BambuLab printer on startup");
+                    }
+                });
+            }
+
+            // Initialize MQTT Relay if enabled
+            if (settings.MqttRelayEnabled)
+            {
+                var mqttRelayService = scope.ServiceProvider.GetRequiredService<MqttRelayService>();
+                var relayLogger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>()
+                    .CreateLogger("MqttRelayInit");
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await mqttRelayService.StartRelayServerAsync(
+                            settings.MqttRelayPort,
+                            settings.MqttRelayUsername,
+                            settings.MqttRelayPassword
+                        );
+                        relayLogger.LogInformation("MQTT Relay started on port {Port}", settings.MqttRelayPort);
+                    }
+                    catch (Exception ex)
+                    {
+                        relayLogger.LogError(ex, "Failed to start MQTT Relay on startup");
                     }
                 });
             }

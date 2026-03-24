@@ -32,4 +32,15 @@ public class AppSettings
     // Automatically handles daylight saving time transitions
     [MaxLength(100)]
     public string TimeZoneId { get; set; } = "Europe/Copenhagen";
+
+    // MQTT Relay Settings (for ESP32 and other clients)
+    public bool MqttRelayEnabled { get; set; } = false;
+
+    public int MqttRelayPort { get; set; } = 1883;
+
+    [MaxLength(50)]
+    public string? MqttRelayUsername { get; set; }
+
+    [MaxLength(50)]
+    public string? MqttRelayPassword { get; set; }
 }

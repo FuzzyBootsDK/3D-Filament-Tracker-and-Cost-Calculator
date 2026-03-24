@@ -1,0 +1,111 @@
+# Git Commit Message
+
+## Title
+```
+feat: Add MQTT Relay Server for ESP32 and multi-client support
+```
+
+## Description
+```
+Implements an MQTT relay/rebroadcaster to solve connection stability issues 
+when multiple devices try to connect to BambuLab printer's MQTT broker.
+
+### Problem Solved
+BambuLab printers have limited concurrent MQTT connection slots (2-5).
+When multiple devices (Filament Tracker, ESP32, Home Assistant) connect
+directly, connections become unstable and frequently drop.
+
+### Solution
+- Filament Tracker maintains single connection to printer
+- Built-in MQTT broker rebroadcasts all messages
+- Unlimited clients can connect to relay instead of printer
+- Improves stability and reduces printer resource usage
+
+### Features Added
+- MqttRelayService with full MQTT broker implementation
+- Settings UI for relay configuration (port, auth)
+- Optional username/password authentication
+- Auto-generated ESP32 connection instructions
+- Real-time client connection monitoring
+- Docker support with port 1883 exposed
+- Environment variable configuration
+- Comprehensive documentation
+
+### Changes
+- Added: Services/MqttRelayService.cs
+- Added: MQTT-RELAY-SETUP.md (complete guide)
+- Added: MQTT-RELAY-CHANGELOG.md (migration notes)
+- Added: MQTT-RELAY-QUICKSTART.md (quick reference)
+- Modified: Models/AppSettings.cs (relay config fields)
+- Modified: Program.cs (service registration, DB migration, env vars)
+- Modified: Components/SettingsPage.razor (relay UI)
+- Modified: FilamentTracker.csproj (MQTTnet.Server package)
+- Modified: docker-compose.yml (port 1883 mapping)
+- Modified: Dockerfile (expose port 1883)
+- Modified: README.md (feature mention)
+
+### Database Migration
+Automatically adds 4 new columns to AppSettings table:
+- MqttRelayEnabled (bool, default: false)
+- MqttRelayPort (int, default: 1883)
+- MqttRelayUsername (string?, nullable)
+- MqttRelayPassword (string?, nullable)
+
+### Docker Changes
+- Exposes port 1883 for MQTT relay
+- Supports MQTT_RELAY_PORT environment variable
+- Fully documented Docker networking behavior
+- Container-to-LAN connectivity explained
+
+### Breaking Changes
+None - relay is disabled by default, all existing features unchanged
+
+### Testing
+- ✅ Builds successfully on .NET 10
+- ✅ Docker container builds and runs
+- ✅ Database migration tested (clean + existing DB)
+- ✅ Settings UI functional
+- ✅ Relay starts/stops correctly
+- ✅ Message rebroadcasting works
+- ✅ Authentication validated
+- ✅ Environment variables work
+
+### Documentation
+Complete setup guide with:
+- Docker networking explanation
+- ESP32 sample code (basic + advanced)
+- Troubleshooting section
+- Firewall configuration guides
+- Architecture diagrams
+- FAQ section
+
+### For Users
+Existing users: No action required, relay is opt-in
+New setup: Enable in Settings → MQTT Relay Server
+ESP32 users: Change mqtt_server to NAS IP instead of printer IP
+```
+
+## Files Changed Summary
+```
+Added:
+  FilamentTracker/Services/MqttRelayService.cs
+  FilamentTracker/MQTT-RELAY-SETUP.md
+  FilamentTracker/MQTT-RELAY-CHANGELOG.md
+  FilamentTracker/MQTT-RELAY-QUICKSTART.md
+
+Modified:
+  FilamentTracker/Models/AppSettings.cs
+  FilamentTracker/Program.cs
+  FilamentTracker/Components/SettingsPage.razor
+  FilamentTracker/FilamentTracker.csproj
+  FilamentTracker/docker-compose.yml
+  FilamentTracker/Dockerfile
+  FilamentTracker/README.md
+
+Database Migration:
+  AppSettings table: +4 columns (automatic on startup)
+
+Docker Changes:
+  Exposed port: 1883
+  New env vars: MQTT_RELAY_*
+```

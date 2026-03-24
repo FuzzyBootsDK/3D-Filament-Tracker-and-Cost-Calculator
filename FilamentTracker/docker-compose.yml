@@ -12,6 +12,7 @@ services:
       - .env
     ports:
       - "${HOST_PORT:-5500}:5000"
+      - "${MQTT_RELAY_PORT:-1883}:1883"  # MQTT Relay port for ESP32 and other clients
     volumes:
       - filament-data:/app/data
       - ./logs:/app/logs

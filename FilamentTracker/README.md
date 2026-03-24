@@ -51,6 +51,7 @@ All configuration is done through the **Settings** page in the web app:
 - **Currency** — 24 international currencies
 - **Timezone** — ETA calculation with automatic DST
 - **BambuLab MQTT** — Printer integration settings
+- **MQTT Relay** — Rebroadcast MQTT for ESP32 and other clients
 - **Theme** — Dark or light mode
 
 ---

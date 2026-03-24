@@ -33,6 +33,7 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 
 # Expose port
 EXPOSE 5000
+EXPOSE 1883
 
 # Run the application
 ENTRYPOINT ["dotnet", "FilamentTracker.dll"]

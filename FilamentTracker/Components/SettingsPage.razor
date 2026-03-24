@@ -3,6 +3,7 @@
 @inject CsvService CsvService
 @inject ThresholdService ThresholdService
 @inject BambuLabService BambuLabService
+@inject MqttRelayService MqttRelayService
 @inject IJSRuntime Js
 @using System.Text
 @using FilamentTracker.Models
@@ -288,6 +289,96 @@
     </div>
 
     <div class="formCard">
+        <h2 style="margin-top: 0;">🔄 MQTT Relay Server</h2>
+        <div style="color: var(--muted); margin-bottom: 16px;">
+            Enable this to rebroadcast MQTT messages from your printer. Your ESP32 and other devices can connect to this server instead of directly to the printer, reducing load on the printer's MQTT broker.
+        </div>
+
+        <div class="checkRow" style="margin-bottom: 16px;">
+            <input type="checkbox" @bind="_mqttRelayEnabled" id="mqttRelayEnabled" disabled="@(!_bambuLabEnabled)"/>
+            <label for="mqttRelayEnabled" style="@(!_bambuLabEnabled ? "color: var(--muted);" : "")">Enable MQTT Relay Server</label>
+        </div>
+        @if (!_bambuLabEnabled)
+        {
+            <div style="font-size: 12px; color: var(--muted); margin-bottom: 16px; margin-left: 26px;">
+                ⚠️ BambuLab MQTT must be enabled and connected before the relay can work.
+            </div>
+        }
+
+        <div style="margin-bottom: 16px;">
+            <label class="label">Relay Port</label>
+            <input type="number" class="input" @bind="_mqttRelayPort" min="1" max="65535" placeholder="1883"/>
+            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                Default MQTT port is 1883. Change if needed. Make sure this port is not in use.
+            </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label class="label">Username (Optional)</label>
+            <input type="text" class="input" @bind="_mqttRelayUsername" placeholder="Leave empty for no auth"/>
+            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                Optional authentication for clients connecting to the relay
+            </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label class="label">Password (Optional)</label>
+            <input type="password" class="input" @bind="_mqttRelayPassword" placeholder="Leave empty for no auth"/>
+            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                Required if username is set
+            </div>
+        </div>
+
+        @if (_mqttRelayStatus != null)
+        {
+            <div class="strip"
+                 style="margin-bottom: 16px; @(_mqttRelayStatusSuccess ? "border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.12);" : "border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12);")">
+                <div>@_mqttRelayStatus</div>
+            </div>
+        }
+
+        <div style="margin-bottom: 16px;">
+            <details style="cursor: pointer;">
+                <summary style="color: var(--muted); font-size: 13px; padding: 8px 0;">
+                    📖 ESP32 Connection Instructions
+                </summary>
+                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; margin-top: 8px; font-size: 12px;">
+                    <p><strong>Configure your ESP32 to connect to this relay:</strong></p>
+                    <pre style="background: #0d1117; padding: 10px; border-radius: 6px; overflow-x: auto;">
+const char* mqtt_server = "<strong>@GetServerIpAddress()</strong>";  // This server's IP
+const int mqtt_port = @_mqttRelayPort;
+@if (!string.IsNullOrEmpty(_mqttRelayUsername))
+{
+<text>const char* mqtt_user = "@_mqttRelayUsername";
+const char* mqtt_pass = "@_mqttRelayPassword";</text>
+}
+else
+{
+<text>// No authentication required</text>
+}
+
+// Subscribe to the same topic
+client.subscribe("device/@(_bambuLabSerialNumber ?? "YOUR_SERIAL")/report");</pre>
+                    <p style="margin-top: 10px; color: var(--muted);">
+                        <strong>Benefits:</strong> Your ESP32 connects to this server instead of the printer, reducing the number of direct connections to the printer's MQTT broker.
+                    </p>
+                </div>
+            </details>
+        </div>
+
+        <button class="btn primary" @onclick="SaveMqttRelaySettings" disabled="@_isProcessing">
+            @if (_isProcessing)
+            {
+                <text>Saving...</text>
+            }
+            else
+            {
+                <text>💾 Save Relay Settings</text>
+            }
+        </button>
+    </div>
+
+    <div class="formCard">
         <h2 style="margin-top: 0;">📡 MQTT Message Log</h2>
         <div style="color: var(--muted); margin-bottom: 16px;">
             Live feed of the last 50 incoming MQTT messages from your BambuLab printer.
@@ -534,6 +625,14 @@
     private string? _bambuLabConnectionStatus;
     private bool _bambuLabConnectionSuccess;
 
+    // MQTT Relay settings
+    private bool _mqttRelayEnabled;
+    private int _mqttRelayPort = 1883;
+    private string _mqttRelayUsername = "";
+    private string _mqttRelayPassword = "";
+    private string? _mqttRelayStatus;
+    private bool _mqttRelayStatusSuccess;
+
     // MQTT log terminal
     private List<MqttLogEntry> _mqttLogEntries = new();
 
@@ -656,6 +755,12 @@
         _bambuLabIpAddress = settings.BambuLabIpAddress ?? "";
         _bambuLabAccessCode = settings.BambuLabAccessCode ?? "";
         _bambuLabSerialNumber = settings.BambuLabSerialNumber ?? "";
+
+        // Load MQTT Relay settings
+        _mqttRelayEnabled = settings.MqttRelayEnabled;
+        _mqttRelayPort = settings.MqttRelayPort;
+        _mqttRelayUsername = settings.MqttRelayUsername ?? "";
+        _mqttRelayPassword = settings.MqttRelayPassword ?? "";
     }
 
     private async Task SaveCurrency()
@@ -1033,4 +1138,101 @@
         }
     }
 
+    // MQTT Relay Methods
+    private async Task SaveMqttRelaySettings()
+    {
+        try
+        {
+            _isProcessing = true;
+            _mqttRelayStatus = null;
+            StateHasChanged();
+
+            // Validate port
+            if (_mqttRelayPort < 1 || _mqttRelayPort > 65535)
+            {
+                _mqttRelayStatus = "❌ Invalid port number. Must be between 1 and 65535.";
+                _mqttRelayStatusSuccess = false;
+                _isProcessing = false;
+                return;
+            }
+
+            // Validate auth: if username is set, password must be set too
+            if (!string.IsNullOrEmpty(_mqttRelayUsername) && string.IsNullOrEmpty(_mqttRelayPassword))
+            {
+                _mqttRelayStatus = "❌ Password is required when username is set.";
+                _mqttRelayStatusSuccess = false;
+                _isProcessing = false;
+                return;
+            }
+
+            var settings = await FilamentService.GetSettingsAsync();
+            settings.MqttRelayEnabled = _mqttRelayEnabled;
+            settings.MqttRelayPort = _mqttRelayPort;
+            settings.MqttRelayUsername = string.IsNullOrWhiteSpace(_mqttRelayUsername) ? null : _mqttRelayUsername;
+            settings.MqttRelayPassword = string.IsNullOrWhiteSpace(_mqttRelayPassword) ? null : _mqttRelayPassword;
+
+            await FilamentService.UpdateSettingsAsync(settings);
+
+            // Start or stop the relay server
+            if (_mqttRelayEnabled && BambuLabService.IsConnected)
+            {
+                try
+                {
+                    await MqttRelayService.StopRelayServerAsync(); // Stop first if already running
+                    await MqttRelayService.StartRelayServerAsync(_mqttRelayPort, settings.MqttRelayUsername, settings.MqttRelayPassword);
+
+                    _mqttRelayStatus = $"✅ MQTT Relay Server started on port {_mqttRelayPort}! Your ESP32 can now connect to this server.";
+                    _mqttRelayStatusSuccess = true;
+                }
+                catch (Exception ex)
+                {
+                    _mqttRelayStatus = $"❌ Failed to start relay server: {ex.Message}";
+                    _mqttRelayStatusSuccess = false;
+                }
+            }
+            else if (!_mqttRelayEnabled)
+            {
+                await MqttRelayService.StopRelayServerAsync();
+                _mqttRelayStatus = "Settings saved. MQTT Relay disabled.";
+                _mqttRelayStatusSuccess = true;
+            }
+            else if (_mqttRelayEnabled && !BambuLabService.IsConnected)
+            {
+                _mqttRelayStatus = "⚠️ Settings saved, but relay cannot start until BambuLab MQTT is connected.";
+                _mqttRelayStatusSuccess = false;
+            }
+
+            ShowMessage("MQTT Relay settings saved!", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error saving MQTT Relay settings: {ex.Message}", true);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
+    }
+
+    private string GetServerIpAddress()
+    {
+        try
+        {
+            var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            return "YOUR_SERVER_IP";
+        }
+        catch
+        {
+            return "YOUR_SERVER_IP";
+        }
+    }
+
 }
+
