@@ -209,8 +209,11 @@ using (var scope = app.Services.CreateScope())
         if (settings != null)
         {
             // Environment-variable overrides (container-friendly)
+            // These override database values and persist them back to the database
             try
             {
+                bool settingsChanged = false;
+
                 var envBambuEnabled = Environment.GetEnvironmentVariable("BAMBULAB_ENABLED");
                 var envBambuIp = Environment.GetEnvironmentVariable("BAMBULAB_IP");
                 var envBambuCode = Environment.GetEnvironmentVariable("BAMBULAB_CODE");
@@ -218,16 +221,37 @@ using (var scope = app.Services.CreateScope())
 
                 if (!string.IsNullOrEmpty(envBambuEnabled) &&
                     (envBambuEnabled == "1" || envBambuEnabled.Equals("true", StringComparison.OrdinalIgnoreCase)))
-                    settings.BambuLabEnabled = true;
+                {
+                    if (!settings.BambuLabEnabled)
+                    {
+                        settings.BambuLabEnabled = true;
+                        settingsChanged = true;
+                    }
+                }
 
-                if (!string.IsNullOrEmpty(envBambuIp))
+                if (!string.IsNullOrEmpty(envBambuIp) && settings.BambuLabIpAddress != envBambuIp)
+                {
                     settings.BambuLabIpAddress = envBambuIp;
+                    settingsChanged = true;
+                }
 
-                if (!string.IsNullOrEmpty(envBambuCode))
+                if (!string.IsNullOrEmpty(envBambuCode) && settings.BambuLabAccessCode != envBambuCode)
+                {
                     settings.BambuLabAccessCode = envBambuCode;
+                    settingsChanged = true;
+                }
 
-                if (!string.IsNullOrEmpty(envBambuSerial))
+                if (!string.IsNullOrEmpty(envBambuSerial) && settings.BambuLabSerialNumber != envBambuSerial)
+                {
                     settings.BambuLabSerialNumber = envBambuSerial;
+                    settingsChanged = true;
+                }
+
+                // Save changes back to database if any environment overrides were applied
+                if (settingsChanged)
+                {
+                    await context.SaveChangesAsync();
+                }
             }
             catch
             {

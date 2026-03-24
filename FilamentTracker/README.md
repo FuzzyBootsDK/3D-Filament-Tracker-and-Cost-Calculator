@@ -1,6 +1,75 @@
-# Filament Tracker v2
+# Filament Tracker v2.0
 
-A Blazor Server web app for tracking 3D printer filament inventory, managing spools, and calculating print costs.
+> **📖 For complete documentation, see the [main README](../README.md) in the repository root.**
+
+## Quick Start
+
+### Docker (Recommended)
+```bash
+docker-compose up -d
+```
+Access at **http://localhost:5500**
+
+### Local .NET
+```bash
+dotnet restore
+dotnet run
+```
+Access at **https://localhost:5001**
+
+---
+
+## What's Included in This Directory
+
+This is the main application directory containing:
+
+- **Components/** — Blazor Razor components
+- **Models/** — Data models (Filament, Spool, AppSettings, etc.)
+- **Services/** — Business logic (FilamentService, BambuLabService, etc.)
+- **wwwroot/** — Static assets (CSS, JavaScript)
+- **Dockerfile** & **docker-compose.yml** — Container configuration
+- **deploy.ps1** & **deploy.bat** — Deployment scripts
+
+---
+
+## Key Files
+
+| File | Purpose |
+|------|---------|
+| `Program.cs` | Application entry point, database initialization |
+| `docker-compose.yml` | Docker container orchestration |
+| `deploy.ps1` | Windows PowerShell deployment script |
+| `Dockerfile` | Container image definition |
+
+---
+
+## Configuration
+
+All configuration is done through the **Settings** page in the web app:
+
+- **Thresholds** — Low/critical stock levels
+- **Currency** — 24 international currencies
+- **Timezone** — ETA calculation with automatic DST
+- **BambuLab MQTT** — Printer integration settings
+- **Theme** — Dark or light mode
+
+---
+
+## Data Storage
+
+- **Development:** `filaments.db` in this directory
+- **Docker:** Persistent volume `filament-tracker-data`
+
+---
+
+For full documentation including:
+- Detailed feature descriptions
+- BambuLab MQTT setup
+- NAS deployment guides
+- CSV format reference
+- Troubleshooting
+
+**👉 See [../README.md](../README.md)**
 
 ---
 
