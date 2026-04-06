@@ -152,10 +152,17 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
     {
         try
         {
-            var payload = Encoding.UTF8.GetString(args.ApplicationMessage.Payload.ToArray());
+            // Capture raw bytes first for exact relay (no encoding round-trip issues)
+            var payloadBytes = args.ApplicationMessage.Payload.ToArray();
+            var payload = Encoding.UTF8.GetString(payloadBytes);
             logger.LogDebug("Received MQTT message: {Payload}", payload);
 
-            var entry = new MqttLogEntry { Timestamp = DateTime.Now, Payload = payload };
+            var entry = new MqttLogEntry 
+            { 
+                Timestamp = DateTime.Now, 
+                Payload = payload,
+                PayloadBytes = payloadBytes  // Store raw bytes for exact relay
+            };
             lock (_mqttLog)
             {
                 _mqttLog.Enqueue(entry);
@@ -424,6 +431,7 @@ public class MqttLogEntry
     public DateTime Timestamp { get; init; }
     public string   Payload   { get; init; } = "";
     public string   Topic     { get; set; }  = "";
+    public byte[]   PayloadBytes { get; init; } = Array.Empty<byte>(); // Raw bytes for exact relay
 }
 
 internal static class StringExtensions

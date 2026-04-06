@@ -113,13 +113,15 @@ public class MqttRelayService : IAsyncDisposable
                     ? $"device/{serialNumber}/report" 
                     : "bambulab/report";
 
-                // Convert the string payload back to bytes using UTF-8 encoding
-                // This ensures ESP32 receives the exact same byte format as the original message
-                var payloadBytes = Encoding.UTF8.GetBytes(entry.Payload);
+                // Use the raw bytes directly from the original MQTT message
+                // This ensures byte-for-byte identical relay with no encoding round-trip
+                var payloadBytes = entry.PayloadBytes.Length > 0 
+                    ? entry.PayloadBytes 
+                    : Encoding.UTF8.GetBytes(entry.Payload);  // Fallback for old entries
 
                 var message = new MqttApplicationMessageBuilder()
                     .WithTopic(topic)
-                    .WithPayload(payloadBytes)  // Use byte array instead of string
+                    .WithPayload(payloadBytes)  // Exact bytes from printer, no re-encoding
                     .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
                     .WithRetainFlag(false)
                     .Build();

@@ -410,23 +410,33 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
                     LowThreshold               = $low,
                     CriticalThreshold          = $crit,
                     Currency                   = $curr,
+                    TimeZoneId                 = $tz,
                     BambuLabIpAddress          = $ip,
                     BambuLabAccessCode         = $code,
                     BambuLabSerialNumber       = $serial,
                     BambuLabEnabled            = $enabled,
                     AmsAutoUpdateWeight        = $autoWeight,
-                    AmsAutoUpdateOnlyDecrease  = $onlyDecrease
+                    AmsAutoUpdateOnlyDecrease  = $onlyDecrease,
+                    MqttRelayEnabled           = $relayEnabled,
+                    MqttRelayPort              = $relayPort,
+                    MqttRelayUsername          = $relayUsername,
+                    MqttRelayPassword          = $relayPassword
                 WHERE Id = $id";
-            cmd.Parameters.AddWithValue("$low",          (double)settings.LowThreshold);
-            cmd.Parameters.AddWithValue("$crit",         (double)settings.CriticalThreshold);
-            cmd.Parameters.AddWithValue("$curr",         settings.Currency);
-            cmd.Parameters.AddWithValue("$ip",           (object?)settings.BambuLabIpAddress    ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("$code",         (object?)settings.BambuLabAccessCode   ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("$serial",       (object?)settings.BambuLabSerialNumber ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("$enabled",      settings.BambuLabEnabled          ? 1 : 0);
-            cmd.Parameters.AddWithValue("$autoWeight",   settings.AmsAutoUpdateWeight       ? 1 : 0);
-            cmd.Parameters.AddWithValue("$onlyDecrease", settings.AmsAutoUpdateOnlyDecrease ? 1 : 0);
-            cmd.Parameters.AddWithValue("$id",           settings.Id);
+            cmd.Parameters.AddWithValue("$low",            (double)settings.LowThreshold);
+            cmd.Parameters.AddWithValue("$crit",           (double)settings.CriticalThreshold);
+            cmd.Parameters.AddWithValue("$curr",           settings.Currency);
+            cmd.Parameters.AddWithValue("$tz",             settings.TimeZoneId);
+            cmd.Parameters.AddWithValue("$ip",             (object?)settings.BambuLabIpAddress    ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$code",           (object?)settings.BambuLabAccessCode   ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$serial",         (object?)settings.BambuLabSerialNumber ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$enabled",        settings.BambuLabEnabled          ? 1 : 0);
+            cmd.Parameters.AddWithValue("$autoWeight",     settings.AmsAutoUpdateWeight       ? 1 : 0);
+            cmd.Parameters.AddWithValue("$onlyDecrease",   settings.AmsAutoUpdateOnlyDecrease ? 1 : 0);
+            cmd.Parameters.AddWithValue("$relayEnabled",   settings.MqttRelayEnabled ? 1 : 0);
+            cmd.Parameters.AddWithValue("$relayPort",      settings.MqttRelayPort);
+            cmd.Parameters.AddWithValue("$relayUsername",  (object?)settings.MqttRelayUsername ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$relayPassword",  (object?)settings.MqttRelayPassword ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$id",             settings.Id);
             await cmd.ExecuteNonQueryAsync();
         }
         catch (Exception ex)
