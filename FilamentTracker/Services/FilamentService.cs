@@ -371,9 +371,10 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
         // Read all columns we care about
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT Id, LowThreshold, CriticalThreshold, Currency,
+            SELECT Id, LowThreshold, CriticalThreshold, Currency, TimeZoneId,
                    BambuLabIpAddress, BambuLabAccessCode, BambuLabSerialNumber,
-                   BambuLabEnabled, AmsAutoUpdateWeight, AmsAutoUpdateOnlyDecrease
+                   BambuLabEnabled, AmsAutoUpdateWeight, AmsAutoUpdateOnlyDecrease,
+                   MqttRelayEnabled, MqttRelayPort, MqttRelayUsername, MqttRelayPassword
             FROM AppSettings
             LIMIT 1";
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -387,12 +388,17 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
             LowThreshold              = reader.GetDecimal(1),
             CriticalThreshold         = reader.GetDecimal(2),
             Currency                  = reader.GetString(3),
-            BambuLabIpAddress         = reader.IsDBNull(4)  ? null : reader.GetString(4),
-            BambuLabAccessCode        = reader.IsDBNull(5)  ? null : reader.GetString(5),
-            BambuLabSerialNumber      = reader.IsDBNull(6)  ? null : reader.GetString(6),
-            BambuLabEnabled           = !reader.IsDBNull(7) && reader.GetInt32(7) == 1,
-            AmsAutoUpdateWeight       = !reader.IsDBNull(8) && reader.GetInt32(8) == 1,
-            AmsAutoUpdateOnlyDecrease = reader.IsDBNull(9)  || reader.GetInt32(9) == 1,
+            TimeZoneId                = reader.IsDBNull(4)  ? "Europe/Copenhagen" : reader.GetString(4),
+            BambuLabIpAddress         = reader.IsDBNull(5)  ? null : reader.GetString(5),
+            BambuLabAccessCode        = reader.IsDBNull(6)  ? null : reader.GetString(6),
+            BambuLabSerialNumber      = reader.IsDBNull(7)  ? null : reader.GetString(7),
+            BambuLabEnabled           = !reader.IsDBNull(8) && reader.GetInt32(8) == 1,
+            AmsAutoUpdateWeight       = !reader.IsDBNull(9) && reader.GetInt32(9) == 1,
+            AmsAutoUpdateOnlyDecrease = reader.IsDBNull(10) || reader.GetInt32(10) == 1,
+            MqttRelayEnabled          = !reader.IsDBNull(11) && reader.GetInt32(11) == 1,
+            MqttRelayPort             = reader.IsDBNull(12) ? 1883 : reader.GetInt32(12),
+            MqttRelayUsername         = reader.IsDBNull(13) ? null : reader.GetString(13),
+            MqttRelayPassword         = reader.IsDBNull(14) ? null : reader.GetString(14),
         };
     }
 
