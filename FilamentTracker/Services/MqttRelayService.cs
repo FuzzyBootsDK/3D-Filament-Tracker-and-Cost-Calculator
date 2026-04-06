@@ -52,6 +52,7 @@ public class MqttRelayService : IAsyncDisposable
             var factory = new MqttServerFactory();
             var options = new MqttServerOptionsBuilder()
                 .WithDefaultEndpoint()
+                .WithDefaultEndpointBoundIPAddress(System.Net.IPAddress.Any) // Bind to 0.0.0.0 (all interfaces)
                 .WithDefaultEndpointPort(port)
                 .Build();
 
@@ -63,7 +64,7 @@ public class MqttRelayService : IAsyncDisposable
             _mqttServer.ClientDisconnectedAsync += OnClientDisconnected;
             _mqttServer.ClientSubscribedTopicAsync += OnClientSubscribed;
 
-            _logger.LogInformation("MQTT Server instance created, starting listener on port {Port}...", port);
+            _logger.LogInformation("MQTT Server instance created, binding to 0.0.0.0:{Port} (all interfaces)...", port);
             await _mqttServer.StartAsync();
             _isServerRunning = true;
 
