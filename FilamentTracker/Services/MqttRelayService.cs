@@ -39,9 +39,11 @@ public class MqttRelayService : IAsyncDisposable
         {
             if (_isServerRunning)
             {
-                _logger.LogWarning("MQTT Relay Server is already running");
+                _logger.LogWarning("MQTT Relay Server is already running on port {Port}", RelayPort);
                 return;
             }
+
+            _logger.LogInformation("Starting MQTT Relay Server on port {Port}...", port);
 
             RelayPort = port;
             _relayUsername = username;
@@ -61,15 +63,18 @@ public class MqttRelayService : IAsyncDisposable
             _mqttServer.ClientDisconnectedAsync += OnClientDisconnected;
             _mqttServer.ClientSubscribedTopicAsync += OnClientSubscribed;
 
+            _logger.LogInformation("MQTT Server instance created, starting listener on port {Port}...", port);
             await _mqttServer.StartAsync();
             _isServerRunning = true;
-            
-            _logger.LogInformation("MQTT Relay Server started on port {Port}", port);
+
+            _logger.LogInformation("✅ MQTT Relay Server successfully started on port {Port}", port);
             _logger.LogInformation("ESP32 and other clients can now connect to this server instead of the printer");
+            _logger.LogInformation("Authentication: {Auth}", string.IsNullOrEmpty(username) ? "Disabled (no credentials required)" : $"Enabled (username: {username})");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to start MQTT Relay Server on port {Port}", port);
+            _logger.LogError(ex, "❌ Failed to start MQTT Relay Server on port {Port}. Error: {Message}", port, ex.Message);
+            _isServerRunning = false;
             throw;
         }
     }
@@ -160,23 +165,30 @@ public class MqttRelayService : IAsyncDisposable
 
     private Task ValidateConnection(ValidatingConnectionEventArgs args)
     {
+        _logger.LogInformation("MQTT Relay: Connection attempt from ClientId={ClientId}, Endpoint={Endpoint}, Username={Username}", 
+            args.ClientId, args.Endpoint, args.UserName ?? "(none)");
+
         // Optional authentication
         if (!string.IsNullOrEmpty(_relayUsername) && !string.IsNullOrEmpty(_relayPassword))
         {
+            _logger.LogDebug("MQTT Relay: Authentication is ENABLED (username: {Username})", _relayUsername);
+
             if (args.UserName != _relayUsername || args.Password != _relayPassword)
             {
                 args.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
-                _logger.LogWarning("MQTT Relay: Client authentication failed for user {User}", args.UserName);
+                _logger.LogWarning("MQTT Relay: ❌ Client authentication FAILED for ClientId={ClientId}, User={User} (expected: {Expected})", 
+                    args.ClientId, args.UserName ?? "(none)", _relayUsername);
             }
             else
             {
                 args.ReasonCode = MqttConnectReasonCode.Success;
-                _logger.LogInformation("MQTT Relay: Client {ClientId} authenticated successfully", args.ClientId);
+                _logger.LogInformation("MQTT Relay: ✅ Client {ClientId} authenticated successfully", args.ClientId);
             }
         }
         else
         {
             // No authentication required
+            _logger.LogDebug("MQTT Relay: Authentication is DISABLED - accepting connection from {ClientId}", args.ClientId);
             args.ReasonCode = MqttConnectReasonCode.Success;
         }
 
