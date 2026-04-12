@@ -1,0 +1,2220 @@
+filament-tracker
+date,stream,content
+2026/04/06 17:22:32,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:22:32,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:21:44,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:21:44,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:21:04,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:21:04,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:21:02,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:21:02,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:21:00,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:21:00,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:20:36,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:20:36,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:20:34,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:20:34,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:20:22,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:20:21,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:20:19,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:20:19,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:20:13,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:20:13,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:20:11,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:20:11,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:20:01,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:20:01,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:19:55,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:19:55,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:19:53,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:19:53,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:19:49,stdout,      ORDER BY "b"."Name"
+
+2026/04/06 17:19:49,stdout,      FROM "Brands" AS "b"
+
+2026/04/06 17:19:49,stdout,"      SELECT \"b\".\"Id\", \"b\".\"DateAdded\", \"b\".\"Name\"
+"
+2026/04/06 17:19:49,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:19:49,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:19:49,stdout,"      ORDER BY \"f\".\"DateAdded\" DESC, \"f\".\"Id\"
+"
+2026/04/06 17:19:49,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 17:19:49,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 17:19:49,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 17:19:49,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 17:19:49,stdout,      LEFT JOIN (
+
+2026/04/06 17:19:49,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 17:19:49,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 17:19:49,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:19:49,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:19:47,stdout,      ORDER BY "f"."Id"
+
+2026/04/06 17:19:47,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 17:19:47,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 17:19:47,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 17:19:47,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 17:19:47,stdout,      LEFT JOIN (
+
+2026/04/06 17:19:47,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 17:19:47,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 17:19:47,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:19:47,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:19:47,stdout,"      ORDER BY \"f\".\"DateAdded\" DESC, \"f\".\"Id\"
+"
+2026/04/06 17:19:47,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 17:19:47,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 17:19:47,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 17:19:47,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 17:19:47,stdout,      LEFT JOIN (
+
+2026/04/06 17:19:47,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 17:19:47,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 17:19:47,stdout,"      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:19:47,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:19:47,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:19:47,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:19:47,stdout,      Executing endpoint '/_blazor'
+
+2026/04/06 17:19:47,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 17:19:47,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/_blazor?id=a8oL92x57MrxLOKlPGJWTQ - - -
+
+2026/04/06 17:19:47,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 17:19:47,stdout,      Request finished HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - 200 316 application/json 0.7731ms
+
+2026/04/06 17:19:47,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 17:19:47,stdout,      Executed endpoint '/_blazor/negotiate'
+
+2026/04/06 17:19:47,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 17:19:47,stdout,      Executing endpoint '/_blazor/negotiate'
+
+2026/04/06 17:19:47,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 17:19:47,stdout,      Request starting HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - - 0
+
+2026/04/06 17:19:47,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 17:19:47,stdout,      Request finished HTTP/1.1 POST http://3dprint.lan/_blazor/disconnect - 200 0 - 35.1170ms
+
+2026/04/06 17:19:47,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 17:19:46,stdout,      Executed endpoint 'Blazor disconnect'
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 17:19:46,stdout,      Request finished HTTP/1.1 GET http://3dprint.lan/_blazor?id=5RifJMqCDQCYORQ2U3Jw-g - 101 - - 1541285.8617ms
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 17:19:46,stdout,      Executed endpoint '/_blazor'
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 17:19:46,stdout,      Request finished HTTP/1.1 GET http://3dprint.lan/_blazor/initializers - 200 - application/json;+charset=utf-8 1.7871ms
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 17:19:46,stdout,      Executed endpoint 'Blazor initializers'
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 17:19:46,stdout,      Executing endpoint 'Blazor initializers'
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 17:19:46,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/_blazor/initializers - - -
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 17:19:46,stdout,      Executing endpoint 'Blazor disconnect'
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 17:19:46,stdout,      Request starting HTTP/1.1 POST http://3dprint.lan/_blazor/disconnect - multipart/form-data;+boundary=----WebKitFormBoundaryEKHbhLPGCHA0DnxO 359
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 17:19:46,stdout,      Request finished HTTP/1.1 GET http://3dprint.lan/ - 200 - text/html;+charset=utf-8 131.9458ms
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 17:19:46,stdout,      Executed endpoint '/_Host'
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 17:19:46,stdout,      Executed page /_Host in 129.5238ms
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[104]
+
+2026/04/06 17:19:46,stdout,      ORDER BY "f"."Id"
+
+2026/04/06 17:19:46,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 17:19:46,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 17:19:46,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 17:19:46,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 17:19:46,stdout,      LEFT JOIN (
+
+2026/04/06 17:19:46,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 17:19:46,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 17:19:46,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:19:46,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:19:46,stdout,"      ORDER BY \"f\".\"DateAdded\" DESC, \"f\".\"Id\"
+"
+2026/04/06 17:19:46,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 17:19:46,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 17:19:46,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 17:19:46,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 17:19:46,stdout,      LEFT JOIN (
+
+2026/04/06 17:19:46,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 17:19:46,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 17:19:46,stdout,"      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:19:46,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:19:46,stdout,"      Executed an implicit handler method, returned result Microsoft.AspNetCore.Mvc.RazorPages.PageResult.
+"
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[109]
+
+2026/04/06 17:19:46,stdout,      Executing an implicit handler method - ModelState is Valid
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[107]
+
+2026/04/06 17:19:46,stdout,      Route matched with {page = "/_Host"}. Executing page /_Host
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[103]
+
+2026/04/06 17:19:46,stdout,      Executing endpoint '/_Host'
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 17:19:46,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/ - - -
+
+2026/04/06 17:19:46,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 17:19:45,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:19:45,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:19:36,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:19:36,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:19:34,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:19:34,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:19:30,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:19:30,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:19:26,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:19:26,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:19:04,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:19:04,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:19:00,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:19:00,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:18:39,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:18:39,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:18:37,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:18:37,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:18:31,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:18:31,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:18:29,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:18:29,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:18:21,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:18:21,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:18:19,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:18:19,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:18:13,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:18:13,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:18:09,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:18:09,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:18:05,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:18:05,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:18:02,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:18:01,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:18:00,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:17:59,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:17:57,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:17:57,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:17:55,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:17:55,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:17:51,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:17:51,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:17:30,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:17:30,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:17:19,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:17:19,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:17:17,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:17:17,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:16:58,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:16:58,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:16:54,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:16:54,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:16:50,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:16:50,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:16:46,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:16:46,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:16:44,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:16:44,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:16:41,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:16:41,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:16:39,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:16:39,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:16:33,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:16:33,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:16:30,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:16:30,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:15:47,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:15:47,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:15:44,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:15:44,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:15:42,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:15:42,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:15:23,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:15:23,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:15:21,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:15:21,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:15:17,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:15:17,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:15:15,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:15:15,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:15:01,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:15:01,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:14:57,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:14:57,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:14:36,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:14:36,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:14:34,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:14:34,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:14:32,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:14:32,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:14:24,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:14:24,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:14:18,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:14:18,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:14:16,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:14:16,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:14:05,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:14:05,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:14:01,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:14:01,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:13:35,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:13:35,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:13:33,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:13:33,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:13:31,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:13:31,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:13:27,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:13:27,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:13:12,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:13:12,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:12:56,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:12:56,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:12:52,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:12:52,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:12:31,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:12:31,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:12:24,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:12:24,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:11:52,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:11:52,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:11:47,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:11:47,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:11:43,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:11:43,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:11:34,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:11:34,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:11:32,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:11:32,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:10:55,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:10:55,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:10:51,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:10:51,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:10:39,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:10:39,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:10:35,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:10:35,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:09:42,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:09:42,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:09:39,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:09:39,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:08:46,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:08:46,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:08:40,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:08:40,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:08:24,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:08:24,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:08:22,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:08:22,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:08:18,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:08:18,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:08:16,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:08:16,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:08:11,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:08:11,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:07:29,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:07:29,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:07:24,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:07:24,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:06:42,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:06:42,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:05:48,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:05:48,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:05:46,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:05:46,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:05:31,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:05:31,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:05:29,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:05:29,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:05:17,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:05:17,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:05:15,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:05:15,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:03:37,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:03:37,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:03:10,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:03:10,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:03:06,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:03:06,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:02:29,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:02:29,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:02:24,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:02:24,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:02:17,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:02:17,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:02:13,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:02:13,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:02:05,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:02:05,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:02:02,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:02:02,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:01:42,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:01:42,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:01:29,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:01:29,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:01:24,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:01:24,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:00:33,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:00:33,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:00:31,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 17:00:31,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:59:56,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:59:56,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:59:52,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:59:52,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:58:10,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:58:10,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:57:36,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:57:36,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:57:34,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:57:34,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:57:30,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:57:30,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:57:23,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:57:23,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:57:20,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:57:20,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:57:18,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:57:18,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:56:41,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:56:41,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:55:36,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:55:36,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:55:34,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:55:34,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:55:04,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:55:04,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:55:02,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:55:02,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:54:12,stdout,      Authentication: Disabled (no credentials required)
+
+2026/04/06 16:54:12,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:54:12,stdout,      ESP32 and other clients can now connect to this server instead of the printer
+
+2026/04/06 16:54:12,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:54:12,stdout,      ✅ MQTT Relay Server successfully started on port 1883
+
+2026/04/06 16:54:12,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:54:12,stdout,"      MQTT Server instance created, binding to 0.0.0.0:1883 (all interfaces)...
+"
+2026/04/06 16:54:12,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:54:12,stdout,      Starting MQTT Relay Server on port 1883...
+
+2026/04/06 16:54:12,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:54:12,stdout,      MQTT Relay Server stopped
+
+2026/04/06 16:54:12,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:54:06,stdout,      ORDER BY "b"."Name"
+
+2026/04/06 16:54:06,stdout,      FROM "Brands" AS "b"
+
+2026/04/06 16:54:06,stdout,"      SELECT \"b\".\"Id\", \"b\".\"DateAdded\", \"b\".\"Name\"
+"
+2026/04/06 16:54:06,stdout,"      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:54:06,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:54:06,stdout,"      ORDER BY \"f\".\"DateAdded\" DESC, \"f\".\"Id\"
+"
+2026/04/06 16:54:06,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 16:54:06,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 16:54:06,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 16:54:06,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 16:54:06,stdout,      LEFT JOIN (
+
+2026/04/06 16:54:06,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 16:54:06,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 16:54:06,stdout,"      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:54:06,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:54:05,stdout,      ORDER BY "f"."Id"
+
+2026/04/06 16:54:05,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 16:54:05,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 16:54:05,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 16:54:05,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 16:54:05,stdout,      LEFT JOIN (
+
+2026/04/06 16:54:05,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 16:54:05,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 16:54:05,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:54:05,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:54:05,stdout,"      ORDER BY \"f\".\"DateAdded\" DESC, \"f\".\"Id\"
+"
+2026/04/06 16:54:05,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 16:54:05,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 16:54:05,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 16:54:05,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 16:54:05,stdout,      LEFT JOIN (
+
+2026/04/06 16:54:05,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 16:54:05,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 16:54:05,stdout,"      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:54:05,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:54:05,stdout,      Executing endpoint '/_blazor'
+
+2026/04/06 16:54:05,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:54:05,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/_blazor?id=5RifJMqCDQCYORQ2U3Jw-g - - -
+
+2026/04/06 16:54:05,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:54:05,stdout,      Request finished HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - 200 316 application/json 12.6208ms
+
+2026/04/06 16:54:05,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:54:05,stdout,      Executed endpoint '/_blazor/negotiate'
+
+2026/04/06 16:54:05,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:54:05,stdout,      Executing endpoint '/_blazor/negotiate'
+
+2026/04/06 16:54:05,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:54:05,stdout,      Request starting HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - - 0
+
+2026/04/06 16:54:05,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:54:05,stdout,      Request finished HTTP/1.1 GET http://3dprint.lan/_blazor/initializers - 200 - application/json;+charset=utf-8 9.1009ms
+
+2026/04/06 16:54:05,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:54:05,stdout,      Executed endpoint 'Blazor initializers'
+
+2026/04/06 16:54:05,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:54:05,stdout,      Executing endpoint 'Blazor initializers'
+
+2026/04/06 16:54:05,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:54:05,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/_blazor/initializers - - -
+
+2026/04/06 16:54:05,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:54:05,stdout,      Request finished HTTP/1.1 GET http://3dprint.lan/ - 200 - text/html;+charset=utf-8 912.5530ms
+
+2026/04/06 16:54:05,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:54:05,stdout,      Executed endpoint '/_Host'
+
+2026/04/06 16:54:05,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:54:05,stdout,      Executed page /_Host in 830.2197ms
+
+2026/04/06 16:54:05,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[104]
+
+2026/04/06 16:54:05,stdout,      ORDER BY "f"."Id"
+
+2026/04/06 16:54:05,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 16:54:05,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 16:54:05,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 16:54:05,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 16:54:05,stdout,      LEFT JOIN (
+
+2026/04/06 16:54:05,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 16:54:05,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 16:54:05,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:54:05,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:54:05,stdout,"      ORDER BY \"f\".\"DateAdded\" DESC, \"f\".\"Id\"
+"
+2026/04/06 16:54:05,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 16:54:05,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 16:54:05,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 16:54:05,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 16:54:05,stdout,      LEFT JOIN (
+
+2026/04/06 16:54:05,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 16:54:05,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 16:54:05,stdout,"      Executed DbCommand (9ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:54:05,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:54:04,stdout,"      Executed an implicit handler method, returned result Microsoft.AspNetCore.Mvc.RazorPages.PageResult.
+"
+2026/04/06 16:54:04,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[109]
+
+2026/04/06 16:54:04,stdout,      Executing an implicit handler method - ModelState is Valid
+
+2026/04/06 16:54:04,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[107]
+
+2026/04/06 16:54:04,stdout,      Route matched with {page = "/_Host"}. Executing page /_Host
+
+2026/04/06 16:54:04,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[103]
+
+2026/04/06 16:54:04,stdout,      Executing endpoint '/_Host'
+
+2026/04/06 16:54:04,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:54:04,stdout,      Failed to determine the https port for redirect.
+
+2026/04/06 16:54:04,stdout,warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]
+
+2026/04/06 16:54:04,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/ - - -
+
+2026/04/06 16:54:04,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:53:54,stdout,      Subscribed to topic: device/01P00C511000629/report. Result: GrantedQoS0
+
+2026/04/06 16:53:54,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:53:54,stdout,      MQTT connected successfully to 192.168.10.188
+
+2026/04/06 16:53:54,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:53:53,stdout,      Content root path: /app
+
+2026/04/06 16:53:53,stdout,info: Microsoft.Hosting.Lifetime[0]
+
+2026/04/06 16:53:53,stdout,      Hosting environment: Production
+
+2026/04/06 16:53:53,stdout,info: Microsoft.Hosting.Lifetime[0]
+
+2026/04/06 16:53:53,stdout,      Application started. Press Ctrl+C to shut down.
+
+2026/04/06 16:53:53,stdout,info: Microsoft.Hosting.Lifetime[0]
+
+2026/04/06 16:53:53,stdout,      Now listening on: http://[::]:5000
+
+2026/04/06 16:53:53,stdout,info: Microsoft.Hosting.Lifetime[14]
+
+2026/04/06 16:53:53,stdout,      Overriding HTTP_PORTS '8080' and HTTPS_PORTS ''. Binding to values defined by URLS instead 'http://+:5000'.
+
+2026/04/06 16:53:53,stdout,warn: Microsoft.AspNetCore.Hosting.Diagnostics[15]
+
+2026/04/06 16:53:53,stdout,      User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+
+2026/04/06 16:53:53,stdout,info: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[62]
+
+2026/04/06 16:53:53,stdout,      Storing keys in a directory '/root/.aspnet/DataProtection-Keys' that may not be persisted outside of the container. Protected data will be unavailable when container is destroyed. For more information go to https://aka.ms/aspnet/dataprotectionwarning
+
+2026/04/06 16:53:53,stdout,warn: Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository[60]
+
+2026/04/06 16:53:53,stdout,      MQTT Relay started on port 1883
+
+2026/04/06 16:53:53,stdout,info: MqttRelayInit[0]
+
+2026/04/06 16:53:53,stdout,      Authentication: Enabled (username: Gulvballe)
+
+2026/04/06 16:53:53,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:53:53,stdout,      ESP32 and other clients can now connect to this server instead of the printer
+
+2026/04/06 16:53:53,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:53:53,stdout,      ✅ MQTT Relay Server successfully started on port 1883
+
+2026/04/06 16:53:53,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:53:53,stdout,      Connecting to BambuLab printer at 192.168.10.188:8883 with serial 01P00C511000629
+
+2026/04/06 16:53:53,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:53:53,stdout,"      MQTT Server instance created, binding to 0.0.0.0:1883 (all interfaces)...
+"
+2026/04/06 16:53:53,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:53:53,stdout,      Starting MQTT Relay Server on port 1883...
+
+2026/04/06 16:53:53,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:53:53,stdout,      LIMIT 1
+
+2026/04/06 16:53:53,stdout,      FROM "AppSettings" AS "a"
+
+2026/04/06 16:53:53,stdout,"      SELECT \"a\".\"Id\", \"a\".\"AmsAutoUpdateOnlyDecrease\", \"a\".\"AmsAutoUpdateWeight\", \"a\".\"BambuLabAccessCode\", \"a\".\"BambuLabEnabled\", \"a\".\"BambuLabIpAddress\", \"a\".\"BambuLabSerialNumber\", \"a\".\"CriticalThreshold\", \"a\".\"Currency\", \"a\".\"LowThreshold\", \"a\".\"MqttRelayEnabled\", \"a\".\"MqttRelayPassword\", \"a\".\"MqttRelayPort\", \"a\".\"MqttRelayUsername\", \"a\".\"TimeZoneId\"
+"
+2026/04/06 16:53:53,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:53:53,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:53:53,stdout,      The query uses the 'First'/'FirstOrDefault' operator without 'OrderBy' and filter operators. This may lead to unpredictable results.
+
+2026/04/06 16:53:53,stdout,warn: Microsoft.EntityFrameworkCore.Query[10103]
+
+2026/04/06 16:53:53,stdout,          FROM "AppSettings" AS "a")
+
+2026/04/06 16:53:53,stdout,          SELECT 1
+
+2026/04/06 16:53:53,stdout,      SELECT EXISTS (
+
+2026/04/06 16:53:53,stdout,"      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:53:53,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:53:52,stdout,                  AND CurrentSpoolId NOT IN (SELECT Id FROM Spools)
+
+2026/04/06 16:53:52,stdout,                  WHERE CurrentSpoolId IS NOT NULL 
+
+2026/04/06 16:53:52,stdout,"                  SET CurrentSpoolId = NULL, InUse = 0 
+"
+2026/04/06 16:53:52,stdout,                  UPDATE ReusableSpools 
+
+2026/04/06 16:53:52,stdout,      
+
+2026/04/06 16:53:52,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:53:52,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:53:52,stdout,      PRAGMA foreign_keys = ON
+
+2026/04/06 16:53:52,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:53:52,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:53:52,stdout,                  UPDATE AppSettings SET MqttRelayPort = 1883 WHERE MqttRelayPort IS NULL OR MqttRelayPort = 0
+
+2026/04/06 16:53:52,stdout,      
+
+2026/04/06 16:53:52,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:53:52,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:53:52,stdout,                  UPDATE AppSettings SET MqttRelayEnabled = 0 WHERE MqttRelayEnabled IS NULL
+
+2026/04/06 16:53:52,stdout,      
+
+2026/04/06 16:53:52,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:53:52,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:53:52,stdout,                  UPDATE AppSettings SET TimeZoneId = 'Europe/Copenhagen' WHERE TimeZoneId IS NULL OR TimeZoneId = ''
+
+2026/04/06 16:53:52,stdout,      
+
+2026/04/06 16:53:52,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:53:52,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:53:52,stdout,                  UPDATE AppSettings SET BambuLabEnabled = 0 WHERE BambuLabEnabled IS NULL
+
+2026/04/06 16:53:52,stdout,      
+
+2026/04/06 16:53:52,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:53:52,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:53:52,stdout,                  UPDATE AppSettings SET AmsAutoUpdateWeight = 0 WHERE AmsAutoUpdateWeight IS NULL
+
+2026/04/06 16:53:52,stdout,      
+
+2026/04/06 16:53:52,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:53:52,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:53:52,stdout,                  UPDATE AppSettings SET AmsAutoUpdateOnlyDecrease = 1 WHERE AmsAutoUpdateOnlyDecrease IS NULL
+
+2026/04/06 16:53:52,stdout,      
+
+2026/04/06 16:53:52,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:53:52,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:53:52,stdout,                  )
+
+2026/04/06 16:53:52,stdout,                      Currency TEXT NOT NULL DEFAULT 'DKK'
+
+2026/04/06 16:53:52,stdout,"                      CriticalThreshold REAL NOT NULL,
+"
+2026/04/06 16:53:52,stdout,"                      LowThreshold REAL NOT NULL,
+"
+2026/04/06 16:53:52,stdout,"                      Id INTEGER PRIMARY KEY AUTOINCREMENT,
+"
+2026/04/06 16:53:52,stdout,                  CREATE TABLE IF NOT EXISTS AppSettings (
+
+2026/04/06 16:53:52,stdout,      
+
+2026/04/06 16:53:52,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:53:52,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:53:52,stdout,                  )
+
+2026/04/06 16:53:52,stdout,                      DateAdded TEXT NOT NULL
+
+2026/04/06 16:53:52,stdout,"                      Name TEXT NOT NULL,
+"
+2026/04/06 16:53:52,stdout,"                      Id INTEGER PRIMARY KEY AUTOINCREMENT,
+"
+2026/04/06 16:53:52,stdout,                  CREATE TABLE IF NOT EXISTS Brands (
+
+2026/04/06 16:53:52,stdout,      
+
+2026/04/06 16:53:52,stdout,"      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:53:52,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:53:52,stdout,      SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+
+2026/04/06 16:53:52,stdout,"      Executed DbCommand (18ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:53:52,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:37:25,stdout,      MQTT disconnected: NormalDisconnection
+
+2026/04/06 16:37:25,stdout,warn: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:37:25,stdout,      Disconnected from BambuLab printer
+
+2026/04/06 16:37:25,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:37:25,stdout,      MQTT Relay Server stopped
+
+2026/04/06 16:37:25,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:37:25,stdout,      Request finished HTTP/1.1 GET http://3dprint.lan/_blazor?id=M55LdKZCcArh525wf1S2cw - 101 - - 125658.6700ms
+
+2026/04/06 16:37:25,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:37:25,stdout,      Executed endpoint '/_blazor'
+
+2026/04/06 16:37:25,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:37:25,stdout,"      Connection id \"0HNKJT6SAL7SR\", Request id \"0HNKJT6SAL7SR:00000001\": the application aborted the connection.
+"
+2026/04/06 16:37:25,stdout,info: Microsoft.AspNetCore.Server.Kestrel.Connections[34]
+
+2026/04/06 16:37:25,stdout,      Application is shutting down...
+
+2026/04/06 16:37:24,stdout,info: Microsoft.Hosting.Lifetime[0]
+
+2026/04/06 16:37:23,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:37:23,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:37:21,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:37:21,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:37:18,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:37:18,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:37:16,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:37:16,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:37:13,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:37:13,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:37:07,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:37:07,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:37:05,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:37:05,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:36:43,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:36:43,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:36:41,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:36:41,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:36:37,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:36:37,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:36:35,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:36:35,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:36:33,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:36:33,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:36:27,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:36:26,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:36:24,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:36:24,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:36:10,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:36:10,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:36:04,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:36:04,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:35:59,stdout,      Request finished HTTP/1.1 POST http://192.168.10.180:5700/_blazor/negotiate?negotiateVersion=1 - 200 316 application/json 0.5466ms
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:59,stdout,      Executed endpoint '/_blazor/negotiate'
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:35:59,stdout,      Executing endpoint '/_blazor/negotiate'
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:35:59,stdout,      Request starting HTTP/1.1 POST http://192.168.10.180:5700/_blazor/negotiate?negotiateVersion=1 - - 0
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:59,stdout,      Request finished HTTP/1.1 GET http://192.168.10.180:5700/_blazor/initializers - 200 - application/json;+charset=utf-8 0.6883ms
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:59,stdout,      Executed endpoint 'Blazor initializers'
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:35:59,stdout,      Executing endpoint 'Blazor initializers'
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:35:59,stdout,      Request starting HTTP/1.1 GET http://192.168.10.180:5700/_blazor/initializers - - -
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:59,stdout,      Request finished HTTP/1.1 GET http://192.168.10.180:5700/js/site.js - 200 451 text/javascript 0.4720ms
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:59,stdout,      Sending file. Request path: '/js/site.js'. Physical path: '/app/wwwroot/js/site.js'
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[2]
+
+2026/04/06 16:35:59,stdout,      Request starting HTTP/1.1 GET http://192.168.10.180:5700/js/site.js - - -
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:59,stdout,      Request finished HTTP/1.1 GET http://192.168.10.180:5700/css/site.css - 200 44127 text/css 28.5814ms
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:59,stdout,      Sending file. Request path: '/css/site.css'. Physical path: '/app/wwwroot/css/site.css'
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[2]
+
+2026/04/06 16:35:59,stdout,      Request finished HTTP/1.1 GET http://192.168.10.180:5700/js/calculator-pdf.js - 200 3665 text/javascript 10.7244ms
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:59,stdout,      Request finished HTTP/1.1 GET http://192.168.10.180:5700/js/calculator-app.js - 200 19488 text/javascript 18.5574ms
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:59,stdout,      Sending file. Request path: '/js/calculator-app.js'. Physical path: '/app/wwwroot/js/calculator-app.js'
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[2]
+
+2026/04/06 16:35:59,stdout,      Sending file. Request path: '/js/calculator-pdf.js'. Physical path: '/app/wwwroot/js/calculator-pdf.js'
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[2]
+
+2026/04/06 16:35:59,stdout,      Request starting HTTP/1.1 GET http://192.168.10.180:5700/js/calculator-pdf.js - - -
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:59,stdout,      Request finished HTTP/1.1 GET http://192.168.10.180:5700/FilamentTracker.styles.css - 200 197 text/css 16.1297ms
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:59,stdout,      Sending file. Request path: '/FilamentTracker.styles.css'. Physical path: '/app/wwwroot/FilamentTracker.styles.css'
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[2]
+
+2026/04/06 16:35:59,stdout,      Request starting HTTP/1.1 GET http://192.168.10.180:5700/js/calculator-app.js - - -
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:59,stdout,      Request finished HTTP/1.1 GET http://192.168.10.180:5700/_framework/blazor.server.js - 304 - text/javascript 4.9810ms
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:59,stdout,      The file /_framework/blazor.server.js was not modified
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[6]
+
+2026/04/06 16:35:59,stdout,      Request starting HTTP/1.1 GET http://192.168.10.180:5700/_framework/blazor.server.js - - -
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:59,stdout,      Request starting HTTP/1.1 GET http://192.168.10.180:5700/FilamentTracker.styles.css - - -
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:59,stdout,      Request starting HTTP/1.1 GET http://192.168.10.180:5700/css/site.css - - -
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:59,stdout,      Request finished HTTP/1.1 GET http://192.168.10.180:5700/ - 200 - text/html;+charset=utf-8 40.4164ms
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:59,stdout,      Executed endpoint '/_Host'
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:35:59,stdout,      Executed page /_Host in 39.24ms
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[104]
+
+2026/04/06 16:35:59,stdout,      ORDER BY "f"."Id"
+
+2026/04/06 16:35:59,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 16:35:59,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 16:35:59,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 16:35:59,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 16:35:59,stdout,      LEFT JOIN (
+
+2026/04/06 16:35:59,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 16:35:59,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 16:35:59,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:35:59,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:35:59,stdout,"      ORDER BY \"f\".\"DateAdded\" DESC, \"f\".\"Id\"
+"
+2026/04/06 16:35:59,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 16:35:59,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 16:35:59,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 16:35:59,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 16:35:59,stdout,      LEFT JOIN (
+
+2026/04/06 16:35:59,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 16:35:59,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 16:35:59,stdout,"      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:35:59,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:35:59,stdout,"      Executed an implicit handler method, returned result Microsoft.AspNetCore.Mvc.RazorPages.PageResult.
+"
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[109]
+
+2026/04/06 16:35:59,stdout,      Executing an implicit handler method - ModelState is Valid
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[107]
+
+2026/04/06 16:35:59,stdout,      Route matched with {page = "/_Host"}. Executing page /_Host
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[103]
+
+2026/04/06 16:35:59,stdout,      Executing endpoint '/_Host'
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:35:59,stdout,      Request starting HTTP/1.1 GET http://192.168.10.180:5700/ - - -
+
+2026/04/06 16:35:59,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:58,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:35:58,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:35:56,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:35:56,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:35:43,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:35:43,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:35:41,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:35:41,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:35:39,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:35:39,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:35:35,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:35:35,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:35:33,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:35:33,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:35:29,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:35:29,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:35:21,stdout,      ORDER BY "b"."Name"
+
+2026/04/06 16:35:21,stdout,      FROM "Brands" AS "b"
+
+2026/04/06 16:35:21,stdout,"      SELECT \"b\".\"Id\", \"b\".\"DateAdded\", \"b\".\"Name\"
+"
+2026/04/06 16:35:21,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:35:21,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:35:21,stdout,"      ORDER BY \"f\".\"DateAdded\" DESC, \"f\".\"Id\"
+"
+2026/04/06 16:35:21,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 16:35:21,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 16:35:21,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 16:35:21,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 16:35:21,stdout,      LEFT JOIN (
+
+2026/04/06 16:35:21,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 16:35:21,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 16:35:21,stdout,"      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:35:21,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:35:19,stdout,      ORDER BY "f"."Id"
+
+2026/04/06 16:35:19,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 16:35:19,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 16:35:19,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 16:35:19,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 16:35:19,stdout,      LEFT JOIN (
+
+2026/04/06 16:35:19,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 16:35:19,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 16:35:19,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:35:19,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:35:19,stdout,"      ORDER BY \"f\".\"DateAdded\" DESC, \"f\".\"Id\"
+"
+2026/04/06 16:35:19,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 16:35:19,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 16:35:19,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 16:35:19,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 16:35:19,stdout,      LEFT JOIN (
+
+2026/04/06 16:35:19,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 16:35:19,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 16:35:19,stdout,"      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:35:19,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:35:19,stdout,      Executing endpoint '/_blazor'
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:35:19,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/_blazor?id=M55LdKZCcArh525wf1S2cw - - -
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:19,stdout,      Request finished HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - 200 316 application/json 0.8704ms
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:19,stdout,      Executed endpoint '/_blazor/negotiate'
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:35:19,stdout,      Executing endpoint '/_blazor/negotiate'
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:35:19,stdout,      Request starting HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - - 0
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:19,stdout,      Request finished HTTP/1.1 POST http://3dprint.lan/_blazor/disconnect - 400 0 - 19.0092ms
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:19,stdout,      Executed endpoint 'Blazor disconnect'
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:35:19,stdout,      Request finished HTTP/1.1 GET http://3dprint.lan/_blazor/initializers - 200 - application/json;+charset=utf-8 5.5892ms
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:19,stdout,      Executed endpoint 'Blazor initializers'
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:35:19,stdout,      Request finished HTTP/1.1 GET http://3dprint.lan/_blazor?id=EYjv-J85kRp5bYPZUHa9tg - 101 - - 2343.4942ms
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:19,stdout,      Request finished HTTP/1.1 GET http://3dprint.lan/_blazor?id=ZyDLg0eUmVUgsV46Sc4Kbw - 101 - - 2377.0142ms
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:19,stdout,      Executed endpoint '/_blazor'
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:35:19,stdout,      Executed endpoint '/_blazor'
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:35:19,stdout,      Executing endpoint 'Blazor initializers'
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:35:19,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/_blazor/initializers - - -
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:19,stdout,      Executing endpoint 'Blazor disconnect'
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:35:19,stdout,      Request starting HTTP/1.1 POST http://3dprint.lan/_blazor/disconnect - multipart/form-data;+boundary=----WebKitFormBoundary6rwyq0PDLX2Zm0K7 359
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:19,stdout,      Request finished HTTP/1.1 GET http://3dprint.lan/ - 200 - text/html;+charset=utf-8 858.7024ms
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:19,stdout,      Executed endpoint '/_Host'
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:35:19,stdout,      Executed page /_Host in 817.4501ms
+
+2026/04/06 16:35:19,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[104]
+
+2026/04/06 16:35:19,stdout,      ORDER BY "f"."Id"
+
+2026/04/06 16:35:19,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 16:35:19,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 16:35:19,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 16:35:19,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 16:35:19,stdout,      LEFT JOIN (
+
+2026/04/06 16:35:19,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 16:35:19,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 16:35:19,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:35:19,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:35:19,stdout,"      ORDER BY \"f\".\"DateAdded\" DESC, \"f\".\"Id\"
+"
+2026/04/06 16:35:19,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 16:35:19,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 16:35:19,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 16:35:19,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 16:35:19,stdout,      LEFT JOIN (
+
+2026/04/06 16:35:19,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 16:35:19,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 16:35:19,stdout,"      Executed DbCommand (8ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:35:18,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:35:18,stdout,"      Executed an implicit handler method, returned result Microsoft.AspNetCore.Mvc.RazorPages.PageResult.
+"
+2026/04/06 16:35:18,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[109]
+
+2026/04/06 16:35:18,stdout,      Executing an implicit handler method - ModelState is Valid
+
+2026/04/06 16:35:18,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[107]
+
+2026/04/06 16:35:18,stdout,      Route matched with {page = "/_Host"}. Executing page /_Host
+
+2026/04/06 16:35:18,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[103]
+
+2026/04/06 16:35:18,stdout,      Executing endpoint '/_Host'
+
+2026/04/06 16:35:18,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:35:18,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/ - - -
+
+2026/04/06 16:35:18,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:17,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:35:17,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:35:17,stdout,      Executing endpoint '/_blazor'
+
+2026/04/06 16:35:17,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:35:17,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/_blazor?id=EYjv-J85kRp5bYPZUHa9tg - - -
+
+2026/04/06 16:35:17,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:17,stdout,      Executing endpoint '/_blazor'
+
+2026/04/06 16:35:17,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:35:17,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/_blazor?id=ZyDLg0eUmVUgsV46Sc4Kbw - - -
+
+2026/04/06 16:35:17,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:17,stdout,      Request finished HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - 200 316 application/json 55.8853ms
+
+2026/04/06 16:35:17,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:17,stdout,      Request finished HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - 200 316 application/json 54.6011ms
+
+2026/04/06 16:35:17,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 16:35:17,stdout,      Executed endpoint '/_blazor/negotiate'
+
+2026/04/06 16:35:17,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:35:17,stdout,      Executed endpoint '/_blazor/negotiate'
+
+2026/04/06 16:35:17,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 16:35:17,stdout,      Executing endpoint '/_blazor/negotiate'
+
+2026/04/06 16:35:17,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:35:17,stdout,      Executing endpoint '/_blazor/negotiate'
+
+2026/04/06 16:35:17,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 16:35:17,stdout,      Failed to determine the https port for redirect.
+
+2026/04/06 16:35:17,stdout,warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]
+
+2026/04/06 16:35:17,stdout,      Request starting HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - - 0
+
+2026/04/06 16:35:17,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:17,stdout,      Request starting HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - - 0
+
+2026/04/06 16:35:16,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 16:35:15,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:35:14,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:35:12,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:35:12,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:35:08,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:35:08,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:35:04,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:35:04,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:34:56,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:34:56,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:34:48,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:34:48,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:34:46,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:34:46,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:34:42,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:34:42,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:34:39,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:34:39,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:34:35,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:34:35,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:34:31,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:34:31,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:34:29,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:34:29,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:34:27,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:34:27,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:34:23,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:34:23,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:34:13,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:34:13,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:34:09,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:34:09,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:34:02,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:34:02,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:54,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:54,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:52,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:52,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:46,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:46,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:44,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:44,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:42,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:42,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:36,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:36,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:34,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:34,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:27,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:27,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:19,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:19,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:17,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:17,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:15,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:15,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:11,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:11,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:09,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:09,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:07,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:07,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:06,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:06,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:33:01,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:33:01,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:32:53,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:32:53,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:32:47,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:32:47,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:32:43,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:32:43,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:32:29,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:32:29,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:32:27,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:32:27,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:32:19,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:32:19,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:32:18,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:32:18,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:32:14,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:32:14,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:32:08,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:32:08,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:31:56,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:31:56,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:31:52,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:31:52,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:31:41,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:31:41,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:31:40,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:31:40,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:31:38,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:31:38,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:31:34,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:31:34,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:31:28,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:31:28,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:31:22,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:31:22,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:31:07,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:31:07,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:31:05,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:31:05,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:31:03,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:31:03,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:30:59,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:30:59,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:30:57,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:30:57,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:30:55,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:30:55,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:30:49,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:30:49,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:30:32,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:30:32,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:30:28,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:30:28,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:30:20,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:30:20,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:30:12,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:30:12,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:30:08,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:30:08,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:30:06,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:30:06,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:30:04,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:30:04,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:58,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:29:58,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:55,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:29:55,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:49,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:29:49,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:47,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:29:47,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:39,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:29:39,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:37,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:29:37,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:29,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:29:29,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:27,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:29:27,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:23,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:29:23,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:21,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:29:20,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:18,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:29:18,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:14,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:29:14,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:12,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:29:12,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:10,stdout,      AMS data parsed: 2 unit(s)
+
+2026/04/06 16:29:10,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:06,stdout,      Subscribed to topic: device/01P00C511000629/report. Result: GrantedQoS0
+
+2026/04/06 16:29:06,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:06,stdout,      MQTT connected successfully to 192.168.10.188
+
+2026/04/06 16:29:06,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:05,stdout,      Content root path: /app
+
+2026/04/06 16:29:05,stdout,info: Microsoft.Hosting.Lifetime[0]
+
+2026/04/06 16:29:05,stdout,      Hosting environment: Production
+
+2026/04/06 16:29:05,stdout,info: Microsoft.Hosting.Lifetime[0]
+
+2026/04/06 16:29:05,stdout,      Application started. Press Ctrl+C to shut down.
+
+2026/04/06 16:29:05,stdout,info: Microsoft.Hosting.Lifetime[0]
+
+2026/04/06 16:29:05,stdout,      Now listening on: http://[::]:5000
+
+2026/04/06 16:29:05,stdout,info: Microsoft.Hosting.Lifetime[14]
+
+2026/04/06 16:29:05,stdout,      Overriding HTTP_PORTS '8080' and HTTPS_PORTS ''. Binding to values defined by URLS instead 'http://+:5000'.
+
+2026/04/06 16:29:05,stdout,warn: Microsoft.AspNetCore.Hosting.Diagnostics[15]
+
+2026/04/06 16:29:05,stdout,      Writing data to file '/root/.aspnet/DataProtection-Keys/key-07c75dd5-02a0-41d2-b9d7-c66427e3665e.xml'.
+
+2026/04/06 16:29:05,stdout,info: Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository[39]
+
+2026/04/06 16:29:05,stdout,      No XML encryptor configured. Key {07c75dd5-02a0-41d2-b9d7-c66427e3665e} may be persisted to storage in unencrypted form.
+
+2026/04/06 16:29:05,stdout,warn: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[35]
+
+2026/04/06 16:29:05,stdout,"      Creating key {07c75dd5-02a0-41d2-b9d7-c66427e3665e} with creation date 2026-04-06 14:29:05Z, activation date 2026-04-06 14:29:05Z, and expiration date 2026-07-05 14:29:05Z.
+"
+2026/04/06 16:29:05,stdout,info: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[58]
+
+2026/04/06 16:29:05,stdout,      User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+
+2026/04/06 16:29:05,stdout,info: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[62]
+
+2026/04/06 16:29:05,stdout,      Storing keys in a directory '/root/.aspnet/DataProtection-Keys' that may not be persisted outside of the container. Protected data will be unavailable when container is destroyed. For more information go to https://aka.ms/aspnet/dataprotectionwarning
+
+2026/04/06 16:29:05,stdout,warn: Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository[60]
+
+2026/04/06 16:29:05,stdout,      Connecting to BambuLab printer at 192.168.10.188:8883 with serial 01P00C511000629
+
+2026/04/06 16:29:05,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 16:29:05,stdout,      MQTT Relay started on port 1883
+
+2026/04/06 16:29:05,stdout,info: MqttRelayInit[0]
+
+2026/04/06 16:29:05,stdout,      Authentication: Enabled (username: Gulvballe)
+
+2026/04/06 16:29:05,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:29:05,stdout,      ESP32 and other clients can now connect to this server instead of the printer
+
+2026/04/06 16:29:05,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:29:05,stdout,      ✅ MQTT Relay Server successfully started on port 1883
+
+2026/04/06 16:29:05,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:29:05,stdout,"      MQTT Server instance created, binding to 0.0.0.0:1883 (all interfaces)...
+"
+2026/04/06 16:29:05,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:29:05,stdout,      Starting MQTT Relay Server on port 1883...
+
+2026/04/06 16:29:04,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 16:29:04,stdout,      LIMIT 1
+
+2026/04/06 16:29:04,stdout,      FROM "AppSettings" AS "a"
+
+2026/04/06 16:29:04,stdout,"      SELECT \"a\".\"Id\", \"a\".\"AmsAutoUpdateOnlyDecrease\", \"a\".\"AmsAutoUpdateWeight\", \"a\".\"BambuLabAccessCode\", \"a\".\"BambuLabEnabled\", \"a\".\"BambuLabIpAddress\", \"a\".\"BambuLabSerialNumber\", \"a\".\"CriticalThreshold\", \"a\".\"Currency\", \"a\".\"LowThreshold\", \"a\".\"MqttRelayEnabled\", \"a\".\"MqttRelayPassword\", \"a\".\"MqttRelayPort\", \"a\".\"MqttRelayUsername\", \"a\".\"TimeZoneId\"
+"
+2026/04/06 16:29:04,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:29:04,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:29:04,stdout,      The query uses the 'First'/'FirstOrDefault' operator without 'OrderBy' and filter operators. This may lead to unpredictable results.
+
+2026/04/06 16:29:04,stdout,warn: Microsoft.EntityFrameworkCore.Query[10103]
+
+2026/04/06 16:29:04,stdout,          FROM "AppSettings" AS "a")
+
+2026/04/06 16:29:04,stdout,          SELECT 1
+
+2026/04/06 16:29:04,stdout,      SELECT EXISTS (
+
+2026/04/06 16:29:04,stdout,"      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:29:04,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:29:04,stdout,                  AND CurrentSpoolId NOT IN (SELECT Id FROM Spools)
+
+2026/04/06 16:29:04,stdout,                  WHERE CurrentSpoolId IS NOT NULL 
+
+2026/04/06 16:29:04,stdout,"                  SET CurrentSpoolId = NULL, InUse = 0 
+"
+2026/04/06 16:29:04,stdout,                  UPDATE ReusableSpools 
+
+2026/04/06 16:29:04,stdout,      
+
+2026/04/06 16:29:04,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:29:04,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:29:04,stdout,      PRAGMA foreign_keys = ON
+
+2026/04/06 16:29:04,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:29:04,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:29:04,stdout,                  UPDATE AppSettings SET MqttRelayPort = 1883 WHERE MqttRelayPort IS NULL OR MqttRelayPort = 0
+
+2026/04/06 16:29:04,stdout,      
+
+2026/04/06 16:29:04,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:29:04,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:29:04,stdout,                  UPDATE AppSettings SET MqttRelayEnabled = 0 WHERE MqttRelayEnabled IS NULL
+
+2026/04/06 16:29:04,stdout,      
+
+2026/04/06 16:29:04,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:29:04,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:29:04,stdout,                  UPDATE AppSettings SET TimeZoneId = 'Europe/Copenhagen' WHERE TimeZoneId IS NULL OR TimeZoneId = ''
+
+2026/04/06 16:29:04,stdout,      
+
+2026/04/06 16:29:04,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:29:04,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:29:04,stdout,                  UPDATE AppSettings SET BambuLabEnabled = 0 WHERE BambuLabEnabled IS NULL
+
+2026/04/06 16:29:04,stdout,      
+
+2026/04/06 16:29:04,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:29:04,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:29:04,stdout,                  UPDATE AppSettings SET AmsAutoUpdateWeight = 0 WHERE AmsAutoUpdateWeight IS NULL
+
+2026/04/06 16:29:04,stdout,      
+
+2026/04/06 16:29:04,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:29:04,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:29:04,stdout,                  UPDATE AppSettings SET AmsAutoUpdateOnlyDecrease = 1 WHERE AmsAutoUpdateOnlyDecrease IS NULL
+
+2026/04/06 16:29:04,stdout,      
+
+2026/04/06 16:29:04,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:29:04,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:29:04,stdout,                  )
+
+2026/04/06 16:29:04,stdout,                      Currency TEXT NOT NULL DEFAULT 'DKK'
+
+2026/04/06 16:29:04,stdout,"                      CriticalThreshold REAL NOT NULL,
+"
+2026/04/06 16:29:04,stdout,"                      LowThreshold REAL NOT NULL,
+"
+2026/04/06 16:29:04,stdout,"                      Id INTEGER PRIMARY KEY AUTOINCREMENT,
+"
+2026/04/06 16:29:04,stdout,                  CREATE TABLE IF NOT EXISTS AppSettings (
+
+2026/04/06 16:29:04,stdout,      
+
+2026/04/06 16:29:04,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:29:04,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:29:04,stdout,                  )
+
+2026/04/06 16:29:04,stdout,                      DateAdded TEXT NOT NULL
+
+2026/04/06 16:29:04,stdout,"                      Name TEXT NOT NULL,
+"
+2026/04/06 16:29:04,stdout,"                      Id INTEGER PRIMARY KEY AUTOINCREMENT,
+"
+2026/04/06 16:29:04,stdout,                  CREATE TABLE IF NOT EXISTS Brands (
+
+2026/04/06 16:29:04,stdout,      
+
+2026/04/06 16:29:04,stdout,"      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:29:04,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 16:29:04,stdout,      SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+
+2026/04/06 16:29:04,stdout,"      Executed DbCommand (17ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 16:29:04,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
