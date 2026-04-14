@@ -57,8 +57,9 @@ FilamentTracker/
 │   ├── SpoolsPage.razor          # Reusable spool management
 │   ├── AMSPage.razor             # AMS slot viewer + spool linking
 │   ├── PrintCalculatorPage.razor # Cost calculator
-│   ├── MqttPage.razor            # Live MQTT message log
-│   ├── SettingsPage.razor        # All settings: theme, currency, timezone, MQTT, relay
+│   ├── MqttPage.razor            # Printer management (add/edit/connect) + MQTT log
+│   ├── PrinterPage.razor         # Live multi-printer status dashboard
+│   ├── SettingsPage.razor        # All settings: theme picker, currency, timezone, MQTT, relay
 │   └── HelpPage.razor            # In-app documentation
 ├── wwwroot/
 │   └── css/
@@ -160,7 +161,9 @@ The single data-access facade for all UI components. Key method groups:
 ## 6. Service Layer
 
 ### 6.1 ThemeService (Singleton)
-Holds `IsDarkMode` (default: `true`). Fires `OnThemeChanged` event. All pages subscribe via `Index.razor` which applies `"dark"` or `"light"` CSS class to the body. No persistence — resets to dark on app restart.
+Holds `string ThemeName` (default: `"dark"`). Exposes `IsDarkMode` as a computed bool for backward compatibility. `SetTheme(string)` updates the name and fires `OnThemeChanged`. `MainLayout.razor` applies the theme name directly as the root CSS class (e.g. `dark`, `light`, `starbucks`, `harmony`, `spring`). No persistence — resets to dark on app restart.
+
+**Five themes:** `dark` (navy/space, default), `light` (clean white/slate), `starbucks` (deep forest green + cream), `harmony` (warm purple/violet), `spring` (soft mint/sage). Each theme is a full CSS variable set in `site.css`.
 
 ### 6.2 ThresholdService (Singleton)
 Holds `LowThreshold` (default: 500g) and `CriticalThreshold` (default: 250g). Loaded from DB at startup in `Program.cs`. `GetStatus(weightRemaining)` returns `"ok"` / `"low"` / `"critical"`. `InventoryPage` subscribes to `OnThresholdsChanged` to refresh tile colors without a page reload.
@@ -218,9 +221,16 @@ Handles CSV export (filaments → CSV rows) and import (CSV rows → create Fila
 ### 7.1 The Shell: `Index.razor`
 
 `Index.razor` is the **single page** the browser ever loads. It owns:
-- The top navigation bar with 8 `navbtn` buttons
+- The top navigation bar with **9 `navbtn` buttons** in a fixed 3×3 grid layout
 - The live tracking widget (right side of nav)
 - A page router (`@if (currentPage == "inventory")`) that conditionally renders child components
+
+**Nav layout (3 rows × 3 columns):**
+| Row 1 | Row 2 | Row 3 |
+|---|---|---|
+| 📦 Inventory | 🧮 Calculator | 🖨️ Printer |
+| ➕ Add Filament | 📡 MQTT | 🗄️ AMS |
+| 🔁 Spools | ❓ Help | ⚙️ Settings |
 
 **Page routing is manual** — no Blazor router, no URL changes. `SetPage(string page)` sets a string variable and the `@if` chain swaps which component is rendered. This keeps navigation instant and state within the session.
 
@@ -271,7 +281,7 @@ Shows the AMS units and their slots from the live `PrintStatus`. Each slot can b
 ### 7.4 SettingsPage.razor
 
 Handles:
-- Theme toggle (calls `ThemeService.SetDarkMode()`)
+- Visual 5-card theme picker (calls `ThemeService.SetTheme(string)` — themes: dark/light/starbucks/harmony/spring)
 - Currency save (persists to `AppSettings` in DB)
 - Timezone save (persists to `AppSettings`, used by `Index.razor` ETA calculation)
 - Threshold save (persists to DB + calls `ThresholdService.SetThresholds()` to update runtime state immediately)
@@ -288,7 +298,8 @@ Handles:
 | `AddFilamentPage.razor` | Form to add new filament entries with one or more spools |
 | `SpoolsPage.razor` | Manage reusable spool shells (available/in-use) |
 | `PrintCalculatorPage.razor` | Calculate print cost from weight + filament price + electricity |
-| `MqttPage.razor` | Live view of last 50 raw MQTT messages from all connected printers |
+| `MqttPage.razor` | Full printer management: add/edit/delete printers, connect/disconnect, AMS settings, MQTT relay config, live log of last 50 raw MQTT messages with per-printer filter |
+| `PrinterPage.razor` | Live multi-printer status dashboard: real-time per-printer cards (printing progress, temps, layers) sourced from `BambuLabService.OnStatusUpdated`; shows idle/offline state when not printing |
 | `HelpPage.razor` | Fully in-app documentation, no external links required |
 
 ---
@@ -315,8 +326,9 @@ BambuLab Printer
         ├─> OnMqttMessageLogged?.Invoke()  ──> MqttRelayService (rebroadcast)
         │                                  └─> MqttPage (display log)
         └─> OnStatusUpdated?.Invoke(printerId, status)
-            ├─> Index.razor.HandleStatusUpdate()     → live widget re-render
-            ├─> AMSPage.razor.HandleStatusUpdated()  → AMS slot refresh
+            ├─> Index.razor.HandleStatusUpdate()          → live widget re-render
+            ├─> AMSPage.razor.HandleStatusUpdated()        → AMS slot refresh
+            ├─> PrinterPage.razor.HandleStatusUpdate()     → per-printer card re-render
             └─> (any other subscriber)
 ```
 
