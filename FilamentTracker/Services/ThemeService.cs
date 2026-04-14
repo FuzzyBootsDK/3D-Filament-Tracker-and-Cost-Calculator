@@ -2,19 +2,21 @@ namespace FilamentTracker.Services;
 
 public class ThemeService
 {
-    public bool IsDarkMode { get; private set; } = true;
+    public string ThemeName { get; private set; } = "dark";
+
+    // Backward-compat: true for every theme except "light"
+    public bool IsDarkMode => ThemeName != "light";
 
     public event Action? OnThemeChanged;
 
-    public void ToggleTheme()
+    public void SetTheme(string name)
     {
-        IsDarkMode = !IsDarkMode;
+        ThemeName = name;
         OnThemeChanged?.Invoke();
     }
 
-    public void SetDarkMode(bool isDark)
-    {
-        IsDarkMode = isDark;
-        OnThemeChanged?.Invoke();
-    }
+    // Backward-compat wrappers
+    public void SetDarkMode(bool isDark) => SetTheme(isDark ? "dark" : "light");
+
+    public void ToggleTheme() => SetTheme(IsDarkMode ? "light" : "dark");
 }

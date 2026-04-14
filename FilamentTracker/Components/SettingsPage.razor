@@ -23,15 +23,23 @@
     <div class="formCard">
         <h2 style="margin-top: 0;">🎨 Appearance</h2>
         <div style="color: var(--muted); margin-bottom: 16px;">
-            Switch between dark and light modes based on your preference.
+            Choose a theme to personalise your experience.
         </div>
-        <div class="row">
-            <button class="btn @(ThemeService.IsDarkMode ? "primary" : "")" @onclick="() => SetTheme(true)">
-                🌙 Dark Mode
-            </button>
-            <button class="btn @(!ThemeService.IsDarkMode ? "primary" : "")" @onclick="() => SetTheme(false)">
-                ☀️ Light Mode
-            </button>
+        <div class="themeGrid">
+            @foreach (var theme in _themes)
+            {
+                <div class="themeCard @(ThemeService.ThemeName == theme.Name ? "active" : "")"
+                     @onclick="() => SetTheme(theme.Name)"
+                     title="@theme.Label">
+                    <div class="themeSwatches">
+                        @foreach (var swatch in theme.Swatches)
+                        {
+                            <div class="themeSwatch" style="background: @swatch;"></div>
+                        }
+                    </div>
+                    <div class="themeCardLabel">@theme.Label</div>
+                </div>
+            }
         </div>
     </div>
 
@@ -346,6 +354,17 @@
 </section>
 
 @code {
+    private record ThemeOption(string Name, string Label, string[] Swatches);
+
+    private readonly ThemeOption[] _themes =
+    [
+        new("dark",      "🌙 Dark",      ["#0b1220", "#101a2c", "#3b82f6", "#e6edf7"]),
+        new("light",     "☀️ Light",     ["#f8fafc", "#ffffff", "#3b82f6", "#0f172a"]),
+        new("starbucks", "☕ Starbucks", ["#1e1a16", "#1A322F", "#927E63", "#DED7CF"]),
+        new("harmony",   "🎵 Harmony",   ["#08192a", "#0F2A3D", "#FFA439", "#DDEFCE"]),
+        new("spring",    "🌿 Spring",    ["#06231D", "#0C342C", "#0db897", "#bce0d6"]),
+    ];
+
     private IBrowserFile? _selectedFile;
     private bool _isProcessing;
     private bool _showPurgeConfirm;
@@ -500,10 +519,11 @@
         _spoolCount = filaments.Sum(f => f.SpoolCount);
     }
 
-    private void SetTheme(bool isDark)
+    private void SetTheme(string name)
     {
-        ThemeService.SetDarkMode(isDark);
-        ShowMessage($"Theme changed to {(isDark ? "Dark" : "Light")} mode", false);
+        ThemeService.SetTheme(name);
+        var label = _themes.FirstOrDefault(t => t.Name == name)?.Label ?? name;
+        ShowMessage($"Theme changed to {label}", false);
     }
 
     private async Task DownloadTemplate()

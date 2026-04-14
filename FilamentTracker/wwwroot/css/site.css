@@ -339,6 +339,176 @@ body.light,
     #f8fafc;
 }
 
+/* STARBUCKS THEME */
+body.starbucks,
+.starbucks,
+.starbucks body {
+    --bg: #1e1a16;
+    --panel: #1A322F;
+    --panel2: #152924;
+    --panelSolid: #1c2e2b;
+    --border: rgba(222, 215, 207, .12);
+    --border2: rgba(222, 215, 207, .18);
+    --text: #DED7CF;
+    --muted: rgba(222, 215, 207, .60);
+    --accent: #927E63;
+    --danger: #c0392b;
+    --warn: #c9922a;
+    --ok: #4a9e6b;
+    --shadow: 0 18px 55px rgba(0, 0, 0, .55);
+    --radius: 16px;
+    --radiusSm: 12px;
+    --focus: 0 0 0 3px rgba(146, 126, 99, .40);
+}
+
+body.starbucks,
+.starbucks body {
+    background: radial-gradient(1200px 600px at 30% -10%, rgba(26, 50, 47, .65), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(146, 126, 99, .18), transparent 55%),
+    #1e1a16;
+}
+
+/* HARMONY THEME */
+body.harmony,
+.harmony,
+.harmony body {
+    --bg: #08192a;
+    --panel: #0F2A3D;
+    --panel2: #0a2233;
+    --panelSolid: #0d2739;
+    --border: rgba(113, 158, 189, .18);
+    --border2: rgba(113, 158, 189, .28);
+    --text: #DDEFCE;
+    --muted: rgba(221, 239, 206, .60);
+    --accent: #FFA439;
+    --danger: #e05252;
+    --warn: #e08030;
+    --ok: #52a87a;
+    --shadow: 0 18px 55px rgba(0, 0, 0, .58);
+    --radius: 16px;
+    --radiusSm: 12px;
+    --focus: 0 0 0 3px rgba(255, 164, 57, .35);
+}
+
+body.harmony,
+.harmony body {
+    background: radial-gradient(1200px 600px at 30% -10%, rgba(15, 42, 61, .80), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(113, 158, 189, .18), transparent 55%),
+    #08192a;
+}
+
+/* SPRING THEME */
+body.spring,
+.spring,
+.spring body {
+    --bg: #06231D;
+    --panel: #0C342C;
+    --panel2: #09231a;
+    --panelSolid: #0b3027;
+    --border: rgba(7, 102, 83, .32);
+    --border2: rgba(7, 102, 83, .48);
+    --text: #bce0d6;
+    --muted: rgba(188, 224, 214, .60);
+    --accent: #0db897;
+    --danger: #d95050;
+    --warn: #e8a030;
+    --ok: #22c69a;
+    --shadow: 0 18px 55px rgba(0, 0, 0, .55);
+    --radius: 16px;
+    --radiusSm: 12px;
+    --focus: 0 0 0 3px rgba(13, 184, 151, .35);
+}
+
+body.spring,
+.spring body {
+    background: radial-gradient(1200px 600px at 30% -10%, rgba(7, 102, 83, .40), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(12, 52, 44, .70), transparent 55%),
+    #06231D;
+}
+
+/* ===== Per-theme accent overrides ===== */
+
+/* Starbucks */
+body.starbucks .navbtn.active,
+.starbucks .navbtn.active {
+    background: rgba(146, 126, 99, .22);
+    border-color: rgba(146, 126, 99, .40);
+}
+
+body.starbucks .btn.primary,
+.starbucks .btn.primary {
+    background: linear-gradient(135deg, #927E63, #7a6852);
+    border-color: #927E63;
+    color: #ede8e2;
+}
+
+body.starbucks .spoolRow.selected,
+.starbucks .spoolRow.selected {
+    border-color: #927E63;
+    background: rgba(146, 126, 99, .18);
+}
+
+body.starbucks .tinyBtn.primary,
+.starbucks .tinyBtn.primary {
+    background: rgba(146, 126, 99, .22);
+    border-color: rgba(146, 126, 99, .50);
+    color: #DED7CF;
+}
+
+/* Harmony */
+body.harmony .navbtn.active,
+.harmony .navbtn.active {
+    background: rgba(255, 164, 57, .18);
+    border-color: rgba(255, 164, 57, .38);
+}
+
+body.harmony .btn.primary,
+.harmony .btn.primary {
+    background: linear-gradient(135deg, #FFA439, #e08030);
+    border-color: #FFA439;
+    color: #0a1e2e;
+}
+
+body.harmony .spoolRow.selected,
+.harmony .spoolRow.selected {
+    border-color: #FFA439;
+    background: rgba(255, 164, 57, .15);
+}
+
+body.harmony .tinyBtn.primary,
+.harmony .tinyBtn.primary {
+    background: rgba(255, 164, 57, .18);
+    border-color: rgba(255, 164, 57, .45);
+    color: #DDEFCE;
+}
+
+/* Spring */
+body.spring .navbtn.active,
+.spring .navbtn.active {
+    background: rgba(13, 184, 151, .20);
+    border-color: rgba(13, 184, 151, .40);
+}
+
+body.spring .btn.primary,
+.spring .btn.primary {
+    background: linear-gradient(135deg, #0db897, #09997d);
+    border-color: #0db897;
+    color: #03201a;
+}
+
+body.spring .spoolRow.selected,
+.spring .spoolRow.selected {
+    border-color: #0db897;
+    background: rgba(13, 184, 151, .15);
+}
+
+body.spring .tinyBtn.primary,
+.spring .tinyBtn.primary {
+    background: rgba(13, 184, 151, .18);
+    border-color: rgba(13, 184, 151, .45);
+    color: #bce0d6;
+}
+
 .wrap {
     max-width: 2000px;
     margin: 0 auto;
@@ -2399,3 +2569,57 @@ label {
     font-size: 38px;
     margin-bottom: 8px;
 }
+
+/* ===== Theme Picker ===== */
+.themeGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.themeCard {
+    flex: 1 1 120px;
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.12s;
+    background: rgba(255, 255, 255, .03);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.light .themeCard {
+    background: var(--panel2);
+}
+
+.themeCard:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+}
+
+.themeCard.active {
+    border-color: var(--accent);
+}
+
+.themeSwatches {
+    display: flex;
+    gap: 4px;
+    height: 22px;
+}
+
+.themeSwatch {
+    flex: 1;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, .10);
+}
+
+.themeCardLabel {
+    font-size: 13px;
+    font-weight: 800;
+    text-align: center;
+    color: var(--text);
+}
+
