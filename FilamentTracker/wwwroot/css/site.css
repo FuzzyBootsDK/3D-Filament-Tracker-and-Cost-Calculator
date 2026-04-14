@@ -310,6 +310,72 @@ body.light,
     --focus: 0 0 0 3px rgba(59, 130, 246, .25);
 }
 
+/* STARBUCKS THEME — deep forest green + warm copper brown */
+body.starbucks,
+.starbucks,
+.starbucks body {
+    --bg: #1e1a16;
+    --panel: #1A322F;
+    --panel2: #152924;
+    --panelSolid: #1c2e2b;
+    --border: rgba(222, 215, 207, .12);
+    --border2: rgba(222, 215, 207, .18);
+    --text: #DED7CF;
+    --muted: rgba(222, 215, 207, .60);
+    --accent: #927E63;
+    --danger: #c0392b;
+    --warn: #c9922a;
+    --ok: #4a9e6b;
+    --shadow: 0 18px 55px rgba(0, 0, 0, .65);
+    --radius: 16px;
+    --radiusSm: 12px;
+    --focus: 0 0 0 3px rgba(146, 126, 99, .40);
+}
+
+/* HARMONY THEME — deep navy + vivid orange + steel blue */
+body.harmony,
+.harmony,
+.harmony body {
+    --bg: #08192a;
+    --panel: #0F2A3D;
+    --panel2: #0a2233;
+    --panelSolid: #0d2739;
+    --border: rgba(113, 158, 189, .18);
+    --border2: rgba(113, 158, 189, .28);
+    --text: #DDEFCE;
+    --muted: rgba(221, 239, 206, .60);
+    --accent: #FFA439;
+    --danger: #e05252;
+    --warn: #e08030;
+    --ok: #52a87a;
+    --shadow: 0 18px 55px rgba(0, 0, 0, .60);
+    --radius: 16px;
+    --radiusSm: 12px;
+    --focus: 0 0 0 3px rgba(255, 164, 57, .35);
+}
+
+/* SPRING THEME — deep forest + vivid teal */
+body.spring,
+.spring,
+.spring body {
+    --bg: #06231D;
+    --panel: #0C342C;
+    --panel2: #09231a;
+    --panelSolid: #0b3027;
+    --border: rgba(7, 102, 83, .32);
+    --border2: rgba(7, 102, 83, .48);
+    --text: #bce0d6;
+    --muted: rgba(188, 224, 214, .60);
+    --accent: #0db897;
+    --danger: #d95050;
+    --warn: #e8a030;
+    --ok: #22c69a;
+    --shadow: 0 18px 55px rgba(0, 0, 0, .65);
+    --radius: 16px;
+    --radiusSm: 12px;
+    --focus: 0 0 0 3px rgba(13, 184, 151, .35);
+}
+
 * {
     box-sizing: border-box;
 }
@@ -337,6 +403,27 @@ body.light,
     background: radial-gradient(1200px 600px at 30% -10%, rgba(59, 130, 246, .08), transparent 60%),
     radial-gradient(900px 500px at 90% 10%, rgba(16, 185, 129, .05), transparent 55%),
     #f8fafc;
+}
+
+body.starbucks,
+.starbucks body {
+    background: radial-gradient(1200px 600px at 30% -10%, rgba(26, 50, 47, .65), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(146, 126, 99, .18), transparent 55%),
+    #1e1a16;
+}
+
+body.harmony,
+.harmony body {
+    background: radial-gradient(1200px 600px at 30% -10%, rgba(15, 42, 61, .80), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(113, 158, 189, .18), transparent 55%),
+    #08192a;
+}
+
+body.spring,
+.spring body {
+    background: radial-gradient(1200px 600px at 30% -10%, rgba(7, 102, 83, .40), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(12, 52, 44, .70), transparent 55%),
+    #06231D;
 }
 
 .wrap {
@@ -1896,6 +1983,133 @@ label {
     .navbtn {
         padding: 12px;
     }
+}
+
+/* ============================================================
+   THEME PICKER (Settings page)
+   ============================================================ */
+
+.themeGrid {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.themeCard {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 16px;
+    border: 2px solid var(--border);
+    background: rgba(255, 255, 255, .03);
+    cursor: pointer;
+    color: var(--text);
+    min-width: 120px;
+    flex: 1 1 120px;
+    transition: border-color .15s, filter .15s;
+}
+
+.themeCard:hover {
+    filter: brightness(1.08);
+}
+
+.themeCard.selected {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, .06);
+}
+
+.light .themeCard {
+    background: var(--panel2);
+}
+
+.light .themeCard.selected {
+    background: rgba(59, 130, 246, .08);
+}
+
+.themeSwatches {
+    display: flex;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 36px;
+}
+
+.themeSwatch {
+    flex: 1;
+    height: 100%;
+}
+
+.themeName {
+    font-size: 13px;
+    font-weight: 900;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* ============================================================
+   PER-THEME ACCENT OVERRIDES
+   Replaces hardcoded blue on interactive elements
+   ============================================================ */
+
+/* Starbucks — copper-brown accent */
+.starbucks .navbtn.active {
+    background: rgba(146, 126, 99, .22);
+    border-color: rgba(146, 126, 99, .40);
+}
+
+.starbucks .btn.primary {
+    background: linear-gradient(135deg, #927E63, #7a6852);
+}
+
+.starbucks .spoolRow.selected {
+    border-color: var(--accent);
+    background: rgba(146, 126, 99, .15);
+}
+
+.starbucks .tinyBtn.primary {
+    border-color: rgba(146, 126, 99, .40);
+    background: rgba(146, 126, 99, .18);
+}
+
+/* Harmony — vivid orange accent */
+.harmony .navbtn.active {
+    background: rgba(255, 164, 57, .18);
+    border-color: rgba(255, 164, 57, .38);
+}
+
+.harmony .btn.primary {
+    background: linear-gradient(135deg, #FFA439, #e08030);
+    color: #0a1e2e;
+}
+
+.harmony .spoolRow.selected {
+    border-color: var(--accent);
+    background: rgba(255, 164, 57, .15);
+}
+
+.harmony .tinyBtn.primary {
+    border-color: rgba(255, 164, 57, .38);
+    background: rgba(255, 164, 57, .18);
+}
+
+/* Spring — vivid teal accent */
+.spring .navbtn.active {
+    background: rgba(13, 184, 151, .20);
+    border-color: rgba(13, 184, 151, .40);
+}
+
+.spring .btn.primary {
+    background: linear-gradient(135deg, #0db897, #09997d);
+}
+
+.spring .spoolRow.selected {
+    border-color: var(--accent);
+    background: rgba(13, 184, 151, .15);
+}
+
+.spring .tinyBtn.primary {
+    border-color: rgba(13, 184, 151, .40);
+    background: rgba(13, 184, 151, .20);
 }
 
 /* ADD THIS AT THE END OF YOUR site.css FILE */

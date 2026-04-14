@@ -3,7 +3,7 @@
 @inject IJSRuntime JS
 @implements IDisposable
 
-<div class="@(ThemeService.IsDarkMode ? "dark" : "light")">
+<div class="@ThemeService.ThemeName">
     @Body
 </div>
 
@@ -29,7 +29,7 @@
     {
         try
         {
-            await JS.InvokeVoidAsync("eval", $"document.body.className = '{(ThemeService.IsDarkMode ? "dark" : "light")}';");
+            await JS.InvokeVoidAsync("eval", $"document.body.className = '{ThemeService.ThemeName}';");
         }
         catch
         {
