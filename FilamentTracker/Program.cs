@@ -76,6 +76,22 @@ using (var scope = app.Services.CreateScope())
                 Currency TEXT NOT NULL DEFAULT 'DKK'
             )");
 
+        // Create Printers table for multi-printer support
+        await context.Database.ExecuteSqlRawAsync(@"
+            CREATE TABLE IF NOT EXISTS Printers (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Name TEXT NOT NULL,
+                PrinterType TEXT NOT NULL DEFAULT 'BambuLab',
+                IpAddress TEXT NOT NULL,
+                AccessCode TEXT NOT NULL,
+                SerialNumber TEXT NOT NULL,
+                Enabled INTEGER NOT NULL DEFAULT 1,
+                IsDefault INTEGER NOT NULL DEFAULT 0,
+                DateAdded TEXT NOT NULL,
+                Location TEXT,
+                ColorHex TEXT DEFAULT '#3b82f6'
+            )");
+
         // Add missing columns only when they do not already exist to avoid noisy errors
         // Capture the connection string up-front so the local function doesn't close over `context`
         var dbConnStr = context.Database.GetDbConnection().ConnectionString;
@@ -231,6 +247,10 @@ using (var scope = app.Services.CreateScope())
             });
             await context.SaveChangesAsync();
         }
+
+        // Migrate legacy single-printer settings to new Printers table
+        var filamentService = scope.ServiceProvider.GetRequiredService<FilamentService>();
+        await filamentService.MigrateLegacyPrinterSettingsAsync();
 
         // Load settings into ThresholdService
         var settings = await context.AppSettings.FirstOrDefaultAsync();

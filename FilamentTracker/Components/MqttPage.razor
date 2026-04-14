@@ -1,0 +1,953 @@
+@inject FilamentService FilamentService
+@inject BambuLabService BambuLabService
+@inject MqttRelayService MqttRelayService
+@inject IJSRuntime Js
+@using System.Text
+@using FilamentTracker.Models
+@implements IDisposable
+
+<section>
+    <div class="pageHeader">
+        <h1>MQTT Printers</h1>
+        <div class="sub">Manage printer connections and MQTT relay settings</div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(_message))
+    {
+        <div class="strip"
+             style="margin-top: 14px; @(_messageIsError ? "border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12);" : "border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.12);")">
+            <div>@_message</div>
+        </div>
+    }
+
+    <!-- ==================== Printer Management Section ==================== -->
+    <div class="formCard">
+        <h2 style="margin-top: 0;">🖨️ Your Printers</h2>
+        <div style="color: var(--muted); margin-bottom: 16px;">
+            Manage your printer configurations. Select a printer to connect and see live status.
+        </div>
+
+        <!-- Printer List -->
+        <div class="printerList" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+            @if (!_printers.Any())
+            {
+                <div style="text-align: center; padding: 40px; color: var(--muted); background: rgba(255,255,255,0.02); border-radius: 12px;">
+                    <div style="font-size: 48px; margin-bottom: 16px;">🖨️</div>
+                    <p style="font-weight: 600;">No printers configured yet</p>
+                    <p style="font-size: 14px;">Click "Add Printer" below to add your first printer.</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var printer in _printers)
+                {
+                    <div class="printerCard" 
+                         style="display: flex; align-items: center; gap: 16px; padding: 16px; border: 1px solid @(printer.Id == _selectedPrinterId ? "var(--primary)" : "var(--border)"); border-radius: 12px; cursor: pointer; transition: all 0.2s; background: @(printer.Id == _selectedPrinterId ? "rgba(59, 130, 246, 0.1)" : "transparent");"
+                         @onclick="() => SelectPrinter(printer.Id)">
+
+                        <div style="width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; background: @(printer.ColorHex ?? "#3b82f6")">
+                            @(printer.IsDefault ? "⭐" : "🖨️")
+                        </div>
+
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                                @printer.Name
+                                @if (printer.IsDefault)
+                                {
+                                    <span style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">Default</span>
+                                }
+                                @if (!printer.Enabled)
+                                {
+                                    <span style="background: var(--muted); color: var(--bg); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">Disabled</span>
+                                }
+                            </div>
+                            <div style="font-size: 13px; color: var(--muted); margin-top: 4px; display: flex; gap: 12px; align-items: center;">
+                                @printer.IpAddress
+                                @if (!string.IsNullOrEmpty(printer.Location))
+                                {
+                                    <span>• @printer.Location</span>
+                                }
+                                @if (BambuLabService.IsConnected && _connectedPrinterSerial == printer.SerialNumber)
+                                {
+                                    <span style="color: #10b981;">● Connected</span>
+                                }
+                                else if (printer.Enabled)
+                                {
+                                    <span style="color: var(--muted);">○ Not connected</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 8px;">
+                            <button class="tinyBtn" @onclick:stopPropagation="true" @onclick="() => EditPrinter(printer.Id)">
+                                ✏️
+                            </button>
+                            <button class="tinyBtn danger" @onclick:stopPropagation="true" @onclick="() => ConfirmDeletePrinter(printer.Id)">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <button class="btn primary" @onclick="ShowAddPrinterForm">
+            ➕ Add Printer
+        </button>
+    </div>
+
+    <!-- ==================== Add/Edit Printer Form ==================== -->
+    @if (_showPrinterForm)
+    {
+        <div class="formCard" style="border: 2px solid var(--primary); background: rgba(59, 130, 246, 0.05);">
+            <h2 style="margin-top: 0;">@(_editingPrinterId.HasValue ? "✏️ Edit" : "➕ Add") Printer</h2>
+
+            <div style="margin-bottom: 16px;">
+                <label class="label">Printer Name *</label>
+                <input type="text" class="input" @bind="_printerForm.Name" placeholder="e.g., X1 Carbon - Office" />
+                <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                    Give your printer a friendly name
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label class="label">IP Address *</label>
+                <input type="text" class="input" @bind="_printerForm.IpAddress" placeholder="192.168.1.100" />
+                <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                    Find this in your printer's network settings
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label class="label">Access Code *</label>
+                <input type="text" class="input" @bind="_printerForm.AccessCode" placeholder="12345678" maxlength="8" />
+                <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                    Found in Settings → Network → Access Code on your printer
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label class="label">Serial Number *</label>
+                <input type="text" class="input" @bind="_printerForm.SerialNumber" placeholder="01S00C..." />
+                <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                    Found in Settings → Device on your printer
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label class="label">Location (Optional)</label>
+                <input type="text" class="input" @bind="_printerForm.Location" placeholder="Office, Garage, etc." />
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label class="label">Color</label>
+                <input type="color" class="input" @bind="_printerForm.ColorHex" style="height: 50px; cursor: pointer;" />
+                <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                    Choose a color to identify this printer
+                </div>
+            </div>
+
+            <div class="checkRow" style="margin-bottom: 16px;">
+                <input type="checkbox" @bind="_printerForm.Enabled" id="printerEnabled" />
+                <label for="printerEnabled">Enable this printer</label>
+            </div>
+
+            <div class="checkRow" style="margin-bottom: 16px;">
+                <input type="checkbox" @bind="_printerForm.IsDefault" id="isDefault" />
+                <label for="isDefault">Set as default printer (shown in live view)</label>
+            </div>
+
+            <div class="row">
+                <button class="btn primary" @onclick="SavePrinter" disabled="@_isProcessing">
+                    @if (_isProcessing)
+                    {
+                        <text>Saving...</text>
+                    }
+                    else
+                    {
+                        <text>💾 Save Printer</text>
+                    }
+                </button>
+                <button class="btn" @onclick="CancelPrinterForm">Cancel</button>
+            </div>
+        </div>
+    }
+
+    <!-- ==================== Connection Section ==================== -->
+    @if (_selectedPrinterId.HasValue && _printers.Any())
+    {
+        var selectedPrinter = _printers.FirstOrDefault(p => p.Id == _selectedPrinterId);
+        if (selectedPrinter != null)
+        {
+            <div class="formCard">
+                <h2 style="margin-top: 0;">🔌 Connection</h2>
+                <div style="color: var(--muted); margin-bottom: 16px;">
+                    Manage connection to <strong>@selectedPrinter.Name</strong>
+                </div>
+
+                <div class="checkRow" style="margin-bottom: 16px;">
+                    <input type="checkbox" @bind="_amsAutoUpdateWeight" id="amsAutoUpdateWeight" />
+                    <label for="amsAutoUpdateWeight">Auto-update spool weight from AMS</label>
+                </div>
+                    <div style="font-size: 12px; color: var(--muted); margin-bottom: 10px; margin-left: 26px;">
+                        When enabled, the remaining weight on a spool is automatically updated whenever the AMS
+                        reports a new remaining % — but <strong>only</strong> for spools you have tagged in the AMS page.
+                        The weight is calculated as: <em>AMS% × spool total weight</em>.
+                    </div>
+
+                    <div class="checkRow" style="margin-bottom: 4px; margin-left: 20px;">
+                        <input type="checkbox" @bind="_amsAutoUpdateOnlyDecrease" id="amsAutoUpdateOnlyDecrease"
+                               disabled="@(!_amsAutoUpdateWeight)" />
+                        <label for="amsAutoUpdateOnlyDecrease"
+                               style="@(!_amsAutoUpdateWeight ? "color: var(--muted);" : "")">
+                            Only decrease weight (never add back)
+                        </label>
+                    </div>
+                    <div style="font-size: 12px; color: var(--muted); margin-bottom: 16px; margin-left: 46px;">
+                        <strong>Checked (recommended for normal use):</strong> The AMS can only reduce weight — it will never increase it.
+                        Safe when you trust your manually entered values.<br />
+                        <strong>Unchecked (two-way sync):</strong> The AMS value always wins in both directions.
+                        Useful if you accidentally registered usage on the wrong spool —
+                        once you link the correct spool in the AMS page, the AMS will restore the weight to what it reports.
+                    </div>
+
+                    @if (_bambuLabConnectionStatus != null)
+                    {
+                        <div class="strip"
+                             style="margin-bottom: 16px; @(_bambuLabConnectionSuccess ? "border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.12);" : "border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12);")">
+                            <div>@_bambuLabConnectionStatus</div>
+                        </div>
+                    }
+
+                    <div class="row">
+                        @if (!BambuLabService.IsConnected)
+                        {
+                            <button class="btn primary" @onclick="() => ConnectToPrinter(selectedPrinter)" disabled="@_isProcessing">
+                                @if (_isProcessing)
+                                {
+                                    <text>Connecting...</text>
+                                }
+                                else
+                                {
+                                    <text>🔌 Connect</text>
+                                }
+                            </button>
+                            <button class="btn" @onclick="() => TestConnection(selectedPrinter)" disabled="@_isProcessing">
+                                🧪 Test Connection
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn" @onclick="DisconnectBambuLab" disabled="@_isProcessing">
+                                🔌 Disconnect
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+        }
+
+        <!-- ==================== MQTT Relay Section (unchanged) ==================== -->
+        <div class="formCard">
+            <h2 style="margin-top: 0;">🔄 MQTT Relay Server</h2>
+            <div style="color: var(--muted); margin-bottom: 16px;">
+                Enable this to rebroadcast MQTT messages from your printer. Your ESP32 and other devices can connect to this server instead of directly to the printer, reducing load on the printer's MQTT broker.
+            </div>
+
+            <div class="checkRow" style="margin-bottom: 16px;">
+                <input type="checkbox" @bind="_mqttRelayEnabled" id="mqttRelayEnabled" disabled="@(!BambuLabService.IsConnected)"/>
+                <label for="mqttRelayEnabled" style="@(!BambuLabService.IsConnected ? "color: var(--muted);" : "")">Enable MQTT Relay Server</label>
+            </div>
+            @if (!BambuLabService.IsConnected)
+            {
+                <div style="font-size: 12px; color: var(--muted); margin-bottom: 16px; margin-left: 26px;">
+                    ⚠️ BambuLab MQTT must be connected before the relay can work.
+                </div>
+            }
+
+        <div style="margin-bottom: 16px;">
+            <label class="label">Relay Port</label>
+            <input type="number" class="input" @bind="_mqttRelayPort" min="1" max="65535" placeholder="1883"/>
+            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                Default MQTT port is 1883. Change if needed. Make sure this port is not in use.
+            </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label class="label">Username (Optional)</label>
+            <input type="text" class="input" @bind="_mqttRelayUsername" placeholder="Leave empty for no auth"/>
+            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                Optional authentication for clients connecting to the relay
+            </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label class="label">Password (Optional)</label>
+            <input type="password" class="input" @bind="_mqttRelayPassword" placeholder="Leave empty for no auth"/>
+            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                Required if username is set
+            </div>
+        </div>
+
+        @if (_mqttRelayStatus != null)
+        {
+            <div class="strip"
+                 style="margin-bottom: 16px; @(_mqttRelayStatusSuccess ? "border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.12);" : "border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12);")">
+                <div>@_mqttRelayStatus</div>
+            </div>
+        }
+
+        <div style="margin-bottom: 16px;">
+            <details style="cursor: pointer;">
+                <summary style="color: var(--muted); font-size: 13px; padding: 8px 0;">
+                    📖 ESP32 Connection Instructions
+                </summary>
+                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; margin-top: 8px; font-size: 12px;">
+                    @{
+                        var instructionsPrinter = _selectedPrinterId.HasValue 
+                            ? _printers.FirstOrDefault(p => p.Id == _selectedPrinterId) 
+                            : null;
+                        var serialForInstructions = instructionsPrinter?.SerialNumber ?? "YOUR_PRINTER_SERIAL";
+                    }
+                    <p><strong>Configure your ESP32 to connect to this relay:</strong></p>
+                    <pre style="background: #0d1117; padding: 10px; border-radius: 6px; overflow-x: auto;">
+const char* mqtt_server = "<strong>@GetServerIpAddress()</strong>";  // This server's IP
+const int mqtt_port = @_mqttRelayPort;
+@if (!string.IsNullOrEmpty(_mqttRelayUsername))
+{
+<text>const char* mqtt_user = "@_mqttRelayUsername";
+const char* mqtt_pass = "@_mqttRelayPassword";</text>
+}
+else
+{
+<text>// No authentication required</text>
+}
+
+// Subscribe to the same topic
+client.subscribe("device/@serialForInstructions/report");</pre>
+                    @if (instructionsPrinter == null)
+                    {
+                        <p style="margin-top: 10px; color: #f59e0b;">
+                            ⚠️ <strong>Select a printer above</strong> to see the correct serial number for your ESP32 configuration.
+                        </p>
+                    }
+                    <p style="margin-top: 10px; color: var(--muted);">
+                        <strong>Benefits:</strong> Your ESP32 connects to this server instead of the printer, reducing the number of direct connections to the printer's MQTT broker.
+                    </p>
+                </div>
+            </details>
+        </div>
+
+        <button class="btn primary" @onclick="SaveMqttRelaySettings" disabled="@_isProcessing">
+            @if (_isProcessing)
+            {
+                <text>Saving...</text>
+            }
+            else
+            {
+                <text>💾 Save Relay Settings</text>
+            }
+        </button>
+    </div>
+
+    <div class="formCard">
+        <h2 style="margin-top: 0;">📡 MQTT Message Log</h2>
+        <div style="color: var(--muted); margin-bottom: 16px;">
+            Live feed of the last 50 incoming MQTT messages from your BambuLab printer.
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center; flex-wrap: wrap;">
+            <!-- Printer Filter Dropdown -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <label style="font-size: 13px; color: var(--muted);">Filter:</label>
+                <select class="input" style="width: 200px; padding: 6px 10px;" @bind="_selectedLogPrinterId">
+                    <option value="">All Printers</option>
+                    @foreach (var printer in _printers)
+                    {
+                        <option value="@printer.Id">@printer.Name</option>
+                    }
+                </select>
+            </div>
+
+            <button class="btn" @onclick="RefreshMqttLog">🔄 Refresh</button>
+            <button class="btn" @onclick="ClearMqttDisplay">🗑️ Clear Display</button>
+            <button class="btn" @onclick="SaveMqttLogCsv">💾 Save Log (CSV)</button>
+            <button class="btn" @onclick="SaveServerMqttLog">📥 Save Server Log</button>
+            @if (BambuLabService.IsConnected)
+            {
+                <span style="font-size: 12px; color: #10b981;">● Connected</span>
+            }
+            else
+            {
+                <span style="font-size: 12px; color: var(--muted);">○ Not connected</span>
+            }
+            <div style="margin-left: auto; font-size: 12px; color: var(--muted);">
+                Messages: <strong>@GetFilteredLogEntries().Count</strong>
+                @if (GetFilteredLogEntries().Any())
+                {
+                    <span> · Last: <strong>@GetFilteredLogEntries().Last().Timestamp.ToString("HH:mm:ss")</strong></span>
+                }
+            </div>
+        </div>
+
+        <div id="mqttTerminal" style="
+            background: #0d1117;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 14px 16px;
+            height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #e6edf3;
+        ">
+            @{
+                var filteredEntries = GetFilteredLogEntries();
+            }
+            @if (!filteredEntries.Any())
+            {
+                <div style="color: #6e7681; text-align: center; padding-top: 160px;">
+                    @if (_selectedLogPrinterId.HasValue)
+                    {
+                        <text>No messages from selected printer yet.</text>
+                    }
+                    else
+                    {
+                        <text>No messages yet. Connect to your printer to see live data.</text>
+                    }
+                </div>
+            }
+            else
+            {
+                @foreach (var entry in filteredEntries.AsEnumerable().Reverse())
+                {
+                    <div
+                        style="margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 6px;">
+                        <span style="color: #58a6ff; user-select: none;">[@entry.Timestamp.ToString("HH:mm:ss")]</span>
+                        @if (!string.IsNullOrEmpty(entry.PrinterName))
+                        {
+                            <span style="color: #f59e0b; user-select: none;"> [@entry.PrinterName] </span>
+                        }
+                        <span style="color: #3fb950; user-select: none;"> device/report </span>
+                        <span style="color: #e6edf3; word-break: break-all;">@entry.Payload</span>
+                    </div>
+                }
+            }
+        </div>
+        <div style="font-size: 11px; color: var(--muted); margin-top: 8px;">
+            Showing last @filteredEntries.Count message(s) — auto-updates when connected.
+        </div>
+    </div>
+</section>
+
+@code {
+    private bool _isProcessing;
+    private string _message = "";
+    private bool _messageIsError;
+
+    // Printer management
+    private List<Printer> _printers = new();
+    private int? _selectedPrinterId;
+    private bool _showPrinterForm;
+    private int? _editingPrinterId;
+    private Printer _printerForm = new();
+    private string _connectedPrinterSerial = "";
+
+    // AMS settings (global)
+    private bool _amsAutoUpdateWeight;
+    private bool _amsAutoUpdateOnlyDecrease = true;
+    private string? _bambuLabConnectionStatus;
+    private bool _bambuLabConnectionSuccess;
+
+    // MQTT Relay settings
+    private bool _mqttRelayEnabled;
+    private int _mqttRelayPort = 1883;
+    private string _mqttRelayUsername = "";
+    private string _mqttRelayPassword = "";
+    private string? _mqttRelayStatus;
+    private bool _mqttRelayStatusSuccess;
+
+    // MQTT log terminal
+    private List<MqttLogEntry> _mqttLogEntries = new();
+    private int? _selectedLogPrinterId; // null = show all printers
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSettings();
+        await LoadPrinters();
+        RefreshMqttLog();
+        BambuLabService.OnMqttMessageLogged += OnNewMqttMessage;
+
+        // Track connected printer
+#pragma warning disable CS0618 // Type or member is obsolete
+        if (BambuLabService.IsConnected)
+        {
+            _connectedPrinterSerial = BambuLabService.GetCurrentStatus().PrinterName?.Split('(').LastOrDefault()?.TrimEnd(')') ?? "";
+        }
+#pragma warning restore CS0618 // Type or member is obsolete
+    }
+
+    public void Dispose()
+    {
+        BambuLabService.OnMqttMessageLogged -= OnNewMqttMessage;
+    }
+
+    private void OnNewMqttMessage(MqttLogEntry entry)
+    {
+        try
+        {
+            InvokeAsync(() =>
+            {
+                try
+                {
+                    _mqttLogEntries = BambuLabService.GetMqttLog().ToList();
+                    StateHasChanged();
+                }
+                catch
+                {
+                    /* component may have been disposed */
+                }
+            });
+        }
+        catch
+        {
+            /* swallow to protect the MQTT background thread */
+        }
+    }
+
+    private void RefreshMqttLog()
+    {
+        _mqttLogEntries = BambuLabService.GetMqttLog().ToList();
+        StateHasChanged();
+    }
+
+    private List<MqttLogEntry> GetFilteredLogEntries()
+    {
+        if (!_selectedLogPrinterId.HasValue)
+            return _mqttLogEntries; // Show all
+
+        // Show entries that match the selected printer, OR entries with no printer ID
+        // (backward compatibility for entries logged before printer tracking was added)
+        return _mqttLogEntries.Where(e => 
+            e.PrinterId == _selectedLogPrinterId || 
+            e.PrinterId == null
+        ).ToList();
+    }
+
+    private void ClearMqttDisplay()
+    {
+        _mqttLogEntries = new List<MqttLogEntry>();
+        StateHasChanged();
+    }
+
+    private async Task SaveMqttLogCsv()
+    {
+        try
+        {
+            var entries = BambuLabService.GetMqttLog().ToList();
+            if (!entries.Any())
+            {
+                ShowMessage("No MQTT messages to save yet.", true);
+                return;
+            }
+
+            var sb = new StringBuilder();
+            sb.AppendLine("Timestamp,Payload");
+            foreach (var e in entries)
+            {
+                var ts = e.Timestamp.ToString("o");
+                var escaped = (e.Payload).Replace("\"", "\"\"");
+                sb.AppendLine($"\"{ts}\",\"{escaped}\"");
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            var base64 = Convert.ToBase64String(bytes);
+            var fileName = $"mqtt-log-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.csv";
+            await Js.InvokeVoidAsync("downloadFile", fileName, base64);
+            ShowMessage($"Saved {entries.Count} MQTT message(s) to {fileName}", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error saving MQTT log: {ex.Message}", true);
+        }
+    }
+
+    private async Task SaveServerMqttLog()
+    {
+        try
+        {
+            var content = await BambuLabService.GetServerMqttLogAsync();
+            if (string.IsNullOrEmpty(content))
+            {
+                ShowMessage("Server log is empty or does not exist yet.", true);
+                return;
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(content);
+            var base64 = Convert.ToBase64String(bytes);
+            var fileName = $"bambulab-server-log-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
+            await Js.InvokeVoidAsync("downloadFile", fileName, base64);
+            ShowMessage($"Saved server log to {fileName}", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error saving server log: {ex.Message}", true);
+        }
+    }
+
+    private async Task LoadSettings()
+    {
+        var settings = await FilamentService.GetSettingsAsync();
+
+        // Load global AMS settings
+        _amsAutoUpdateWeight = settings.AmsAutoUpdateWeight;
+        _amsAutoUpdateOnlyDecrease = settings.AmsAutoUpdateOnlyDecrease;
+
+        // Load MQTT Relay settings
+        _mqttRelayEnabled = settings.MqttRelayEnabled;
+        _mqttRelayPort = settings.MqttRelayPort;
+        _mqttRelayUsername = settings.MqttRelayUsername ?? "";
+        _mqttRelayPassword = settings.MqttRelayPassword ?? "";
+    }
+
+    private async Task LoadPrinters()
+    {
+        _printers = await FilamentService.GetAllPrintersAsync();
+
+        // Auto-select default or first printer
+        if (!_selectedPrinterId.HasValue && _printers.Any())
+        {
+            var defaultPrinter = _printers.FirstOrDefault(p => p.IsDefault);
+            _selectedPrinterId = defaultPrinter?.Id ?? _printers.First().Id;
+        }
+    }
+
+    // ==================== Printer Management Methods ====================
+
+    private void SelectPrinter(int printerId)
+    {
+        _selectedPrinterId = printerId;
+        StateHasChanged();
+    }
+
+    private void ShowAddPrinterForm()
+    {
+        _showPrinterForm = true;
+        _editingPrinterId = null;
+        _printerForm = new Printer
+        {
+            Name = "My Printer",
+            PrinterType = "BambuLab",
+            Enabled = true,
+            IsDefault = !_printers.Any(),
+            ColorHex = "#3b82f6"
+        };
+    }
+
+    private void EditPrinter(int printerId)
+    {
+        var printer = _printers.FirstOrDefault(p => p.Id == printerId);
+        if (printer != null)
+        {
+            _showPrinterForm = true;
+            _editingPrinterId = printerId;
+            _printerForm = new Printer
+            {
+                Id = printer.Id,
+                Name = printer.Name,
+                PrinterType = printer.PrinterType,
+                IpAddress = printer.IpAddress,
+                AccessCode = printer.AccessCode,
+                SerialNumber = printer.SerialNumber,
+                Enabled = printer.Enabled,
+                IsDefault = printer.IsDefault,
+                Location = printer.Location,
+                ColorHex = printer.ColorHex ?? "#3b82f6"
+            };
+        }
+    }
+
+    private async Task SavePrinter()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_printerForm.Name) ||
+                string.IsNullOrWhiteSpace(_printerForm.IpAddress) ||
+                string.IsNullOrWhiteSpace(_printerForm.AccessCode) ||
+                string.IsNullOrWhiteSpace(_printerForm.SerialNumber))
+            {
+                ShowMessage("Please fill in all required fields", true);
+                return;
+            }
+
+            _isProcessing = true;
+            StateHasChanged();
+
+            if (_editingPrinterId.HasValue)
+            {
+                await FilamentService.UpdatePrinterAsync(_printerForm);
+                ShowMessage($"Printer '{_printerForm.Name}' updated successfully!", false);
+            }
+            else
+            {
+                _printerForm.DateAdded = DateTime.UtcNow;
+                await FilamentService.AddPrinterAsync(_printerForm);
+                ShowMessage($"Printer '{_printerForm.Name}' added successfully!", false);
+            }
+
+            await LoadPrinters();
+            CancelPrinterForm();
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error saving printer: {ex.Message}", true);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
+    }
+
+    private void CancelPrinterForm()
+    {
+        _showPrinterForm = false;
+        _editingPrinterId = null;
+        _printerForm = new();
+    }
+
+    private async Task ConfirmDeletePrinter(int printerId)
+    {
+        var printer = _printers.FirstOrDefault(p => p.Id == printerId);
+        if (printer != null && await Js.InvokeAsync<bool>("confirm", $"Delete printer '{printer.Name}'? This cannot be undone."))
+        {
+            try
+            {
+                await FilamentService.DeletePrinterAsync(printerId);
+                ShowMessage($"Printer '{printer.Name}' deleted successfully", false);
+                await LoadPrinters();
+
+                if (_selectedPrinterId == printerId)
+                {
+                    _selectedPrinterId = _printers.FirstOrDefault()?.Id;
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"Error deleting printer: {ex.Message}", true);
+            }
+        }
+    }
+
+    private async Task ConnectToPrinter(Printer printer)
+    {
+        try
+        {
+            _isProcessing = true;
+            _bambuLabConnectionStatus = null;
+            StateHasChanged();
+
+            // Save AMS settings
+            var settings = await FilamentService.GetSettingsAsync();
+            settings.AmsAutoUpdateWeight = _amsAutoUpdateWeight;
+            settings.AmsAutoUpdateOnlyDecrease = _amsAutoUpdateOnlyDecrease;
+            await FilamentService.UpdateSettingsAsync(settings);
+
+            // Propagate the auto-update setting to the live service immediately
+            BambuLabService.AmsAutoUpdateWeight = _amsAutoUpdateWeight;
+            BambuLabService.AmsAutoUpdateOnlyDecrease = _amsAutoUpdateOnlyDecrease;
+
+            // Connect to printer with ID and name for tracking (new multi-connection API)
+            await BambuLabService.ConnectToPrinterAsync(printer.Id, printer.IpAddress, printer.AccessCode, printer.SerialNumber, printer.Name);
+            _bambuLabConnectionStatus = $"✅ Successfully connected to {printer.Name}!";
+            _bambuLabConnectionSuccess = true;
+            _connectedPrinterSerial = printer.SerialNumber;
+
+            ShowMessage($"Connected to {printer.Name}!", false);
+        }
+        catch (Exception ex)
+        {
+            _bambuLabConnectionStatus = $"❌ Connection failed: {ex.Message}";
+            _bambuLabConnectionSuccess = false;
+            ShowMessage($"Error connecting to printer: {ex.Message}", true);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
+    }
+
+    private async Task TestConnection(Printer printer)
+    {
+        try
+        {
+            _isProcessing = true;
+            _bambuLabConnectionStatus = "Testing connection...";
+            StateHasChanged();
+
+            await BambuLabService.ConnectToPrinterAsync(printer.Id, printer.IpAddress, printer.AccessCode, printer.SerialNumber, printer.Name);
+
+            // Wait a moment for the connection to establish
+            await Task.Delay(2000);
+
+            if (BambuLabService.IsPrinterConnected(printer.Id))
+            {
+                _bambuLabConnectionStatus = $"✅ Connection successful! Receiving data from {printer.Name}.";
+                _bambuLabConnectionSuccess = true;
+                _connectedPrinterSerial = printer.SerialNumber;
+            }
+            else
+            {
+                _bambuLabConnectionStatus = "❌ Connection failed. Check your settings and network.";
+                _bambuLabConnectionSuccess = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            _bambuLabConnectionStatus = $"❌ Connection failed: {ex.Message}";
+            _bambuLabConnectionSuccess = false;
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
+    }
+
+    private void ShowMessage(string msg, bool isError)
+    {
+        _message = msg;
+        _messageIsError = isError;
+
+        _ = Task.Delay(5000).ContinueWith(_ =>
+        {
+            _message = "";
+            InvokeAsync(StateHasChanged);
+        });
+    }
+
+    // BambuLab MQTT Methods (updated for multi-printer)
+    private async Task DisconnectBambuLab()
+    {
+        try
+        {
+            _isProcessing = true;
+            StateHasChanged();
+
+            // Disconnect all printers (for now - later we can add per-printer disconnect)
+#pragma warning disable CS0618 // Type or member is obsolete
+            await BambuLabService.DisconnectAsync(); // This will disconnect first connected printer
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            _bambuLabConnectionStatus = "Disconnected from printer";
+            _bambuLabConnectionSuccess = true;
+            _connectedPrinterSerial = "";
+
+            ShowMessage("Disconnected from printer", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error disconnecting: {ex.Message}", true);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
+    }
+
+    // MQTT Relay Methods
+    private async Task SaveMqttRelaySettings()
+    {
+        try
+        {
+            _isProcessing = true;
+            _mqttRelayStatus = null;
+            StateHasChanged();
+
+            // Validate port
+            if (_mqttRelayPort < 1 || _mqttRelayPort > 65535)
+            {
+                _mqttRelayStatus = "❌ Invalid port number. Must be between 1 and 65535.";
+                _mqttRelayStatusSuccess = false;
+                _isProcessing = false;
+                return;
+            }
+
+            // Validate auth: if username is set, password must be set too
+            if (!string.IsNullOrEmpty(_mqttRelayUsername) && string.IsNullOrEmpty(_mqttRelayPassword))
+            {
+                _mqttRelayStatus = "❌ Password is required when username is set.";
+                _mqttRelayStatusSuccess = false;
+                _isProcessing = false;
+                return;
+            }
+
+            var settings = await FilamentService.GetSettingsAsync();
+            settings.MqttRelayEnabled = _mqttRelayEnabled;
+            settings.MqttRelayPort = _mqttRelayPort;
+            settings.MqttRelayUsername = string.IsNullOrWhiteSpace(_mqttRelayUsername) ? null : _mqttRelayUsername;
+            settings.MqttRelayPassword = string.IsNullOrWhiteSpace(_mqttRelayPassword) ? null : _mqttRelayPassword;
+
+            await FilamentService.UpdateSettingsAsync(settings);
+
+            // Start or stop the relay server
+            if (_mqttRelayEnabled && BambuLabService.IsConnected)
+            {
+                try
+                {
+                    await MqttRelayService.StopRelayServerAsync(); // Stop first if already running
+                    await MqttRelayService.StartRelayServerAsync(_mqttRelayPort, settings.MqttRelayUsername, settings.MqttRelayPassword);
+
+                    _mqttRelayStatus = $"✅ MQTT Relay Server started on port {_mqttRelayPort}! Your ESP32 can now connect to this server.";
+                    _mqttRelayStatusSuccess = true;
+                }
+                catch (Exception ex)
+                {
+                    _mqttRelayStatus = $"❌ Failed to start relay server: {ex.Message}";
+                    _mqttRelayStatusSuccess = false;
+                }
+            }
+            else if (!_mqttRelayEnabled)
+            {
+                await MqttRelayService.StopRelayServerAsync();
+                _mqttRelayStatus = "Settings saved. MQTT Relay disabled.";
+                _mqttRelayStatusSuccess = true;
+            }
+            else if (_mqttRelayEnabled && !BambuLabService.IsConnected)
+            {
+                _mqttRelayStatus = "⚠️ Settings saved, but relay cannot start until BambuLab MQTT is connected.";
+                _mqttRelayStatusSuccess = false;
+            }
+
+            ShowMessage("MQTT Relay settings saved!", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error saving MQTT Relay settings: {ex.Message}", true);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
+    }
+
+    private string GetServerIpAddress()
+    {
+        try
+        {
+            var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            return "YOUR_SERVER_IP";
+        }
+        catch
+        {
+            return "YOUR_SERVER_IP";
+        }
+    }
+
+}

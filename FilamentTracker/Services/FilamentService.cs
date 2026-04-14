@@ -505,6 +505,124 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
         await context.SaveChangesAsync();
         return result;
     }
+
+    // ==================== Printer Management Methods ====================
+
+    public async Task<List<Printer>> GetAllPrintersAsync()
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+        return await context.Printers
+            .OrderByDescending(p => p.IsDefault)
+            .ThenByDescending(p => p.Enabled)
+            .ThenBy(p => p.Name)
+            .ToListAsync();
+    }
+
+    public async Task<Printer?> GetPrinterByIdAsync(int id)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+        return await context.Printers.FindAsync(id);
+    }
+
+    public async Task<Printer?> GetDefaultPrinterAsync()
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+        return await context.Printers.FirstOrDefaultAsync(p => p.IsDefault && p.Enabled);
+    }
+
+    public async Task<Printer> AddPrinterAsync(Printer printer)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+
+        // If this printer is being set as default, unset all others
+        if (printer.IsDefault)
+        {
+            var existingDefaultPrinters = await context.Printers
+                .Where(p => p.IsDefault)
+                .ToListAsync();
+
+            foreach (var existing in existingDefaultPrinters)
+            {
+                existing.IsDefault = false;
+                context.Printers.Update(existing);
+            }
+        }
+
+        context.Printers.Add(printer);
+        await context.SaveChangesAsync();
+        return printer;
+    }
+
+    public async Task UpdatePrinterAsync(Printer printer)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+
+        // If this printer is being set as default, unset all others
+        if (printer.IsDefault)
+        {
+            var existingDefaultPrinters = await context.Printers
+                .Where(p => p.IsDefault && p.Id != printer.Id)
+                .ToListAsync();
+
+            foreach (var existing in existingDefaultPrinters)
+            {
+                existing.IsDefault = false;
+                context.Printers.Update(existing);
+            }
+        }
+
+        context.Printers.Update(printer);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task DeletePrinterAsync(int id)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+        var printer = await context.Printers.FindAsync(id);
+        if (printer != null)
+        {
+            context.Printers.Remove(printer);
+            await context.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
+    /// Migrates legacy single-printer settings to the new Printers table.
+    /// Called automatically on startup if no printers exist but legacy settings are present.
+    /// </summary>
+    public async Task MigrateLegacyPrinterSettingsAsync()
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+
+        // Check if migration is needed
+        var hasExistingPrinters = await context.Printers.AnyAsync();
+        if (hasExistingPrinters)
+            return;
+
+        var settings = await context.AppSettings.FirstOrDefaultAsync();
+        if (settings == null || string.IsNullOrEmpty(settings.BambuLabIpAddress))
+            return;
+
+        // Create legacy printer from old settings
+        var legacyPrinter = new Printer
+        {
+            Name = "My BambuLab Printer",
+            PrinterType = "BambuLab",
+            IpAddress = settings.BambuLabIpAddress,
+            AccessCode = settings.BambuLabAccessCode ?? "",
+            SerialNumber = settings.BambuLabSerialNumber ?? "",
+            Enabled = settings.BambuLabEnabled,
+            IsDefault = true,
+            Location = null,
+            ColorHex = "#3b82f6",
+            DateAdded = DateTime.UtcNow
+        };
+
+        context.Printers.Add(legacyPrinter);
+        await context.SaveChangesAsync();
+
+        Console.WriteLine("✅ Migrated legacy printer settings to new Printers table.");
+    }
 }
 
 // Result class for smart usage recording

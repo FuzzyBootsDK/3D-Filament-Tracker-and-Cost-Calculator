@@ -14,6 +14,7 @@ public class FilamentContext : DbContext
     public DbSet<ReusableSpool> ReusableSpools { get; set; }
     public DbSet<Brand> Brands { get; set; }
     public DbSet<AppSettings> AppSettings { get; set; }
+    public DbSet<Printer> Printers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -45,5 +46,11 @@ public class FilamentContext : DbContext
         modelBuilder.Entity<Spool>()
             .Property(s => s.WeightRemaining)
             .HasPrecision(10, 2);
+
+        // Ensure only one printer can be marked as default
+        modelBuilder.Entity<Printer>()
+            .HasIndex(p => p.IsDefault)
+            .IsUnique()
+            .HasFilter("[IsDefault] = 1");
     }
 }

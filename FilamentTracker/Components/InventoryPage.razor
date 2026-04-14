@@ -176,7 +176,9 @@
     protected override async Task OnInitializedAsync()
     {
         await RefreshData();
+#pragma warning disable CS0618 // Type or member is obsolete
         RebuildAmsMap(BambuLabService.GetCurrentStatus());
+#pragma warning restore CS0618 // Type or member is obsolete
         BambuLabService.OnStatusUpdated += HandleStatusUpdated;
         BambuLabService.OnAmsWeightUpdated += HandleAmsWeightUpdated;
     }
@@ -187,7 +189,7 @@
         BambuLabService.OnAmsWeightUpdated -= HandleAmsWeightUpdated;
     }
 
-    private void HandleAmsWeightUpdated()
+    private void HandleAmsWeightUpdated(int printerId)
     {
         // Skip refresh if user is currently editing in the modal
         if (EditStateService.IsEditing)
@@ -206,7 +208,7 @@
         });
     }
 
-    private void HandleStatusUpdated(PrintStatus status)
+    private void HandleStatusUpdated(int printerId, PrintStatus status)
     {
         try
         {
