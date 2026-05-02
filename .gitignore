@@ -59,6 +59,12 @@ publish/
 docker-compose.override.yml
 
 # ===========================
+# AI assistant memory files
+# ===========================
+FilamentTracker/memory/
+FilamentTracker/Claude_Instructions.md
+
+# ===========================
 # Logs
 # ===========================
 *.log

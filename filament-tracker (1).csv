@@ -1,0 +1,500 @@
+filament-tracker
+date,stream,content
+2026/04/06 17:24:51,stdout,      Authentication: Disabled (no credentials required)
+
+2026/04/06 17:24:51,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 17:24:51,stdout,      ESP32 and other clients can now connect to this server instead of the printer
+
+2026/04/06 17:24:51,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 17:24:51,stdout,      ✅ MQTT Relay Server successfully started on port 1883
+
+2026/04/06 17:24:51,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 17:24:51,stdout,"      MQTT Server instance created, binding to 0.0.0.0:1883 (all interfaces)...
+"
+2026/04/06 17:24:51,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 17:24:51,stdout,      Starting MQTT Relay Server on port 1883...
+
+2026/04/06 17:24:51,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 17:24:51,stdout,      MQTT Relay Server stopped
+
+2026/04/06 17:24:51,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 17:24:47,stdout,      ORDER BY "b"."Name"
+
+2026/04/06 17:24:47,stdout,      FROM "Brands" AS "b"
+
+2026/04/06 17:24:47,stdout,"      SELECT \"b\".\"Id\", \"b\".\"DateAdded\", \"b\".\"Name\"
+"
+2026/04/06 17:24:47,stdout,"      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:47,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:47,stdout,"      ORDER BY \"f\".\"DateAdded\" DESC, \"f\".\"Id\"
+"
+2026/04/06 17:24:47,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 17:24:47,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 17:24:47,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 17:24:47,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 17:24:47,stdout,      LEFT JOIN (
+
+2026/04/06 17:24:47,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 17:24:47,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 17:24:47,stdout,"      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:47,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:46,stdout,      ORDER BY "f"."Id"
+
+2026/04/06 17:24:46,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 17:24:46,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 17:24:46,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 17:24:46,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 17:24:46,stdout,      LEFT JOIN (
+
+2026/04/06 17:24:46,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 17:24:46,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 17:24:46,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:46,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:46,stdout,"      ORDER BY \"f\".\"DateAdded\" DESC, \"f\".\"Id\"
+"
+2026/04/06 17:24:46,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 17:24:46,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 17:24:46,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 17:24:46,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 17:24:46,stdout,      LEFT JOIN (
+
+2026/04/06 17:24:46,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 17:24:46,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 17:24:46,stdout,"      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:46,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:45,stdout,      Executing endpoint '/_blazor'
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 17:24:45,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/_blazor?id=lv78dnqp0-37DxXlb3Qzmw - - -
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 17:24:45,stdout,      Request finished HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - 200 316 application/json 0.9368ms
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 17:24:45,stdout,      Executed endpoint '/_blazor/negotiate'
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 17:24:45,stdout,      Executing endpoint '/_blazor/negotiate'
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 17:24:45,stdout,      Request starting HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - - 0
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 17:24:45,stdout,      Request finished HTTP/1.1 POST http://3dprint.lan/_blazor/disconnect - 400 0 - 24.0227ms
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 17:24:45,stdout,      Executed endpoint 'Blazor disconnect'
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 17:24:45,stdout,      Request finished HTTP/1.1 GET http://3dprint.lan/_blazor/initializers - 200 - application/json;+charset=utf-8 6.7811ms
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 17:24:45,stdout,      Executed endpoint 'Blazor initializers'
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 17:24:45,stdout,      Executing endpoint 'Blazor initializers'
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 17:24:45,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/_blazor/initializers - - -
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 17:24:45,stdout,      Request finished HTTP/1.1 GET http://3dprint.lan/_blazor?id=hPrd1De_nryKj9hN0TEv5A - 101 - - 2064.1681ms
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 17:24:45,stdout,      Request finished HTTP/1.1 GET http://3dprint.lan/_blazor?id=5FfbrFRCG4Ad88mm1cQKrQ - 101 - - 2105.5154ms
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 17:24:45,stdout,      Executed endpoint '/_blazor'
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 17:24:45,stdout,      Executed endpoint '/_blazor'
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 17:24:45,stdout,      Executing endpoint 'Blazor disconnect'
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 17:24:45,stdout,      Request starting HTTP/1.1 POST http://3dprint.lan/_blazor/disconnect - multipart/form-data;+boundary=----WebKitFormBoundaryOht97beZogQltEgq 359
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 17:24:45,stdout,      Request finished HTTP/1.1 GET http://3dprint.lan/ - 200 - text/html;+charset=utf-8 884.4657ms
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 17:24:45,stdout,      Executed endpoint '/_Host'
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 17:24:45,stdout,      Executed page /_Host in 842.409ms
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[104]
+
+2026/04/06 17:24:45,stdout,      ORDER BY "f"."Id"
+
+2026/04/06 17:24:45,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 17:24:45,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 17:24:45,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 17:24:45,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 17:24:45,stdout,      LEFT JOIN (
+
+2026/04/06 17:24:45,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 17:24:45,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 17:24:45,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:45,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:45,stdout,"      ORDER BY \"f\".\"DateAdded\" DESC, \"f\".\"Id\"
+"
+2026/04/06 17:24:45,stdout,      ) AS "t" ON "f"."Id" = "t"."FilamentId"
+
+2026/04/06 17:24:45,stdout,"          WHERE ef_compare(\"s\".\"WeightRemaining\", '0.0') > 0 AND \"s\".\"DateEmptied\" IS NULL
+"
+2026/04/06 17:24:45,stdout,          FROM "Spools" AS "s"
+
+2026/04/06 17:24:45,stdout,"          SELECT \"s\".\"Id\", \"s\".\"AmsTagUid\", \"s\".\"AmsTrayUuid\", \"s\".\"DateAdded\", \"s\".\"DateEmptied\", \"s\".\"FilamentId\", \"s\".\"IsRefill\", \"s\".\"IsReusable\", \"s\".\"PurchasePricePerKg\", \"s\".\"SpoolMaterial\", \"s\".\"TotalWeight\", \"s\".\"WeightRemaining\"
+"
+2026/04/06 17:24:45,stdout,      LEFT JOIN (
+
+2026/04/06 17:24:45,stdout,      FROM "Filaments" AS "f"
+
+2026/04/06 17:24:45,stdout,"      SELECT \"f\".\"Id\", \"f\".\"Brand\", \"f\".\"ColorCode\", \"f\".\"ColorHex\", \"f\".\"ColorName\", \"f\".\"DateAdded\", \"f\".\"Diameter\", \"f\".\"Finish\", \"f\".\"Location\", \"f\".\"Notes\", \"f\".\"PricePerKg\", \"f\".\"Type\", \"t\".\"Id\", \"t\".\"AmsTagUid\", \"t\".\"AmsTrayUuid\", \"t\".\"DateAdded\", \"t\".\"DateEmptied\", \"t\".\"FilamentId\", \"t\".\"IsRefill\", \"t\".\"IsReusable\", \"t\".\"PurchasePricePerKg\", \"t\".\"SpoolMaterial\", \"t\".\"TotalWeight\", \"t\".\"WeightRemaining\"
+"
+2026/04/06 17:24:45,stdout,"      Executed DbCommand (9ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:45,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:45,stdout,"      Executed an implicit handler method, returned result Microsoft.AspNetCore.Mvc.RazorPages.PageResult.
+"
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[109]
+
+2026/04/06 17:24:45,stdout,      Executing an implicit handler method - ModelState is Valid
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[107]
+
+2026/04/06 17:24:45,stdout,      Route matched with {page = "/_Host"}. Executing page /_Host
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageActionInvoker[103]
+
+2026/04/06 17:24:45,stdout,      Executing endpoint '/_Host'
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 17:24:45,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/ - - -
+
+2026/04/06 17:24:45,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 17:24:43,stdout,      Executing endpoint '/_blazor'
+
+2026/04/06 17:24:43,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 17:24:43,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/_blazor?id=hPrd1De_nryKj9hN0TEv5A - - -
+
+2026/04/06 17:24:43,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 17:24:43,stdout,      Executing endpoint '/_blazor'
+
+2026/04/06 17:24:43,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 17:24:43,stdout,      Request starting HTTP/1.1 GET http://3dprint.lan/_blazor?id=5FfbrFRCG4Ad88mm1cQKrQ - - -
+
+2026/04/06 17:24:43,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 17:24:43,stdout,      Request finished HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - 200 316 application/json 57.7077ms
+
+2026/04/06 17:24:43,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 17:24:43,stdout,      Request finished HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - 200 316 application/json 57.0075ms
+
+2026/04/06 17:24:43,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+
+2026/04/06 17:24:43,stdout,      Executed endpoint '/_blazor/negotiate'
+
+2026/04/06 17:24:43,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 17:24:43,stdout,      Executed endpoint '/_blazor/negotiate'
+
+2026/04/06 17:24:43,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+
+2026/04/06 17:24:43,stdout,      Executing endpoint '/_blazor/negotiate'
+
+2026/04/06 17:24:43,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 17:24:43,stdout,      Executing endpoint '/_blazor/negotiate'
+
+2026/04/06 17:24:43,stdout,info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+
+2026/04/06 17:24:43,stdout,      Failed to determine the https port for redirect.
+
+2026/04/06 17:24:43,stdout,warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]
+
+2026/04/06 17:24:43,stdout,      Request starting HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - - 0
+
+2026/04/06 17:24:43,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 17:24:43,stdout,      Request starting HTTP/1.1 POST http://3dprint.lan/_blazor/negotiate?negotiateVersion=1 - - 0
+
+2026/04/06 17:24:43,stdout,info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+
+2026/04/06 17:24:43,stdout,      Subscribed to topic: device/01P00C511000629/report. Result: GrantedQoS0
+
+2026/04/06 17:24:43,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:24:43,stdout,      MQTT connected successfully to 192.168.10.188
+
+2026/04/06 17:24:43,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:24:42,stdout,      Content root path: /app
+
+2026/04/06 17:24:42,stdout,info: Microsoft.Hosting.Lifetime[0]
+
+2026/04/06 17:24:42,stdout,      Hosting environment: Production
+
+2026/04/06 17:24:42,stdout,info: Microsoft.Hosting.Lifetime[0]
+
+2026/04/06 17:24:42,stdout,      Application started. Press Ctrl+C to shut down.
+
+2026/04/06 17:24:42,stdout,info: Microsoft.Hosting.Lifetime[0]
+
+2026/04/06 17:24:42,stdout,      Now listening on: http://[::]:5000
+
+2026/04/06 17:24:42,stdout,info: Microsoft.Hosting.Lifetime[14]
+
+2026/04/06 17:24:42,stdout,      Overriding HTTP_PORTS '8080' and HTTPS_PORTS ''. Binding to values defined by URLS instead 'http://+:5000'.
+
+2026/04/06 17:24:42,stdout,warn: Microsoft.AspNetCore.Hosting.Diagnostics[15]
+
+2026/04/06 17:24:42,stdout,      Writing data to file '/root/.aspnet/DataProtection-Keys/key-2ed8f703-f37c-4e69-8671-48b1a2722ef5.xml'.
+
+2026/04/06 17:24:42,stdout,info: Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository[39]
+
+2026/04/06 17:24:42,stdout,      No XML encryptor configured. Key {2ed8f703-f37c-4e69-8671-48b1a2722ef5} may be persisted to storage in unencrypted form.
+
+2026/04/06 17:24:42,stdout,warn: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[35]
+
+2026/04/06 17:24:42,stdout,"      Creating key {2ed8f703-f37c-4e69-8671-48b1a2722ef5} with creation date 2026-04-06 15:24:42Z, activation date 2026-04-06 15:24:42Z, and expiration date 2026-07-05 15:24:42Z.
+"
+2026/04/06 17:24:42,stdout,info: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[58]
+
+2026/04/06 17:24:41,stdout,      User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+
+2026/04/06 17:24:41,stdout,info: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[62]
+
+2026/04/06 17:24:41,stdout,      Storing keys in a directory '/root/.aspnet/DataProtection-Keys' that may not be persisted outside of the container. Protected data will be unavailable when container is destroyed. For more information go to https://aka.ms/aspnet/dataprotectionwarning
+
+2026/04/06 17:24:41,stdout,warn: Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository[60]
+
+2026/04/06 17:24:41,stdout,      Connecting to BambuLab printer at 192.168.10.188:8883 with serial 01P00C511000629
+
+2026/04/06 17:24:41,stdout,info: FilamentTracker.Services.BambuLabService[0]
+
+2026/04/06 17:24:41,stdout,      MQTT Relay started on port 1883
+
+2026/04/06 17:24:41,stdout,info: MqttRelayInit[0]
+
+2026/04/06 17:24:41,stdout,      Authentication: Disabled (no credentials required)
+
+2026/04/06 17:24:41,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 17:24:41,stdout,      ESP32 and other clients can now connect to this server instead of the printer
+
+2026/04/06 17:24:41,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 17:24:41,stdout,      ✅ MQTT Relay Server successfully started on port 1883
+
+2026/04/06 17:24:41,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 17:24:41,stdout,"      MQTT Server instance created, binding to 0.0.0.0:1883 (all interfaces)...
+"
+2026/04/06 17:24:41,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 17:24:41,stdout,      Starting MQTT Relay Server on port 1883...
+
+2026/04/06 17:24:41,stdout,info: FilamentTracker.Services.MqttRelayService[0]
+
+2026/04/06 17:24:41,stdout,      LIMIT 1
+
+2026/04/06 17:24:41,stdout,      FROM "AppSettings" AS "a"
+
+2026/04/06 17:24:41,stdout,"      SELECT \"a\".\"Id\", \"a\".\"AmsAutoUpdateOnlyDecrease\", \"a\".\"AmsAutoUpdateWeight\", \"a\".\"BambuLabAccessCode\", \"a\".\"BambuLabEnabled\", \"a\".\"BambuLabIpAddress\", \"a\".\"BambuLabSerialNumber\", \"a\".\"CriticalThreshold\", \"a\".\"Currency\", \"a\".\"LowThreshold\", \"a\".\"MqttRelayEnabled\", \"a\".\"MqttRelayPassword\", \"a\".\"MqttRelayPort\", \"a\".\"MqttRelayUsername\", \"a\".\"TimeZoneId\"
+"
+2026/04/06 17:24:41,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:41,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:41,stdout,      The query uses the 'First'/'FirstOrDefault' operator without 'OrderBy' and filter operators. This may lead to unpredictable results.
+
+2026/04/06 17:24:41,stdout,warn: Microsoft.EntityFrameworkCore.Query[10103]
+
+2026/04/06 17:24:41,stdout,          FROM "AppSettings" AS "a")
+
+2026/04/06 17:24:41,stdout,          SELECT 1
+
+2026/04/06 17:24:41,stdout,      SELECT EXISTS (
+
+2026/04/06 17:24:41,stdout,"      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:41,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:41,stdout,                  AND CurrentSpoolId NOT IN (SELECT Id FROM Spools)
+
+2026/04/06 17:24:41,stdout,                  WHERE CurrentSpoolId IS NOT NULL 
+
+2026/04/06 17:24:41,stdout,"                  SET CurrentSpoolId = NULL, InUse = 0 
+"
+2026/04/06 17:24:41,stdout,                  UPDATE ReusableSpools 
+
+2026/04/06 17:24:41,stdout,      
+
+2026/04/06 17:24:41,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:41,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:41,stdout,      PRAGMA foreign_keys = ON
+
+2026/04/06 17:24:41,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:41,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:41,stdout,                  UPDATE AppSettings SET MqttRelayPort = 1883 WHERE MqttRelayPort IS NULL OR MqttRelayPort = 0
+
+2026/04/06 17:24:41,stdout,      
+
+2026/04/06 17:24:41,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:41,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:41,stdout,                  UPDATE AppSettings SET MqttRelayEnabled = 0 WHERE MqttRelayEnabled IS NULL
+
+2026/04/06 17:24:41,stdout,      
+
+2026/04/06 17:24:41,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:41,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:41,stdout,                  UPDATE AppSettings SET TimeZoneId = 'Europe/Copenhagen' WHERE TimeZoneId IS NULL OR TimeZoneId = ''
+
+2026/04/06 17:24:41,stdout,      
+
+2026/04/06 17:24:41,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:41,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:41,stdout,                  UPDATE AppSettings SET BambuLabEnabled = 0 WHERE BambuLabEnabled IS NULL
+
+2026/04/06 17:24:41,stdout,      
+
+2026/04/06 17:24:41,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:41,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:41,stdout,                  UPDATE AppSettings SET AmsAutoUpdateWeight = 0 WHERE AmsAutoUpdateWeight IS NULL
+
+2026/04/06 17:24:41,stdout,      
+
+2026/04/06 17:24:41,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:41,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:41,stdout,                  UPDATE AppSettings SET AmsAutoUpdateOnlyDecrease = 1 WHERE AmsAutoUpdateOnlyDecrease IS NULL
+
+2026/04/06 17:24:41,stdout,      
+
+2026/04/06 17:24:41,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:41,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:41,stdout,                  )
+
+2026/04/06 17:24:41,stdout,                      Currency TEXT NOT NULL DEFAULT 'DKK'
+
+2026/04/06 17:24:41,stdout,"                      CriticalThreshold REAL NOT NULL,
+"
+2026/04/06 17:24:41,stdout,"                      LowThreshold REAL NOT NULL,
+"
+2026/04/06 17:24:41,stdout,"                      Id INTEGER PRIMARY KEY AUTOINCREMENT,
+"
+2026/04/06 17:24:41,stdout,                  CREATE TABLE IF NOT EXISTS AppSettings (
+
+2026/04/06 17:24:41,stdout,      
+
+2026/04/06 17:24:41,stdout,"      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:41,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:41,stdout,                  )
+
+2026/04/06 17:24:41,stdout,                      DateAdded TEXT NOT NULL
+
+2026/04/06 17:24:41,stdout,"                      Name TEXT NOT NULL,
+"
+2026/04/06 17:24:41,stdout,"                      Id INTEGER PRIMARY KEY AUTOINCREMENT,
+"
+2026/04/06 17:24:41,stdout,                  CREATE TABLE IF NOT EXISTS Brands (
+
+2026/04/06 17:24:41,stdout,      
+
+2026/04/06 17:24:41,stdout,"      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:41,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
+2026/04/06 17:24:41,stdout,      SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+
+2026/04/06 17:24:41,stdout,"      Executed DbCommand (18ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+"
+2026/04/06 17:24:41,stdout,info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+
