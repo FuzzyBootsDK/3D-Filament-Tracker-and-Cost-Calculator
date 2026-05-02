@@ -1,13 +1,13 @@
-.color-swatch { position: relative; border-radius: 8px; overflow: hidden; display:inline-block; vertical-align:middle; z-index: 10000; }
+.color-swatch { --swatch-color: transparent; position: relative; border-radius: 8px; overflow: hidden; display:inline-block; vertical-align:middle; z-index: 10000; }
 .color-swatch .checkerboard { position:absolute; inset:0; background-image: linear-gradient(45deg,#d6d6d6 25%, transparent 25%), linear-gradient(-45deg,#d6d6d6 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #d6d6d6 75%), linear-gradient(-45deg, transparent 75%, #d6d6d6 75%); background-size: 8px 8px; background-position: 0 0, 0 4px, 4px -4px, -4px 0px; opacity:0.45; z-index: 0; }
-.light .color-swatch .checkerboard { background-image: linear-gradient(45deg,#f2f2f2 25%, transparent 25%), linear-gradient(-45deg,#f2f2f2 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f2f2f2 75%), linear-gradient(-45deg, transparent 75%, #f2f2f2 75%); opacity:0.35; }
+.nebula .color-swatch .checkerboard { background-image: linear-gradient(45deg,#f2f2f2 25%, transparent 25%), linear-gradient(-45deg,#f2f2f2 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f2f2f2 75%), linear-gradient(-45deg, transparent 75%, #f2f2f2 75%); opacity:0.35; }
 .color-swatch .swatch-fill { position:absolute; inset:0; z-index: 2; /* fallback to css var set inline */
     background-color: var(--swatch-color, transparent) !important;
     background-image: none !important;
     opacity: 1 !important;
 }
 .color-swatch .alpha-label { position:absolute; right:6px; bottom:6px; background: rgba(0,0,0,0.45); color:#fff; font-size:11px; padding:2px 6px; border-radius:999px; font-weight:700; }
-.light .color-swatch .alpha-label { background: rgba(255,255,255,0.12); color:var(--text); }
+.nebula .color-swatch .alpha-label { background: rgba(255,255,255,0.12); color:var(--text); }
 .color-swatch .swatch-overlays { position:absolute; inset:0; pointer-events:none; z-index:3; }
 
 /* Variant overlays */

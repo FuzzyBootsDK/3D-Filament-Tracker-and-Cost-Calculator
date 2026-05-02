@@ -24,7 +24,7 @@
     z-index: 1000;
 }
 
-.light .backdrop {
+.nebula .backdrop {
     background: rgba(0, 0, 0, .45);
 }
 
@@ -54,7 +54,7 @@
     background: rgba(255, 255, 255, .04);
 }
 
-.light .modalHeader {
+.nebula .modalHeader {
     background: var(--panel2);
 }
 
@@ -95,7 +95,7 @@
     font-weight: 1000;
 }
 
-.light .iconBtn {
+.nebula .iconBtn {
     background: var(--panel);
 }
 
@@ -132,7 +132,7 @@
     padding: 12px;
 }
 
-.light .panel {
+.nebula .panel {
     background: var(--panel2);
 }
 
@@ -168,7 +168,7 @@
     padding: 16px;
 }
 
-.light .formCard {
+.nebula .formCard {
     background: var(--panel);
 }
 
@@ -248,7 +248,7 @@
     cursor: pointer;
 }
 
-.light .spoolRow {
+.nebula .spoolRow {
     background: var(--panel);
 }
 
@@ -288,26 +288,26 @@ body.dark,
     --focus: 0 0 0 3px rgba(59, 130, 246, .35);
 }
 
-/* LIGHT MODE */
-body.light,
-.light,
-.light body {
-    --bg: #f8fafc;
-    --panel: #ffffff;
-    --panel2: #f1f5f9;
-    --panelSolid: #ffffff;
-    --border: rgba(0, 0, 0, .10);
-    --border2: rgba(0, 0, 0, .14);
-    --text: #0f172a;
-    --muted: rgba(15, 23, 42, .65);
-    --accent: #3b82f6;
-    --danger: #ef4444;
+/* NEBULA THEME (replaces Light) */
+body.nebula,
+.nebula,
+.nebula body {
+    --bg: #141E30;
+    --panel: #1b1f3f;
+    --panel2: #252850;
+    --panelSolid: #1a2142;
+    --border: rgba(192, 132, 252, .28);
+    --border2: rgba(236, 72, 153, .30);
+    --text: #f5edff;
+    --muted: rgba(229, 214, 255, .72);
+    --accent: #c084fc;
+    --danger: #fb7185;
     --warn: #f59e0b;
-    --ok: #10b981;
-    --shadow: 0 8px 30px rgba(0, 0, 0, .08);
+    --ok: #34d399;
+    --shadow: 0 16px 42px rgba(7, 8, 28, .52);
     --radius: 16px;
     --radiusSm: 12px;
-    --focus: 0 0 0 3px rgba(59, 130, 246, .25);
+    --focus: 0 0 0 3px rgba(192, 132, 252, .35);
 }
 
 /* STARBUCKS THEME — deep forest green + warm copper brown */
@@ -398,11 +398,11 @@ body.dark,
     #0b1220;
 }
 
-body.light,
-.light body {
-    background: radial-gradient(1200px 600px at 30% -10%, rgba(59, 130, 246, .08), transparent 60%),
-    radial-gradient(900px 500px at 90% 10%, rgba(16, 185, 129, .05), transparent 55%),
-    #f8fafc;
+body.nebula,
+.nebula body {
+    background: radial-gradient(1200px 600px at 30% -10%, rgba(192, 132, 252, .30), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(236, 72, 153, .22), transparent 55%),
+    #141E30;
 }
 
 /* STARBUCKS THEME */
@@ -493,6 +493,33 @@ body.spring,
 }
 
 /* ===== Per-theme accent overrides ===== */
+
+/* Nebula */
+body.nebula .navbtn.active,
+.nebula .navbtn.active {
+    background: rgba(192, 132, 252, .22);
+    border-color: rgba(192, 132, 252, .42);
+}
+
+body.nebula .btn.primary,
+.nebula .btn.primary {
+    background: linear-gradient(135deg, #a855f7, #c084fc);
+    border-color: rgba(192, 132, 252, .55);
+    color: #faf5ff;
+}
+
+body.nebula .spoolRow.selected,
+.nebula .spoolRow.selected {
+    border-color: #c084fc;
+    background: rgba(192, 132, 252, .16);
+}
+
+body.nebula .tinyBtn.primary,
+.nebula .tinyBtn.primary {
+    background: rgba(192, 132, 252, .20);
+    border-color: rgba(192, 132, 252, .45);
+    color: #f3e8ff;
+}
 
 /* Starbucks */
 body.starbucks .navbtn.active,
@@ -903,19 +930,21 @@ body.spring .tinyBtn.primary,
     justify-content: space-between;
 }
 
-/* Light mode adjustments for calculator */
-.light .calculator-root {
-    --calc-bg-body: #f8fafc;
-    --calc-bg-card: #ffffff;
-    --calc-bg-input: #f1f5f9;
-    --calc-bg-pill: #f1f5f9;
-    --calc-bg-pill-soft: #e2e8f0;
-    --calc-border-subtle: #e2e8f0;
-    --calc-border-strong: #cbd5e1;
-    --calc-text-main: #0f172a;
-    --calc-text-muted: #64748b;
-    --calc-text-strong: #020617;
-    --calc-shadow-card: 0 8px 30px rgba(0, 0, 0, 0.1);
+/* Nebula mode adjustments for calculator */
+.nebula .calculator-root {
+    --calc-bg-body: #141E30;
+    --calc-bg-card: #1b1f3f;
+    --calc-bg-input: #11182b;
+    --calc-bg-pill: #1d2341;
+    --calc-bg-pill-soft: #252d52;
+    --calc-border-subtle: rgba(192, 132, 252, 0.24);
+    --calc-border-strong: rgba(236, 72, 153, 0.30);
+    --calc-accent: #c084fc;
+    --calc-accent-soft: rgba(192, 132, 252, 0.18);
+    --calc-text-main: #f1e8ff;
+    --calc-text-muted: #c5b3e6;
+    --calc-text-strong: #ffffff;
+    --calc-shadow-card: 0 14px 36px rgba(8, 8, 28, 0.55);
 }
 
 /* Calculator Responsive */
@@ -970,7 +999,7 @@ body.spring .tinyBtn.primary,
     user-select: none;
 }
 
-.light .navbtn {
+.nebula .navbtn {
     background: var(--panel2);
 }
 
@@ -993,7 +1022,7 @@ body.spring .tinyBtn.primary,
     box-shadow: var(--shadow);
 }
 
-.light .topnav {
+.nebula .topnav {
     background: var(--panel);
 }
 
@@ -1024,7 +1053,7 @@ body.spring .tinyBtn.primary,
     user-select: none;
 }
 
-.light .navbtn {
+.nebula .navbtn {
     background: var(--panel2);
 }
 
@@ -1048,7 +1077,7 @@ body.spring .tinyBtn.primary,
     overflow: hidden;
 }
 
-.light .liveTracker {
+.nebula .liveTracker {
     background: var(--panel2);
 }
 
@@ -1062,7 +1091,7 @@ body.spring .tinyBtn.primary,
     background: rgba(255, 255, 255, .03);
 }
 
-.light .liveTrackerHeader {
+.nebula .liveTrackerHeader {
     background: rgba(0, 0, 0, .02);
 }
 
@@ -1147,7 +1176,7 @@ body.spring .tinyBtn.primary,
     border: 1px solid var(--border);
 }
 
-.light .progressBar {
+.nebula .progressBar {
     background: rgba(0, 0, 0, .06);
 }
 
@@ -1182,7 +1211,7 @@ body.spring .tinyBtn.primary,
     border: 1px solid var(--border);
 }
 
-.light .printDetail {
+.nebula .printDetail {
     background: rgba(0, 0, 0, .02);
 }
 
@@ -1310,7 +1339,7 @@ body.spring .tinyBtn.primary,
     margin-top: 2px;
 }
 
-.light .wifiBar {
+.nebula .wifiBar {
     background: rgba(0, 0, 0, .12);
 }
 
@@ -1325,7 +1354,7 @@ body.spring .tinyBtn.primary,
     border: 1px solid var(--border);
 }
 
-.light .disconnectedMessage {
+.nebula .disconnectedMessage {
     background: rgba(0, 0, 0, .02);
 }
 
@@ -1376,7 +1405,7 @@ body.spring .tinyBtn.primary,
     padding: 18px 18px;
 }
 
-.light .pageHeader {
+.nebula .pageHeader {
     background: var(--panel);
 }
 
@@ -1403,7 +1432,7 @@ body.spring .tinyBtn.primary,
     font-weight: 800;
 }
 
-.light .btn {
+.nebula .btn {
     background: var(--panel2);
 }
 
@@ -1435,9 +1464,9 @@ body.spring .tinyBtn.primary,
     width: 100%;
 }
 
-.light .input,
-.light select,
-.light textarea {
+.nebula .input,
+.nebula select,
+.nebula textarea {
     background: var(--panel);
 }
 
@@ -1492,7 +1521,7 @@ label {
     justify-content: space-between;
 }
 
-.light .kpi {
+.nebula .kpi {
     background: var(--panel);
 }
 
@@ -1507,7 +1536,7 @@ label {
     color: #93c5fd;
 }
 
-.light .kpi .value {
+.nebula .kpi .value {
     color: #3b82f6;
 }
 
@@ -1541,7 +1570,7 @@ label {
     letter-spacing: .2px;
 }
 
-.light .pill {
+.nebula .pill {
     background: var(--panel);
 }
 
@@ -1597,7 +1626,7 @@ label {
     min-height: 150px;
 }
 
-.light .tile {
+.nebula .tile {
     background: var(--panel);
 }
 
@@ -1754,7 +1783,7 @@ label {
     color: var(--muted);
 }
 
-.light .tag {
+.nebula .tag {
     background: var(--panel2);
 }
 
@@ -2000,7 +2029,7 @@ label {
     cursor: pointer;
 }
 
-.light .spoolRow {
+.nebula .spoolRow {
     background: var(--panel);
 }
 
@@ -2056,7 +2085,7 @@ label {
     cursor: pointer;
 }
 
-.light .tinyBtn {
+.nebula .tinyBtn {
     background: var(--panel);
 }
 
@@ -2078,7 +2107,7 @@ label {
     border: 1px solid rgba(255, 255, 255, .06);
 }
 
-.light .barWrap {
+.nebula .barWrap {
     background: rgba(0, 0, 0, .08);
     border-color: rgba(0, 0, 0, .06);
 }
@@ -2168,11 +2197,11 @@ label {
     background: rgba(255, 255, 255, .06);
 }
 
-.light .themeCard {
+.nebula .themeCard {
     background: var(--panel2);
 }
 
-.light .themeCard.selected {
+.nebula .themeCard.selected {
     background: rgba(59, 130, 246, .08);
 }
 
@@ -2620,7 +2649,7 @@ label {
     transition: all 0.2s ease;
 }
 
-.light .helpNavLink {
+.nebula .helpNavLink {
     background: var(--panel);
 }
 
@@ -2655,7 +2684,7 @@ label {
     transition: border-color 0.2s;
 }
 
-.light .printerStatusCard {
+.nebula .printerStatusCard {
     background: var(--panel);
 }
 
@@ -2714,7 +2743,7 @@ label {
     padding: 8px 10px;
 }
 
-.light .printerStatBox {
+.nebula .printerStatBox {
     background: rgba(0, 0, 0, .04);
 }
 
@@ -2741,7 +2770,7 @@ label {
     margin-top: 6px;
 }
 
-.light .printerProgressBar {
+.nebula .printerProgressBar {
     background: rgba(0, 0, 0, .08);
 }
 
@@ -2784,7 +2813,7 @@ label {
     gap: 8px;
 }
 
-.light .themeCard {
+.nebula .themeCard {
     background: var(--panel2);
 }
 
