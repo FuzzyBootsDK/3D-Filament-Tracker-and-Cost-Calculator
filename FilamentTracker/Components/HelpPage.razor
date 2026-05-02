@@ -9,20 +9,24 @@
          style="border-color: rgba(99,102,241,.40); background: rgba(99,102,241,.05); margin-top: 14px;">
         <h2 style="margin-top: 0;">📑 Quick Navigation</h2>
         <div style="color: var(--muted); line-height: 1.8;">
-            <p style="margin-bottom: 12px;">Jump directly to a section:</p>
+            <p style="margin-bottom: 12px;">Top-nav pages (same order as the navigation bar):</p>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 8px;">
-                <a href="#overview" class="helpNavLink">🚀 What Can This App Do?</a>
                 <a href="#inventory" class="helpNavLink">📦 Inventory Overview</a>
-                <a href="#adding" class="helpNavLink">➕ Adding New Filaments</a>
+                <a href="#adding" class="helpNavLink">➕ Add Filament</a>
                 <a href="#spools" class="helpNavLink">🔁 Managing Reusable Spools</a>
                 <a href="#calculator" class="helpNavLink">🧮 Print Cost Calculator</a>
+                <a href="#multiprinter" class="helpNavLink">📡 MQTT (Printers & Relay)</a>
+                <a href="#overview" class="helpNavLink">❓ Help Overview</a>
+                <a href="#printer" class="helpNavLink">🖨️ Printer (Live Printers)</a>
+                <a href="#ams" class="helpNavLink">🎞️ AMS Slot Management</a>
+                <a href="#settings" class="helpNavLink">⚙️ Settings</a>
+            </div>
+            <p style="margin: 14px 0 10px 0;">Additional guides and troubleshooting:</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 8px;">
                 <a href="#usage" class="helpNavLink">📊 Recording Usage</a>
                 <a href="#pricing" class="helpNavLink">💰 Weighted Average Pricing</a>
-                <a href="#settings" class="helpNavLink">⚙️ Settings</a>
                 <a href="#tips" class="helpNavLink">💡 Tips & Best Practices</a>
-                <a href="#multiprinter" class="helpNavLink">🖨️ Multi-Printer Setup (NEW v2.0)</a>
                 <a href="#livetracker" class="helpNavLink">📊 Live Tracking Widget</a>
-                <a href="#ams" class="helpNavLink">🎞️ AMS Slot Management</a>
                 <a href="#amssync" class="helpNavLink">🔄 AMS Auto-Weight Sync</a>
                 <a href="#mqttterminal" class="helpNavLink">📡 MQTT Message Log</a>
                 <a href="#quickactions" class="helpNavLink">⚡ Quick Actions & Workflows</a>
@@ -469,6 +473,26 @@
         @backToTop
     </div>
 
+    <div class="formCard" id="printer" style="scroll-margin-top: 20px;">
+        <h2 style="margin-top: 0;">🖨️ Printer (Live Printers)</h2>
+        <div style="color: var(--muted); line-height: 1.8;">
+            <p>
+                The <strong>Printer</strong> page shows real-time status cards for all enabled printers:
+                online/offline state, printing progress, temperatures, and current job details.
+            </p>
+            <ul>
+                <li>Use the <strong>MQTT</strong> page to add/edit printers and connect/disconnect.</li>
+                <li>Use the <strong>Printer</strong> page to monitor all configured printers in one view.</li>
+                <li>Use the <strong>AMS</strong> page to link slots to inventory and verify spool matches.</li>
+            </ul>
+            <p>
+                See <a href="#multiprinter">MQTT setup</a> for connection steps and
+                <a href="#livetracker">Live Tracking Widget</a> for the compact top-bar status card.
+            </p>
+        </div>
+        @backToTop
+    </div>
+
     <div class="formCard" id="usage" style="scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">📊 Recording Usage</h2>
         <div style="color: var(--muted); line-height: 1.8;">
@@ -716,19 +740,17 @@
             <p><em>💡 Tip: Keep your brand list clean by deleting brands you no longer use. This makes the dropdown
                     easier to navigate.</em></p>
 
-            <h3>🖨️ BambuLab MQTT Live Tracking</h3>
-            <p>See the <a href="#livetracker">BambuLab Live Tracking section</a> below for full setup instructions.
-                Within Settings you can:</p>
+            <h3>📡 MQTT & Printer Setup</h3>
+            <p>BambuLab connection setup moved to the <strong>MQTT</strong> page. Use it to:</p>
             <ul>
-                <li>Enable / disable live tracking</li>
-                <li>Enter your printer IP, Access Code, and Serial Number</li>
-                <li>Test the connection before saving</li>
-                <li>Save &amp; connect with one click</li>
-                <li>Disconnect at any time</li>
+                <li>Add/edit printer entries (IP, Access Code, Serial Number, location, default printer)</li>
+                <li>Test and connect/disconnect each printer</li>
+                <li>Configure MQTT Relay (port, optional username/password)</li>
             </ul>
+            <p>See <a href="#multiprinter">MQTT (Printers & Relay)</a> for the full walkthrough.</p>
 
             <h3>🔄 AMS Auto-Weight Sync</h3>
-            <p>When BambuLab Live Tracking is enabled, two additional options become available:</p>
+            <p>When a printer is connected through the <strong>MQTT</strong> page, AMS sync options become available:</p>
             <ul>
                 <li>
                     <strong>Auto-update spool weight from AMS</strong> — When checked, the app reads the remaining
@@ -758,8 +780,8 @@
             <p>See the <a href="#amssync">AMS Auto-Weight Sync section</a> for a detailed walkthrough.</p>
 
             <h3>📡 MQTT Message Log</h3>
-            <p>A built-in diagnostic terminal displays the last 50 raw MQTT messages received from your printer in real
-                time. See the <a href="#mqttterminal">MQTT Message Log section</a> for details.</p>
+            <p>The built-in diagnostic terminal now lives on the <strong>MQTT</strong> page. It displays the last 50 raw MQTT
+                messages in real time. See the <a href="#mqttterminal">MQTT Message Log section</a> for details.</p>
 
             <h3>Database Management</h3>
             <ul>
@@ -831,7 +853,7 @@
 
     <div class="formCard" id="multiprinter" 
          style="border-color: rgba(99,102,241,.40); background: rgba(99,102,241,.05); scroll-margin-top: 20px;">
-        <h2 style="margin-top: 0;">🖨️✨ Multi-Printer Setup (NEW in v2.0)</h2>
+        <h2 style="margin-top: 0;">📡 MQTT Page: Printers & Relay (Multi-Printer)</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
                 <strong>Filament Tracker v2.0</strong> introduces <strong>multi-printer support</strong>! You can now
@@ -854,7 +876,7 @@
 
             <h4>Step 1: Add Your Printers</h4>
             <ol>
-                <li>Navigate to <strong>"MQTT Printers"</strong> page in the navigation menu</li>
+                <li>Open the <strong>"📡 MQTT"</strong> page from the top navigation</li>
                 <li>Click <strong>"➕ Add Printer"</strong> button</li>
                 <li>Fill in the printer information:
                     <ul>
@@ -877,7 +899,7 @@
 
             <h4>Step 2: Connect to Your Printers</h4>
             <ol>
-                <li>In the <strong>MQTT Printers</strong> page, click on a printer from the list to select it</li>
+                <li>On the <strong>MQTT</strong> page, click a printer from the list to select it</li>
                 <li>Scroll to the <strong>"🔌 Connection"</strong> section</li>
                 <li>Configure AMS auto-update settings (applies to this printer):
                     <ul>
@@ -961,7 +983,7 @@ client.subscribe("device/+/report");  // Subscribe to all printers
 
             <h4>Workflow 1: Monitor a Printer Farm</h4>
             <ol>
-                <li>Add all your printers in the MQTT Printers page</li>
+                <li>Add all your printers on the MQTT page</li>
                 <li>Enable the printers you want to monitor</li>
                 <li>Connect to each printer you want to track</li>
                 <li>View connection status for all printers in the printer list</li>
@@ -1022,7 +1044,7 @@ client.subscribe("device/+/report");  // Subscribe to all printers
         <h2 style="margin-top: 0;">📊 Live Tracking Widget</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
-                The <strong>Live Tracking</strong> widget in the navigation bar provides real-time monitoring of your
+                The <strong>Live Tracking</strong> widget in the top area provides real-time monitoring of your
                 BambuLab 3D printer status.
                 See print progress, time remaining, and layer information at a glance without opening Bambu Studio!
             </p>
@@ -1041,7 +1063,7 @@ client.subscribe("device/+/report");  // Subscribe to all printers
                 </li>
                 <li><strong>Connection Status</strong> - Visual indicator (green pulsing dot) when connected</li>
                 <li><strong>Idle Detection</strong> - Shows "Printer Idle" when connected but not printing</li>
-                <li><strong>Always Visible</strong> - Widget stays in the navigation bar on all pages</li>
+                <li><strong>Always Visible</strong> - Widget stays visible above page content on all pages</li>
             </ul>
 
             <h3>Setting Up Live Tracking:</h3>
@@ -1060,14 +1082,11 @@ client.subscribe("device/+/report");  // Subscribe to all printers
 
                 <li><strong>Configure in Filament Tracker</strong>
                     <ul>
-                        <li>Click the <strong>⚙️ Settings</strong> button in the navigation bar</li>
-                        <li>Scroll down to the <strong>"🖨️ BambuLab MQTT Live Tracking"</strong> section</li>
-                        <li>Check the <strong>"Enable BambuLab Live Tracking"</strong> checkbox</li>
-                        <li>Enter your printer's <strong>IP Address</strong></li>
-                        <li>Enter your printer's <strong>Access Code</strong></li>
-                        <li>Enter your printer's <strong>Serial Number</strong></li>
-                        <li>Click <strong>"🧪 Test Connection"</strong> to verify the connection works</li>
-                        <li>Click <strong>"💾 Save & Connect"</strong> to save settings and start tracking</li>
+                        <li>Open the <strong>📡 MQTT</strong> page</li>
+                        <li>Add your printer (name, IP, access code, serial number)</li>
+                        <li>Select the printer card</li>
+                        <li>Click <strong>"🧪 Test Connection"</strong> to verify access</li>
+                        <li>Click <strong>"🔌 Connect"</strong> to start live tracking</li>
                     </ul>
                 </li>
 
@@ -1287,7 +1306,7 @@ client.subscribe("device/+/report");  // Subscribe to all printers
 
             <h3>Prerequisites:</h3>
             <ul>
-                <li>BambuLab Live Tracking must be <strong>enabled and connected</strong> (Settings → BambuLab MQTT)
+                <li>A printer must be <strong>connected</strong> from the <strong>MQTT</strong> page
                 </li>
                 <li>The spool must be a <strong>Bambu Lab RFID-tagged</strong> spool (the tag reports the remaining %)
                 </li>
@@ -1299,12 +1318,11 @@ client.subscribe("device/+/report");  // Subscribe to all printers
 
             <h3>How to Enable It:</h3>
             <ol>
-                <li>Go to <strong>Settings</strong></li>
-                <li>Scroll to <strong>"🖨️ BambuLab MQTT Live Tracking"</strong></li>
-                <li>Make sure <strong>"Enable BambuLab Live Tracking"</strong> is checked</li>
+                <li>Go to <strong>MQTT</strong></li>
+                <li>Select the printer you want to configure</li>
                 <li>Check <strong>"Auto-update spool weight from AMS"</strong></li>
                 <li>Decide on the <strong>"Only decrease"</strong> sub-option (see below)</li>
-                <li>Click <strong>"💾 Save & Connect"</strong></li>
+                <li>Click <strong>"💾 Save Settings"</strong> (then connect if needed)</li>
             </ol>
 
             <h3>How the Weight is Calculated:</h3>

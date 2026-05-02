@@ -319,19 +319,21 @@
     justify-content: space-between;
 }
 
-/* Light mode adjustments for calculator */
-.light .calculator-root {
-    --calc-bg-body: #f8fafc;
-    --calc-bg-card: #ffffff;
-    --calc-bg-input: #f1f5f9;
-    --calc-bg-pill: #f1f5f9;
-    --calc-bg-pill-soft: #e2e8f0;
-    --calc-border-subtle: #e2e8f0;
-    --calc-border-strong: #cbd5e1;
-    --calc-text-main: #0f172a;
-    --calc-text-muted: #64748b;
-    --calc-text-strong: #020617;
-    --calc-shadow-card: 0 8px 30px rgba(0, 0, 0, 0.1);
+/* Nebula mode adjustments for calculator */
+.nebula .calculator-root {
+    --calc-bg-body: #141E30;
+    --calc-bg-card: #1b1f3f;
+    --calc-bg-input: #11182b;
+    --calc-bg-pill: #1d2341;
+    --calc-bg-pill-soft: #252d52;
+    --calc-border-subtle: rgba(192, 132, 252, 0.24);
+    --calc-border-strong: rgba(236, 72, 153, 0.30);
+    --calc-accent: #c084fc;
+    --calc-accent-soft: rgba(192, 132, 252, 0.18);
+    --calc-text-main: #f1e8ff;
+    --calc-text-muted: #c5b3e6;
+    --calc-text-strong: #ffffff;
+    --calc-shadow-card: 0 14px 36px rgba(8, 8, 28, 0.55);
 }
 
 /* Calculator Responsive */
