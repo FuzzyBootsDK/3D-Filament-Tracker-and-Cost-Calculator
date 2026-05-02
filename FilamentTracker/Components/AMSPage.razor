@@ -19,13 +19,15 @@
     protected override async Task OnInitializedAsync()
     {
         _inventory = await FilamentService.GetAllFilamentsAsync();
+#pragma warning disable CS0618 // Type or member is obsolete
         RefreshFromStatus(BambuLabService.GetCurrentStatus());
+#pragma warning restore CS0618 // Type or member is obsolete
         await AutoMatchSlotsAsync();
         BambuLabService.OnStatusUpdated += HandleStatusUpdated;
         BambuLabService.OnAmsWeightUpdated += HandleAmsWeightUpdated;
     }
 
-    private void HandleAmsWeightUpdated()
+    private void HandleAmsWeightUpdated(int printerId)
     {
         // Reload inventory from DB so spool weights in dropdown and linked label are fresh
         InvokeAsync(async () =>
@@ -42,7 +44,7 @@
         });
     }
 
-    private void HandleStatusUpdated(PrintStatus status)
+    private void HandleStatusUpdated(int printerId, PrintStatus status)
     {
         try
         {

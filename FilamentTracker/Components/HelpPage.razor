@@ -20,7 +20,8 @@
                 <a href="#pricing" class="helpNavLink">💰 Weighted Average Pricing</a>
                 <a href="#settings" class="helpNavLink">⚙️ Settings</a>
                 <a href="#tips" class="helpNavLink">💡 Tips & Best Practices</a>
-                <a href="#livetracker" class="helpNavLink">🖨️ BambuLab Live Tracking</a>
+                <a href="#multiprinter" class="helpNavLink">🖨️ Multi-Printer Setup (NEW v2.0)</a>
+                <a href="#livetracker" class="helpNavLink">📊 Live Tracking Widget</a>
                 <a href="#ams" class="helpNavLink">🎞️ AMS Slot Management</a>
                 <a href="#amssync" class="helpNavLink">🔄 AMS Auto-Weight Sync</a>
                 <a href="#mqttterminal" class="helpNavLink">📡 MQTT Message Log</a>
@@ -40,7 +41,7 @@
             </div>;
     }
 
-    <div class="formCard" id="overview"
+        <div class="formCard" id="overview"
          style="border-color: rgba(59,130,246,.40); background: rgba(59,130,246,.05); scroll-margin-top: 20px;">
         <h2 style="margin-top: 0;">🚀 What Can This App Do?</h2>
         <div style="color: var(--muted); line-height: 1.8;">
@@ -117,19 +118,28 @@
                 </li>
             </ul>
 
-            <h3>🖨️ BambuLab Live Integration:</h3>
+            <h3>🖨️ Multi-Printer BambuLab Integration (NEW v2.0):</h3>
             <ul>
+                <li><strong>✨ Multiple Printer Support</strong> - Connect to multiple BambuLab printers simultaneously!
+                </li>
                 <li><strong>Real-Time Print Monitoring</strong> - Live progress, layer count, time remaining via direct
-                    MQTT connection
+                    MQTT connection for all printers
+                </li>
+                <li><strong>Per-Printer Management</strong> - Independent connection control, settings, and status
+                    tracking
                 </li>
                 <li><strong>AMS Slot Tracking</strong> - See all AMS slots with color, filament type, and sub-brand at a
-                    glance
+                    glance (per printer)
                 </li>
-                <li><strong>MQTT Message Log</strong> - Built-in terminal showing the last 50 incoming raw MQTT messages
-                    for diagnostics
+                <li><strong>MQTT Message Log</strong> - Filter by specific printer or view all printers' messages
+                </li>
+                <li><strong>MQTT Relay Server</strong> - Broadcast messages from multiple printers to external devices
+                    (ESP32, Home Assistant)
                 </li>
                 <li><strong>Inventory Linking</strong> - Match AMS slots to your tracked inventory filaments</li>
-                <li><strong>AMS Auto-Weight Sync</strong> - Automatically update spool weights from AMS RFID data</li>
+                <li><strong>AMS Auto-Weight Sync</strong> - Automatically update spool weights from AMS RFID data (per
+                    printer)
+                </li>
             </ul>
 
             <p style="margin-top: 16px;">
@@ -819,8 +829,197 @@
         @backToTop
     </div>
 
+    <div class="formCard" id="multiprinter" 
+         style="border-color: rgba(99,102,241,.40); background: rgba(99,102,241,.05); scroll-margin-top: 20px;">
+        <h2 style="margin-top: 0;">🖨️✨ Multi-Printer Setup (NEW in v2.0)</h2>
+        <div style="color: var(--muted); line-height: 1.8;">
+            <p>
+                <strong>Filament Tracker v2.0</strong> introduces <strong>multi-printer support</strong>! You can now
+                connect to multiple BambuLab printers simultaneously, monitor them independently, and manage per-printer
+                settings. Perfect for printer farms, hobbyists with multiple machines, or maker spaces.
+            </p>
+
+            <h3>🎯 What's New:</h3>
+            <ul>
+                <li><strong>Concurrent Connections</strong> - Connect to multiple printers at the same time</li>
+                <li><strong>Independent Management</strong> - Each printer has its own connection, status, and settings
+                </li>
+                <li><strong>Per-Printer MQTT Logs</strong> - Filter message log by specific printer or view all</li>
+                <li><strong>MQTT Relay Server</strong> - Broadcast from multiple printers to external devices</li>
+                <li><strong>Per-Printer AMS Sync</strong> - AMS auto-weight updates work independently per printer</li>
+                <li><strong>Connection Status</strong> - Visual indicators show which printers are connected</li>
+            </ul>
+
+            <h3>📖 Getting Started with Multi-Printer:</h3>
+
+            <h4>Step 1: Add Your Printers</h4>
+            <ol>
+                <li>Navigate to <strong>"MQTT Printers"</strong> page in the navigation menu</li>
+                <li>Click <strong>"➕ Add Printer"</strong> button</li>
+                <li>Fill in the printer information:
+                    <ul>
+                        <li><strong>Name:</strong> Friendly identifier (e.g., "X1 Carbon - Office", "P1S - Garage")</li>
+                        <li><strong>IP Address:</strong> Found in printer's <em>Settings → Network</em></li>
+                        <li><strong>Access Code:</strong> 8-character code from <em>Settings → Network → Access Code</em>
+                        </li>
+                        <li><strong>Serial Number:</strong> Found in <em>Settings → Device</em> (starts with 01S00C or
+                            01P00A)
+                        </li>
+                        <li><strong>Location (optional):</strong> Physical location for organization</li>
+                        <li><strong>Color:</strong> Choose a color to visually identify this printer</li>
+                        <li><strong>Enable:</strong> Check to make this printer available for connection</li>
+                        <li><strong>Set as Default:</strong> Mark this as your primary printer (shows in live view)</li>
+                    </ul>
+                </li>
+                <li>Click <strong>"💾 Save Printer"</strong></li>
+                <li>Repeat for all your printers!</li>
+            </ol>
+
+            <h4>Step 2: Connect to Your Printers</h4>
+            <ol>
+                <li>In the <strong>MQTT Printers</strong> page, click on a printer from the list to select it</li>
+                <li>Scroll to the <strong>"🔌 Connection"</strong> section</li>
+                <li>Configure AMS auto-update settings (applies to this printer):
+                    <ul>
+                        <li><strong>Auto-update spool weight from AMS</strong> - Enable automatic weight sync</li>
+                        <li><strong>Only decrease weight (recommended)</strong> - AMS can only reduce weight, never add
+                            back
+                        </li>
+                        <li><strong>Two-way sync</strong> - AMS value always wins in both directions</li>
+                    </ul>
+                </li>
+                <li>Click <strong>"🔌 Connect"</strong> button</li>
+                <li>Wait for <strong>"✅ Successfully connected!"</strong> message</li>
+                <li>Repeat for other printers you want to monitor</li>
+            </ol>
+
+            <p><strong>💡 Pro Tip:</strong> You can connect to multiple printers at once! Each maintains its own
+                independent connection and status.</p>
+
+            <h4>Step 3: MQTT Relay Server (Optional)</h4>
+            <p>
+                The MQTT relay allows external devices (ESP32, Home Assistant, etc.) to receive messages from your
+                printers without connecting directly to them. This reduces load on the printer's MQTT broker.
+            </p>
+
+            <ol>
+                <li>Ensure at least one printer is connected</li>
+                <li>In the <strong>"🔄 MQTT Relay Server"</strong> section:
+                    <ul>
+                        <li>Check <strong>"Enable MQTT Relay Server"</strong></li>
+                        <li><strong>Relay Port:</strong> Default is 1883 (change if port is in use)</li>
+                        <li><strong>Username/Password (optional):</strong> Add authentication for security</li>
+                    </ul>
+                </li>
+                <li>Click <strong>"💾 Save Relay Settings"</strong></li>
+                <li>Your relay server is now broadcasting messages from all connected printers!</li>
+            </ol>
+
+            <p><strong>Topic Structure:</strong></p>
+            <ul>
+                <li><code>device/{printerId}/report</code> - Messages from a specific printer</li>
+                <li><code>device/+/report</code> - All printers (wildcard subscription)</li>
+            </ul>
+
+            <p><strong>ESP32 Configuration Example:</strong></p>
+            <pre style="background: #0d1117; padding: 12px; border-radius: 8px; color: #e6edf3; overflow-x: auto; font-size: 12px;">
+const char* mqtt_server = "192.168.1.100";  // Your server's IP
+const int mqtt_port = 1883;
+const char* mqtt_user = "your_username";     // If auth enabled
+const char* mqtt_pass = "your_password";
+
+client.subscribe("device/+/report");  // Subscribe to all printers
+            </pre>
+
+            <h4>Step 4: MQTT Message Log Filtering</h4>
+            <p>
+                The <strong>"📡 MQTT Message Log"</strong> section shows real-time messages from your printers. Use the
+                dropdown filter to:
+            </p>
+            <ul>
+                <li><strong>All Printers</strong> - See messages from all connected printers</li>
+                <li><strong>Specific Printer</strong> - Filter to show only one printer's messages</li>
+            </ul>
+            <p>
+                Each message includes a <strong>[Printer Name]</strong> badge so you can identify the source at a glance.
+            </p>
+
+            <h3>🔧 Managing Multiple Printers:</h3>
+            <ul>
+                <li><strong>Connection Indicators:</strong> Each printer shows "● Connected" (green) or "○ Not connected"
+                    (gray)
+                </li>
+                <li><strong>Edit Printers:</strong> Click the ✏️ button to modify printer settings</li>
+                <li><strong>Delete Printers:</strong> Click the 🗑️ button (requires confirmation)</li>
+                <li><strong>Enable/Disable:</strong> Toggle the "Enable this printer" checkbox when editing</li>
+                <li><strong>Default Printer:</strong> Set which printer shows in the Live View widget (only one default
+                    allowed)
+                </li>
+            </ul>
+
+            <h3>🌟 Multi-Printer Workflows:</h3>
+
+            <h4>Workflow 1: Monitor a Printer Farm</h4>
+            <ol>
+                <li>Add all your printers in the MQTT Printers page</li>
+                <li>Enable the printers you want to monitor</li>
+                <li>Connect to each printer you want to track</li>
+                <li>View connection status for all printers in the printer list</li>
+                <li>Use MQTT log filter to check messages from specific printers</li>
+                <li>Each printer's AMS data is tracked independently</li>
+            </ol>
+
+            <h4>Workflow 2: MQTT Relay for Home Automation</h4>
+            <ol>
+                <li>Connect to all printers you want to monitor</li>
+                <li>Enable MQTT Relay Server</li>
+                <li>Configure port and optional authentication</li>
+                <li>Your ESP32/Home Assistant connects to this relay server</li>
+                <li>Subscribe to <code>device/+/report</code> to receive from all printers</li>
+                <li>Or subscribe to <code>device/1/report</code> for a specific printer</li>
+                <li>Messages are automatically relayed from all connected printers</li>
+            </ol>
+
+            <h4>Workflow 3: Per-Printer AMS Weight Sync</h4>
+            <ol>
+                <li>Connect to all printers with AMS units</li>
+                <li>Enable "Auto-update spool weight from AMS" for each printer connection</li>
+                <li>Choose sync mode (one-way recommended)</li>
+                <li>Go to <strong>AMS Page</strong> and link spools to AMS slots (requires tag UID)</li>
+                <li>Weights automatically update from each printer's AMS independently</li>
+                <li>Each printer can have different sync settings</li>
+            </ol>
+
+            <h3>❓ Common Questions:</h3>
+
+            <p><strong>Q: Can I connect to multiple printers at the same time?</strong></p>
+            <p>A: Yes! v2.0 supports concurrent connections to multiple printers. Each operates independently.</p>
+
+            <p><strong>Q: Do all printers share the same settings?</strong></p>
+            <p>A: No. Each printer has independent connection settings and AMS auto-update configuration.</p>
+
+            <p><strong>Q: Can the MQTT relay handle multiple printers?</strong></p>
+            <p>A: Yes! The relay server broadcasts messages from all connected printers. External devices can subscribe
+                to specific printers or all printers using MQTT wildcards.</p>
+
+            <p><strong>Q: Will the Live View show all printers?</strong></p>
+            <p>A: Currently, the Live View shows the default printer (marked with ⭐). Multi-printer Live View with grid
+                layout is coming in a future update.</p>
+
+            <p><strong>Q: Can I have different AMS auto-update settings per printer?</strong></p>
+            <p>A: Currently, AMS auto-update settings are global and apply to all connected printers. Per-printer settings
+                are planned for a future update.</p>
+
+            <p><strong>Q: What happens if one printer disconnects?</strong></p>
+            <p>A: Other printers remain connected. Each connection is independent. The disconnected printer will show "○
+                Not connected" status.</p>
+
+        </div>
+        @backToTop
+    </div>
+
     <div class="formCard" id="livetracker" style="scroll-margin-top: 20px;">
-        <h2 style="margin-top: 0;">🖨️ BambuLab Live Tracking</h2>
+        <h2 style="margin-top: 0;">📊 Live Tracking Widget</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
                 The <strong>Live Tracking</strong> widget in the navigation bar provides real-time monitoring of your

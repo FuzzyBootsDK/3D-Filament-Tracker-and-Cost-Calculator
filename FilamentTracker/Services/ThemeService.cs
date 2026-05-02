@@ -4,23 +4,19 @@ public class ThemeService
 {
     public string ThemeName { get; private set; } = "dark";
 
-    public bool IsDarkMode => ThemeName == "dark";
+    // Backward-compat: true for every theme except "light"
+    public bool IsDarkMode => ThemeName != "light";
 
     public event Action? OnThemeChanged;
 
-    public void SetTheme(string themeName)
+    public void SetTheme(string name)
     {
-        ThemeName = themeName;
+        ThemeName = name;
         OnThemeChanged?.Invoke();
     }
 
-    public void ToggleTheme()
-    {
-        SetTheme(IsDarkMode ? "light" : "dark");
-    }
+    // Backward-compat wrappers
+    public void SetDarkMode(bool isDark) => SetTheme(isDark ? "dark" : "light");
 
-    public void SetDarkMode(bool isDark)
-    {
-        SetTheme(isDark ? "dark" : "light");
-    }
+    public void ToggleTheme() => SetTheme(IsDarkMode ? "light" : "dark");
 }

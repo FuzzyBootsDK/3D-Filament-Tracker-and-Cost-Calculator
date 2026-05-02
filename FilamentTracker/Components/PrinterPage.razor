@@ -1,0 +1,157 @@
+@inject FilamentService FilamentService
+@inject BambuLabService BambuLabService
+@using FilamentTracker.Models
+@implements IDisposable
+
+<section>
+    <div class="pageHeader">
+        <h1>🖨️ Live Printers</h1>
+        <div class="sub">Real-time status for all configured printers</div>
+    </div>
+
+    @if (!_printers.Any())
+    {
+        <div class="formCard" style="text-align: center; padding: 40px;">
+            <div style="font-size: 48px; margin-bottom: 16px;">🖨️</div>
+            <p style="font-weight: 600;">No printers configured</p>
+            <p style="font-size: 14px; color: var(--muted);">Add printers in the MQTT page to see live status here.</p>
+        </div>
+    }
+    else
+    {
+        <div class="printerStatusGrid">
+            @foreach (var printer in _printers.Where(p => p.Enabled))
+            {
+                var status = _printerStatuses.GetValueOrDefault(printer.Id);
+                var isConnected = BambuLabService.IsPrinterConnected(printer.Id);
+                var isPrinting = status?.IsPrinting == true;
+                var cardClass = isPrinting ? "printing" : isConnected ? "connected" : "";
+
+                <div class="printerStatusCard @cardClass">
+                    <div class="printerStatusHeader">
+                        <div class="printerColorDot" style="background: @(printer.ColorHex ?? "#3b82f6");">
+                            @(isPrinting ? "⚙️" : isConnected ? "🖨️" : "💤")
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div class="printerStatusName">@printer.Name</div>
+                            @if (!string.IsNullOrEmpty(printer.Location))
+                            {
+                                <div class="printerStatusLocation">📍 @printer.Location</div>
+                            }
+                        </div>
+                        <div>
+                            @if (isPrinting)
+                            {
+                                <span style="background: rgba(59,130,246,.18); border: 1px solid rgba(59,130,246,.35); color: #93c5fd; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;">Printing</span>
+                            }
+                            else if (isConnected)
+                            {
+                                <span style="background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.30); color: #6ee7b7; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;">● Idle</span>
+                            }
+                            else
+                            {
+                                <span style="background: rgba(255,255,255,.05); border: 1px solid var(--border); color: var(--muted); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;">○ Offline</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="printerStatusBody">
+                        @if (!isConnected)
+                        {
+                            <div class="printerIdleState">
+                                <div class="printerIdleIcon">🔌</div>
+                                <div style="font-size: 14px; font-weight: 600;">Not connected</div>
+                                <div style="font-size: 12px; margin-top: 4px;">@printer.IpAddress</div>
+                                <div style="font-size: 12px; margin-top: 2px;">Connect in MQTT settings</div>
+                            </div>
+                        }
+                        else if (isPrinting && status != null)
+                        {
+                            <div>
+                                @if (!string.IsNullOrEmpty(status.CurrentFile))
+                                {
+                                    <div style="font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px;">
+                                        📄 @status.CurrentFile
+                                    </div>
+                                }
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 24px; font-weight: 900;">@status.Progress<span style="font-size: 14px;">%</span></span>
+                                    <span style="font-size: 13px; color: var(--muted);">Layer @status.CurrentLayer / @status.TotalLayers</span>
+                                </div>
+                                <div class="printerProgressBar">
+                                    <div class="printerProgressFill" style="width: @(status.Progress)%;"></div>
+                                </div>
+                                <div class="printerStatGrid">
+                                    <div class="printerStatBox">
+                                        <div class="printerStatLabel">Elapsed</div>
+                                        <div class="printerStatValue" style="font-size: 15px;">@status.TimeElapsed</div>
+                                    </div>
+                                    <div class="printerStatBox">
+                                        <div class="printerStatLabel">Remaining</div>
+                                        <div class="printerStatValue" style="font-size: 15px;">@status.TimeRemaining</div>
+                                    </div>
+                                    <div class="printerStatBox">
+                                        <div class="printerStatLabel">Bed</div>
+                                        <div class="printerStatValue">@status.BedTemperature<span style="font-size: 12px;">°C</span></div>
+                                    </div>
+                                    <div class="printerStatBox">
+                                        <div class="printerStatLabel">Nozzle</div>
+                                        <div class="printerStatValue">@status.NozzleTemperature<span style="font-size: 12px;">°C</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="printerIdleState">
+                                <div class="printerIdleIcon">💤</div>
+                                <div style="font-size: 14px; font-weight: 600;">Idle</div>
+                                @if (status != null && (status.BedTemperature > 0 || status.NozzleTemperature > 0))
+                                {
+                                    <div style="font-size: 12px; margin-top: 8px; display: flex; gap: 12px; justify-content: center;">
+                                        <span>🛏️ @status.BedTemperature°C</span>
+                                        <span>🌡️ @status.NozzleTemperature°C</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (_printers.Any(p => !p.Enabled))
+        {
+            <div style="margin-top: 12px; font-size: 13px; color: var(--muted); text-align: center;">
+                @_printers.Count(p => !p.Enabled) disabled printer(s) not shown — enable them in MQTT settings.
+            </div>
+        }
+    }
+</section>
+
+@code {
+    private List<Printer> _printers = new();
+    private Dictionary<int, PrintStatus> _printerStatuses = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        BambuLabService.OnStatusUpdated += HandleStatusUpdate;
+        _printers = await FilamentService.GetAllPrintersAsync();
+        _printerStatuses = BambuLabService.GetAllPrinterStatuses();
+    }
+
+    private void HandleStatusUpdate(int printerId, PrintStatus status)
+    {
+        try
+        {
+            _printerStatuses[printerId] = status;
+            InvokeAsync(StateHasChanged);
+        }
+        catch { }
+    }
+
+    public void Dispose()
+    {
+        BambuLabService.OnStatusUpdated -= HandleStatusUpdate;
+    }
+}

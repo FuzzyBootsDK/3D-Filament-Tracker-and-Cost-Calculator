@@ -14,9 +14,15 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
     : IAsyncDisposable
 {
     private const int MaxLogEntries = 50;
-    private readonly PrintStatus _currentStatus = new();
+
+    // Multi-connection state
+    private readonly Dictionary<int, IMqttClient> _mqttClients = new();
+    private readonly Dictionary<int, PrintStatus> _printerStatuses = new();
+    private readonly Dictionary<int, CancellationTokenSource> _cancellationTokens = new();
+    private readonly Dictionary<int, string> _printerNames = new();
+    private readonly Dictionary<int, string> _printerSerialNumbers = new();
     private readonly Queue<MqttLogEntry> _mqttLog = new();
-    private IMqttClient? _mqttClient;
+    private readonly object _lock = new();
 
     /// When true, automatically update spool WeightRemaining from AMS remain%
     /// (only for spools that have been tagged/linked in the AMS page).
@@ -26,35 +32,159 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
     /// When false, it syncs in both directions — AMS can also restore weight.
     public bool AmsAutoUpdateOnlyDecrease { get; set; } = true;
 
-    public bool IsConnected => _mqttClient?.IsConnected ?? false;
+    // Multi-connection API
+    public bool IsAnyConnected
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _mqttClients.Any(kvp => kvp.Value.IsConnected);
+            }
+        }
+    }
+
+    public bool IsPrinterConnected(int printerId)
+    {
+        lock (_lock)
+        {
+            return _mqttClients.TryGetValue(printerId, out var client) && client.IsConnected;
+        }
+    }
+
+    public PrintStatus? GetPrinterStatus(int printerId)
+    {
+        lock (_lock)
+        {
+            return _printerStatuses.GetValueOrDefault(printerId);
+        }
+    }
+
+    public List<int> GetConnectedPrinterIds()
+    {
+        lock (_lock)
+        {
+            return _mqttClients
+                .Where(kvp => kvp.Value.IsConnected)
+                .Select(kvp => kvp.Key)
+                .ToList();
+        }
+    }
+
+    public Dictionary<int, PrintStatus> GetAllPrinterStatuses()
+    {
+        lock (_lock)
+        {
+            return new Dictionary<int, PrintStatus>(_printerStatuses);
+        }
+    }
 
     public async ValueTask DisposeAsync()
     {
-        await DisconnectAsync();
-        _mqttClient?.Dispose();
+        await DisconnectAllAsync();
+        lock (_lock)
+        {
+            foreach (var client in _mqttClients.Values)
+            {
+                client?.Dispose();
+            }
+            _mqttClients.Clear();
+        }
     }
 
-    public event Action<PrintStatus>? OnStatusUpdated;
+    // Events now include printer ID
+    public event Action<int, PrintStatus>? OnStatusUpdated;
     public event Action<MqttLogEntry>? OnMqttMessageLogged;
 
     /// Fired after AMS auto-weight updates have been saved to the DB.
-    public event Action? OnAmsWeightUpdated;
+    /// Includes printer ID and affected spool IDs
+    public event Action<int>? OnAmsWeightUpdated;
 
-    public PrintStatus GetCurrentStatus() => _currentStatus;
+    // Backward compatibility methods (deprecated)
+    [Obsolete("Use IsPrinterConnected(int printerId) for multi-printer support")]
+    public bool IsConnected => IsAnyConnected;
 
-    public async Task ConnectAsync(string ipAddress, string accessCode, string serialNumber)
+    [Obsolete("Use GetPrinterStatus(int printerId) for multi-printer support")]
+    public PrintStatus GetCurrentStatus()
+    {
+        lock (_lock)
+        {
+            // Return first connected printer status or empty
+            var firstConnectedId = _mqttClients
+                .FirstOrDefault(kvp => kvp.Value.IsConnected).Key;
+            return _printerStatuses.GetValueOrDefault(firstConnectedId) ?? new PrintStatus();
+        }
+    }
+
+    [Obsolete("Use GetConnectedPrinterIds() for multi-printer support")]
+    public int? GetConnectedPrinterId()
+    {
+        lock (_lock)
+        {
+            return _mqttClients
+                .FirstOrDefault(kvp => kvp.Value.IsConnected).Key;
+        }
+    }
+
+    [Obsolete("Use GetPrinterStatus(printerId).PrinterName for multi-printer support")]
+    public string GetConnectedPrinterName()
+    {
+        lock (_lock)
+        {
+            var firstId = _mqttClients.FirstOrDefault(kvp => kvp.Value.IsConnected).Key;
+            return _printerNames.GetValueOrDefault(firstId) ?? "";
+        }
+    }
+
+    // Backward compatibility: ConnectAsync (wraps new method)
+    [Obsolete("Use ConnectToPrinterAsync for explicit multi-printer support")]
+    public async Task ConnectAsync(string ipAddress, string accessCode, string serialNumber, int? printerId = null, string printerName = "")
+    {
+        if (printerId.HasValue)
+        {
+            await ConnectToPrinterAsync(printerId.Value, ipAddress, accessCode, serialNumber, printerName);
+        }
+        else
+        {
+            throw new ArgumentException("printerId is required for multi-connection mode");
+        }
+    }
+
+    public async Task ConnectToPrinterAsync(int printerId, string ipAddress, string accessCode, string serialNumber, string printerName)
     {
         try
         {
-            if (_mqttClient?.IsConnected == true) await DisconnectAsync();
+            // Disconnect existing connection to this printer if any
+            if (IsPrinterConnected(printerId))
+            {
+                logger.LogInformation("Printer {PrinterId} already connected, disconnecting first", printerId);
+                await DisconnectFromPrinterAsync(printerId);
+            }
+
+            logger.LogInformation("Connecting to printer {PrinterId} ({Name}) at {IpAddress}:8883 with serial {Serial}", 
+                printerId, printerName, ipAddress, serialNumber);
 
             var factory = new MqttClientFactory();
-            _mqttClient = factory.CreateMqttClient();
+            var client = factory.CreateMqttClient();
+            var cts = new CancellationTokenSource();
+
+            lock (_lock)
+            {
+                _mqttClients[printerId] = client;
+                _cancellationTokens[printerId] = cts;
+                _printerNames[printerId] = printerName;
+                _printerSerialNumbers[printerId] = serialNumber;
+                _printerStatuses[printerId] = new PrintStatus 
+                { 
+                    PrinterName = $"{printerName} ({serialNumber})",
+                    IsConnected = false
+                };
+            }
 
             var options = new MqttClientOptionsBuilder()
                 .WithTcpServer(ipAddress, 8883)
                 .WithCredentials("bblp", accessCode)
-                .WithClientId($"FilamentTracker_{Guid.NewGuid():N}")
+                .WithClientId($"FilamentTracker_{printerId}_{Guid.NewGuid():N}")
                 .WithTlsOptions(o =>
                 {
                     o.UseTls();
@@ -68,46 +198,80 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
                 .WithProtocolVersion(MqttProtocolVersion.V311)
                 .Build();
 
-            _mqttClient.ApplicationMessageReceivedAsync += OnMessageReceived;
+            // Setup message handler for this specific printer
+            client.ApplicationMessageReceivedAsync += args => OnMessageReceived(printerId, args);
 
-            _mqttClient.ConnectedAsync += _ =>
+            client.ConnectedAsync += _ =>
             {
-                logger.LogInformation("MQTT connected successfully to {IpAddress}", ipAddress);
-                _currentStatus.IsConnected = true;
-                _currentStatus.PrinterName = $"BambuLab ({serialNumber})";
-                try { OnStatusUpdated?.Invoke(_currentStatus); }
-                catch (Exception ex) { logger.LogWarning(ex, "A subscriber threw in OnStatusUpdated (connected)"); }
+                logger.LogInformation("MQTT connected successfully to printer {PrinterId} at {IpAddress}", printerId, ipAddress);
+                PrintStatus? status = null;
+                lock (_lock)
+                {
+                    if (_printerStatuses.TryGetValue(printerId, out var foundStatus))
+                    {
+                        foundStatus.IsConnected = true;
+                        foundStatus.PrinterName = $"{printerName} ({serialNumber})";
+                        status = foundStatus;
+                    }
+                }
+                if (status != null)
+                {
+                    try { OnStatusUpdated?.Invoke(printerId, status); }
+                    catch (Exception ex) { logger.LogWarning(ex, "A subscriber threw in OnStatusUpdated (connected) for printer {PrinterId}", printerId); }
+                }
                 return Task.CompletedTask;
             };
 
-            _mqttClient.DisconnectedAsync += async e =>
+            client.DisconnectedAsync += async e =>
             {
-                logger.LogWarning("MQTT disconnected: {Reason}", e.Reason);
-                _currentStatus.IsConnected = false;
-                try { OnStatusUpdated?.Invoke(_currentStatus); }
-                catch (Exception ex) { logger.LogWarning(ex, "A subscriber threw in OnStatusUpdated (disconnected)"); }
+                logger.LogWarning("MQTT disconnected from printer {PrinterId}: {Reason}", printerId, e.Reason);
+                PrintStatus? status = null;
+                lock (_lock)
+                {
+                    if (_printerStatuses.TryGetValue(printerId, out var foundStatus))
+                    {
+                        foundStatus.IsConnected = false;
+                        status = foundStatus;
+                    }
+                }
+                if (status != null)
+                {
+                    try { OnStatusUpdated?.Invoke(printerId, status); }
+                    catch (Exception ex) { logger.LogWarning(ex, "A subscriber threw in OnStatusUpdated (disconnected) for printer {PrinterId}", printerId); }
+                }
 
                 if (e.Reason != MqttClientDisconnectReason.NormalDisconnection)
                 {
+                    // Auto-reconnect logic
                     await Task.Delay(TimeSpan.FromSeconds(5));
                     try
                     {
-                        if (_mqttClient is { IsConnected: false })
+                        bool shouldReconnect;
+                        lock (_lock)
                         {
-                            logger.LogInformation("Attempting to reconnect...");
-                            await _mqttClient.ConnectAsync(options);
+                            shouldReconnect = _mqttClients.ContainsKey(printerId) && 
+                                            _mqttClients[printerId] is { IsConnected: false };
+                        }
+
+                        if (shouldReconnect)
+                        {
+                            logger.LogInformation("Attempting to reconnect printer {PrinterId}...", printerId);
+                            await client.ConnectAsync(options);
                         }
                     }
-                    catch (Exception ex) { logger.LogError(ex, "Failed to reconnect to MQTT"); }
+                    catch (Exception ex) { logger.LogError(ex, "Failed to reconnect printer {PrinterId} to MQTT", printerId); }
                 }
             };
 
-            logger.LogInformation("Connecting to BambuLab printer at {IpAddress}:8883 with serial {Serial}", ipAddress, serialNumber);
-            var connectResult = await _mqttClient.ConnectAsync(options);
+            var connectResult = await client.ConnectAsync(options);
 
             if (connectResult.ResultCode != MqttClientConnectResultCode.Success)
             {
-                logger.LogError("Failed to connect: {ResultCode}", connectResult.ResultCode);
+                logger.LogError("Failed to connect printer {PrinterId}: {ResultCode}", printerId, connectResult.ResultCode);
+
+                // Clean up failed connection
+                await DisconnectFromPrinterAsync(printerId);
+
                 throw new Exception($"MQTT connection failed: {connectResult.ResultCode} - {connectResult.ReasonString}");
             }
 
@@ -115,53 +279,149 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
                 .WithTopicFilter(f => f.WithTopic($"device/{serialNumber}/report"))
                 .Build();
 
-            var subscribeResult = await _mqttClient.SubscribeAsync(subscribeOptions);
-            logger.LogInformation("Subscribed to topic: device/{Serial}/report. Result: {ResultCode}",
-                serialNumber, subscribeResult.Items.FirstOrDefault()?.ResultCode);
+            var subscribeResult = await client.SubscribeAsync(subscribeOptions);
+            logger.LogInformation("Printer {PrinterId} subscribed to topic: device/{Serial}/report. Result: {ResultCode}",
+                printerId, serialNumber, subscribeResult.Items.FirstOrDefault()?.ResultCode);
 
-            _currentStatus.IsConnected = true;
-            _currentStatus.PrinterName = $"BambuLab ({serialNumber})";
-            OnStatusUpdated?.Invoke(_currentStatus);
+            PrintStatus? finalStatus = null;
+            lock (_lock)
+            {
+                if (_printerStatuses.TryGetValue(printerId, out var foundStatus))
+                {
+                    foundStatus.IsConnected = true;
+                    foundStatus.PrinterName = $"{printerName} ({serialNumber})";
+                    finalStatus = foundStatus;
+                }
+            }
+            if (finalStatus != null)
+            {
+                OnStatusUpdated?.Invoke(printerId, finalStatus);
+            }
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to connect to BambuLab MQTT");
-            _currentStatus.IsConnected = false;
-            OnStatusUpdated?.Invoke(_currentStatus);
+            logger.LogError(ex, "Failed to connect printer {PrinterId} to BambuLab MQTT", printerId);
+
+            PrintStatus? errorStatus = null;
+            lock (_lock)
+            {
+                if (_printerStatuses.TryGetValue(printerId, out var foundStatus))
+                {
+                    foundStatus.IsConnected = false;
+                    errorStatus = foundStatus;
+                }
+            }
+            if (errorStatus != null)
+            {
+                OnStatusUpdated?.Invoke(printerId, errorStatus);
+            }
             throw;
         }
     }
 
+    // Backward compatibility
+    [Obsolete("Use DisconnectFromPrinterAsync(int printerId) or DisconnectAllAsync()")]
     public async Task DisconnectAsync()
     {
-        try
+        // Disconnect first connected printer for backward compatibility
+        var firstId = GetConnectedPrinterIds().FirstOrDefault();
+        if (firstId != 0)
         {
-            if (_mqttClient?.IsConnected == true) await _mqttClient.DisconnectAsync();
-            _currentStatus.IsConnected = false;
-            _currentStatus.IsPrinting = false;
-            OnStatusUpdated?.Invoke(_currentStatus);
-            logger.LogInformation("Disconnected from BambuLab printer");
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error disconnecting from MQTT");
+            await DisconnectFromPrinterAsync(firstId);
         }
     }
 
-    private Task OnMessageReceived(MqttApplicationMessageReceivedEventArgs args)
+    public async Task DisconnectFromPrinterAsync(int printerId)
     {
         try
         {
-            // Capture raw bytes first for exact relay (no encoding round-trip issues)
-            var payloadBytes = args.ApplicationMessage.Payload.ToArray();
-            var payload = Encoding.UTF8.GetString(payloadBytes);
-            logger.LogDebug("Received MQTT message: {Payload}", payload);
+            IMqttClient? client;
+            CancellationTokenSource? cts;
+            PrintStatus? status;
+
+            lock (_lock)
+            {
+                if (!_mqttClients.TryGetValue(printerId, out client))
+                {
+                    logger.LogDebug("Printer {PrinterId} not found in connected clients", printerId);
+                    return; // Not connected
+                }
+
+                _cancellationTokens.TryGetValue(printerId, out cts);
+                _printerStatuses.TryGetValue(printerId, out status);
+            }
+
+            try
+            {
+                cts?.Cancel();
+                if (client?.IsConnected == true)
+                {
+                    await client.DisconnectAsync();
+                }
+                client?.Dispose();
+            }
+            finally
+            {
+                lock (_lock)
+                {
+                    _mqttClients.Remove(printerId);
+                    _cancellationTokens.Remove(printerId);
+                    _printerNames.Remove(printerId);
+                    _printerSerialNumbers.Remove(printerId);
+                    _printerStatuses.Remove(printerId);
+                }
+
+                if (status != null)
+                {
+                    status.IsConnected = false;
+                    status.IsPrinting = false;
+                    OnStatusUpdated?.Invoke(printerId, status);
+                }
+
+                logger.LogInformation("Disconnected from printer {PrinterId}", printerId);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error disconnecting from printer {PrinterId}", printerId);
+        }
+    }
+
+    public async Task DisconnectAllAsync()
+    {
+        List<int> printerIds;
+        lock (_lock)
+        {
+            printerIds = _mqttClients.Keys.ToList();
+        }
+
+        logger.LogInformation("Disconnecting from {Count} printer(s)", printerIds.Count);
+
+        foreach (var printerId in printerIds)
+        {
+            await DisconnectFromPrinterAsync(printerId);
+        }
+    }
+
+    private Task OnMessageReceived(int printerId, MqttApplicationMessageReceivedEventArgs args)
+    {
+        try
+        {
+            var payload = Encoding.UTF8.GetString(args.ApplicationMessage.Payload.ToArray());
+            logger.LogDebug("Received MQTT message from printer {PrinterId}: {Payload}", printerId, payload);
+
+            string printerName;
+            lock (_lock)
+            {
+                printerName = _printerNames.GetValueOrDefault(printerId) ?? $"Printer {printerId}";
+            }
 
             var entry = new MqttLogEntry 
             { 
                 Timestamp = DateTime.Now, 
                 Payload = payload,
-                PayloadBytes = payloadBytes  // Store raw bytes for exact relay
+                PrinterId = printerId,
+                PrinterName = printerName
             };
             lock (_mqttLog)
             {
@@ -171,12 +431,22 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
             }
 
             // Append to server-side log file (best-effort)
-            var logLine = $"[{entry.Timestamp:O}] {payload.Replace("\r\n", " ").Replace("\n", " ")}{Environment.NewLine}";
+            var logLine = $"[{entry.Timestamp:O}] [Printer {printerId}] {payload.Replace("\r\n", " ").Replace("\n", " ")}{Environment.NewLine}";
             _ = File.AppendAllTextAsync("bambulab-mqtt.log", logLine)
                     .ContinueWith(t => logger.LogDebug(t.Exception, "Log write failed"), TaskContinuationOptions.OnlyOnFaulted);
 
             try { OnMqttMessageLogged?.Invoke(entry); }
-            catch (Exception ex) { logger.LogWarning(ex, "A subscriber threw in OnMqttMessageLogged"); }
+            catch (Exception ex) { logger.LogWarning(ex, "A subscriber threw in OnMqttMessageLogged for printer {PrinterId}", printerId); }
+
+            PrintStatus status;
+            lock (_lock)
+            {
+                if (!_printerStatuses.TryGetValue(printerId, out status!))
+                {
+                    logger.LogWarning("Received message for disconnected printer {PrinterId}", printerId);
+                    return Task.CompletedTask;
+                }
+            }
 
             var root = JsonDocument.Parse(payload).RootElement;
 
@@ -186,65 +456,65 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
                     ams.TryGetProperty("ams", out var amsArray))
                 {
                     var amsUnits = ParseAmsUnits(amsArray);
-                    _currentStatus.AMSUnits = amsUnits;
-                    logger.LogInformation("AMS data parsed: {Count} unit(s)", amsUnits.Count);
+                    status.AMSUnits = amsUnits;
+                    logger.LogInformation("Printer {PrinterId}: AMS data parsed: {Count} unit(s)", printerId, amsUnits.Count);
 
                     if (AmsAutoUpdateWeight)
-                        _ = Task.Run(() => ApplyAmsWeightUpdatesAsync(amsUnits));
+                        _ = Task.Run(() => ApplyAmsWeightUpdatesAsync(printerId, amsUnits));
                 }
 
                 if (print.TryGetProperty("gcode_state", out var gcodeState))
                 {
                     var state = GetStringSafe(gcodeState).ToLower();
                     if (string.IsNullOrEmpty(state)) state = "idle";
-                    _currentStatus.Status = state;
-                    _currentStatus.IsPrinting = state is "running" or "printing";
+                    status.Status = state;
+                    status.IsPrinting = state is "running" or "printing";
                 }
 
                 if (print.TryGetProperty("mc_percent", out var mcPercent))
-                    _currentStatus.Progress = mcPercent.GetInt32();
+                    status.Progress = mcPercent.GetInt32();
 
                 if (print.TryGetProperty("layer_num", out var layerNum))
-                    _currentStatus.CurrentLayer = layerNum.GetInt32();
+                    status.CurrentLayer = layerNum.GetInt32();
 
                 if (print.TryGetProperty("total_layer_num", out var totalLayerNum))
-                    _currentStatus.TotalLayers = totalLayerNum.GetInt32();
+                    status.TotalLayers = totalLayerNum.GetInt32();
 
                 if (print.TryGetProperty("mc_remaining_time", out var remainingTime))
-                    _currentStatus.TimeRemaining = FormatTime(remainingTime.GetInt32());
+                    status.TimeRemaining = FormatTime(remainingTime.GetInt32());
 
-                if (print.TryGetProperty("mc_remaining_time", out var remaining) && _currentStatus.Progress is > 0 and < 100)
+                if (print.TryGetProperty("mc_remaining_time", out var remaining) && status.Progress is > 0 and < 100)
                 {
                     var remainingMin = remaining.GetInt32();
-                    var totalMin = remainingMin * 100 / (100 - _currentStatus.Progress);
-                    _currentStatus.TimeElapsed = FormatTime(totalMin - remainingMin);
+                    var totalMin = remainingMin * 100 / (100 - status.Progress);
+                    status.TimeElapsed = FormatTime(totalMin - remainingMin);
                 }
-                else if (_currentStatus.Progress == 0)
-                    _currentStatus.TimeElapsed = "0m";
+                else if (status.Progress == 0)
+                    status.TimeElapsed = "0m";
 
                 if (print.TryGetProperty("gcode_file", out var gcodeFile))
-                    _currentStatus.CurrentFile = gcodeFile.GetString();
+                    status.CurrentFile = gcodeFile.GetString();
 
                 if (print.TryGetProperty("bed_temper", out var bedTemp))
-                    _currentStatus.BedTemperature = (int)bedTemp.GetDouble();
+                    status.BedTemperature = (int)bedTemp.GetDouble();
 
                 if (print.TryGetProperty("nozzle_temper", out var nozzleTemp))
-                    _currentStatus.NozzleTemperature = (int)nozzleTemp.GetDouble();
+                    status.NozzleTemperature = (int)nozzleTemp.GetDouble();
 
                 if (print.TryGetProperty("wifi_signal", out var wifiSignal))
                 {
                     var sig = GetStringSafe(wifiSignal);
                     if (!string.IsNullOrEmpty(sig))
-                        _currentStatus.WifiSignal = sig;
+                        status.WifiSignal = sig;
                 }
             }
 
-            try { OnStatusUpdated?.Invoke(_currentStatus); }
-            catch (Exception ex) { logger.LogWarning(ex, "A subscriber threw in OnStatusUpdated"); }
+            try { OnStatusUpdated?.Invoke(printerId, status); }
+            catch (Exception ex) { logger.LogWarning(ex, "A subscriber threw in OnStatusUpdated for printer {PrinterId}", printerId); }
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error parsing MQTT message");
+            logger.LogError(ex, "Error parsing MQTT message from printer {PrinterId}", printerId);
         }
 
         return Task.CompletedTask;
@@ -326,7 +596,7 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
         }
     }
 
-    private async Task ApplyAmsWeightUpdatesAsync(List<AMSUnit> amsUnits)
+    private async Task ApplyAmsWeightUpdatesAsync(int printerId, List<AMSUnit> amsUnits)
     {
         try
         {
@@ -361,15 +631,15 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
                 if (AmsAutoUpdateOnlyDecrease && newWeight > spool.WeightRemaining)
                 {
                     logger.LogDebug(
-                        "AMS auto-update skipped (OnlyDecrease): spool {SpoolId} AMS says {New}g but inventory has {Old}g",
-                        spool.Id, newWeight, spool.WeightRemaining);
+                        "Printer {PrinterId}: AMS auto-update skipped (OnlyDecrease): spool {SpoolId} AMS says {New}g but inventory has {Old}g",
+                        printerId, spool.Id, newWeight, spool.WeightRemaining);
                     continue;
                 }
 
                 var direction = newWeight < spool.WeightRemaining ? "▼ decreased" : "▲ increased";
                 logger.LogInformation(
-                    "AMS auto-update: spool {SpoolId} ({Brand} {Color}) {Direction} {Old}g → {New}g (AMS {Pct}%)",
-                    spool.Id, spool.Filament?.Brand, spool.Filament?.ColorName,
+                    "Printer {PrinterId}: AMS auto-update: spool {SpoolId} ({Brand} {Color}) {Direction} {Old}g → {New}g (AMS {Pct}%)",
+                    printerId, spool.Id, spool.Filament?.Brand, spool.Filament?.ColorName,
                     direction, spool.WeightRemaining, newWeight, slot.Remain.Value);
 
                 spool.WeightRemaining = newWeight;
@@ -380,13 +650,13 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
 
             if (anyChanged)
             {
-                try { OnAmsWeightUpdated?.Invoke(); }
-                catch (Exception ex) { logger.LogWarning(ex, "A subscriber threw in OnAmsWeightUpdated"); }
+                try { OnAmsWeightUpdated?.Invoke(printerId); }
+                catch (Exception ex) { logger.LogWarning(ex, "A subscriber threw in OnAmsWeightUpdated for printer {PrinterId}", printerId); }
             }
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Failed to apply AMS weight updates");
+            logger.LogWarning(ex, "Failed to apply AMS weight updates for printer {PrinterId}", printerId);
         }
     }
 
@@ -431,7 +701,8 @@ public class MqttLogEntry
     public DateTime Timestamp { get; init; }
     public string   Payload   { get; init; } = "";
     public string   Topic     { get; set; }  = "";
-    public byte[]   PayloadBytes { get; init; } = Array.Empty<byte>(); // Raw bytes for exact relay
+    public int?     PrinterId { get; set; }
+    public string   PrinterName { get; set; } = "";
 }
 
 internal static class StringExtensions
