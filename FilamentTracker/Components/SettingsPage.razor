@@ -23,7 +23,7 @@
     <div class="formCard">
         <h2 style="margin-top: 0;">🎨 Appearance</h2>
         <div style="color: var(--muted); margin-bottom: 16px;">
-            Choose a theme to personalise your experience.
+            Choose a color theme to personalize your experience.
         </div>
         <div class="themeGrid">
             @foreach (var theme in _themes)
@@ -519,10 +519,21 @@
         _spoolCount = filaments.Sum(f => f.SpoolCount);
     }
 
-    private void SetTheme(string name)
+    private record ThemeOption(string Id, string Label, string[] Colors);
+
+    private readonly ThemeOption[] _themes =
+    [
+        new("dark",      "🌙 Dark",      ["#0b1220", "#101a2c", "#3b82f6", "#e6edf7"]),
+        new("light",     "☀️ Light",     ["#f8fafc", "#ffffff", "#3b82f6", "#0f172a"]),
+        new("starbucks", "☕ Starbucks", ["#1e1a16", "#1A322F", "#927E63", "#DED7CF"]),
+        new("harmony",   "🎵 Harmony",  ["#08192a", "#0F2A3D", "#FFA439", "#DDEFCE"]),
+        new("spring",    "🌿 Spring",   ["#06231D", "#0C342C", "#0db897", "#bce0d6"]),
+    ];
+
+    private void SetTheme(string themeName)
     {
-        ThemeService.SetTheme(name);
-        var label = _themes.FirstOrDefault(t => t.Name == name)?.Label ?? name;
+        ThemeService.SetTheme(themeName);
+        var label = _themes.FirstOrDefault(t => t.Id == themeName)?.Label ?? themeName;
         ShowMessage($"Theme changed to {label}", false);
     }
 

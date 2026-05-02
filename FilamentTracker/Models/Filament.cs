@@ -48,8 +48,8 @@ public class Filament
             var spoolsWithPrices = Spools.Where(s => s.PurchasePricePerKg.HasValue).ToList();
             if (spoolsWithPrices.Any()) return spoolsWithPrices.Average(s => s.PurchasePricePerKg!.Value);
 
-            // Default fallback
-            return 149m;
+            // Default fallback when no prices are set
+            return 0m;
         }
     }
 
