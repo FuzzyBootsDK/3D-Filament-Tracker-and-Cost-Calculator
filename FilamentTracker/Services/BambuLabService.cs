@@ -407,7 +407,8 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
     {
         try
         {
-            var payload = Encoding.UTF8.GetString(args.ApplicationMessage.Payload.ToArray());
+            var payloadBytes = args.ApplicationMessage.Payload.ToArray();
+            var payload = Encoding.UTF8.GetString(payloadBytes);
             logger.LogDebug("Received MQTT message from printer {PrinterId}: {Payload}", printerId, payload);
 
             string printerName;
@@ -420,6 +421,7 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
             { 
                 Timestamp = DateTime.Now, 
                 Payload = payload,
+                PayloadBytes = payloadBytes,
                 PrinterId = printerId,
                 PrinterName = printerName
             };
@@ -700,6 +702,7 @@ public class MqttLogEntry
 {
     public DateTime Timestamp { get; init; }
     public string   Payload   { get; init; } = "";
+    public byte[]   PayloadBytes { get; init; } = Array.Empty<byte>();
     public string   Topic     { get; set; }  = "";
     public int?     PrinterId { get; set; }
     public string   PrinterName { get; set; } = "";
