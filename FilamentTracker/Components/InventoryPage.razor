@@ -2,7 +2,9 @@
 @inject FilamentService FilamentService
 @inject ThresholdService ThresholdService
 @inject BambuLabService BambuLabService
+@inject PrinterStatusStore PrinterStatusStore
 @inject EditStateService EditStateService
+@inject InventoryPageState InventoryPageState
 @implements IDisposable
 
 <section>
@@ -50,16 +52,16 @@
             </div>
             <div class="row">
                 <button class="btn" @onclick="ToggleLowFilter">
-                    @(_filterLowOnly ? "Show All" : "Show Low")
+                    @(InventoryPageState.FilterLowOnly ? "Show All" : "Show Low")
                 </button>
             </div>
         </section>
     }
 
     <div class="controls">
-        <input class="input" placeholder="Search (brand, color, type, finish)..." @bind="_searchText"
+        <input class="input" placeholder="Search (brand, color, type, finish)..." @bind="InventoryPageState.SearchText"
                @bind:event="oninput" @bind:after="FilterFilaments"/>
-        <select class="input" @bind="_typeFilter" @bind:after="FilterFilaments">
+        <select class="input" @bind="InventoryPageState.TypeFilter" @bind:after="FilterFilaments">
             <option value="all">All Types</option>
             <option value="PLA">PLA</option>
             <option value="PETG">PETG</option>
@@ -68,7 +70,7 @@
             <option value="TPU">TPU</option>
             <option value="NYLON">NYLON</option>
         </select>
-        <select class="input" @bind="_sortOption" @bind:after="FilterFilaments">
+        <select class="input" @bind="InventoryPageState.SortOption" @bind:after="FilterFilaments">
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
             <option value="remainingAsc">Lowest Remaining</option>
@@ -162,11 +164,6 @@
     private Dictionary<string, int> _statistics = new();
     private Filament? _selectedFilament;
 
-    private string _searchText = "";
-    private string _typeFilter = "all";
-    private string _sortOption = "newest";
-    private bool _filterLowOnly;
-
     // spoolId → AMS-reported remain % (from live MQTT)
     private Dictionary<int, int> _amsRemainBySpoolId = new();
 
@@ -176,16 +173,14 @@
     protected override async Task OnInitializedAsync()
     {
         await RefreshData();
-#pragma warning disable CS0618 // Type or member is obsolete
-        RebuildAmsMap(BambuLabService.GetCurrentStatus());
-#pragma warning restore CS0618 // Type or member is obsolete
-        BambuLabService.OnStatusUpdated += HandleStatusUpdated;
+        RebuildAmsMapFromStatuses(PrinterStatusStore.GetAllStatuses().Values);
+        PrinterStatusStore.OnStatusChanged += HandleStatusUpdated;
         BambuLabService.OnAmsWeightUpdated += HandleAmsWeightUpdated;
     }
 
     public void Dispose()
     {
-        BambuLabService.OnStatusUpdated -= HandleStatusUpdated;
+        PrinterStatusStore.OnStatusChanged -= HandleStatusUpdated;
         BambuLabService.OnAmsWeightUpdated -= HandleAmsWeightUpdated;
     }
 
@@ -212,7 +207,7 @@
     {
         try
         {
-            RebuildAmsMap(status);
+            RebuildAmsMapFromStatuses(PrinterStatusStore.GetAllStatuses().Values);
             InvokeAsync(StateHasChanged);
         }
         catch
@@ -221,11 +216,24 @@
         }
     }
 
+    private void RebuildAmsMapFromStatuses(IEnumerable<PrintStatus> statuses)
+    {
+        var merged = new Dictionary<int, int>();
+        foreach (var status in statuses)
+        {
+            var perPrinter = BuildAmsMap(status);
+            foreach (var kvp in perPrinter)
+                merged[kvp.Key] = kvp.Value;
+        }
+
+        _amsRemainBySpoolId = merged;
+    }
+
     /// Build a lookup of spoolId → AMS remain% using the saved RFID ids on each spool.
-    private void RebuildAmsMap(PrintStatus status)
+    private Dictionary<int, int> BuildAmsMap(PrintStatus status)
     {
         var map = new Dictionary<int, int>();
-        if (status.AMSUnits == null) { _amsRemainBySpoolId = map; return; }
+        if (status.AMSUnits == null) return map;
 
         foreach (var unit in status.AMSUnits)
         foreach (var slot in unit.Slots)
@@ -238,7 +246,7 @@
             if (!hasUuid && !hasTag) continue;
 
             foreach (var filament in _allFilaments)
-            foreach (var spool in filament.Spools ?? new List<Spool>())
+            foreach (var spool in filament.Spools)
             {
                 if ((hasUuid && spool.AmsTrayUuid == slot.TrayUuid) ||
                     (hasTag  && spool.AmsTagUid   == slot.TagUid))
@@ -248,14 +256,14 @@
             }
         }
 
-        _amsRemainBySpoolId = map;
+        return map;
     }
 
     /// Returns (amsRemain%, inventoryPct%) if any spool for this filament has an AMS
     /// discrepancy > 5% relative to the spool's total weight. Returns null if no linked AMS data.
     private (int amsRemain, int inventoryPct)? GetAmsDiscrepancy(Filament filament)
     {
-        foreach (var spool in filament.Spools ?? new List<Spool>())
+        foreach (var spool in filament.Spools)
         {
             if (!_amsRemainBySpoolId.TryGetValue(spool.Id, out var amsRemain)) continue;
 
@@ -276,7 +284,7 @@
     {
         _allFilaments = await FilamentService.GetAllFilamentsAsync();
         _statistics = await FilamentService.GetStatisticsAsync();
-        RebuildAmsMap(BambuLabService.GetCurrentStatus());
+        RebuildAmsMapFromStatuses(PrinterStatusStore.GetAllStatuses().Values);
         FilterFilaments();
         StateHasChanged();
     }
@@ -291,22 +299,22 @@
         _filteredFilaments = _allFilaments
             .Where(f =>
             {
-                if (!string.IsNullOrWhiteSpace(_searchText))
+                if (!string.IsNullOrWhiteSpace(InventoryPageState.SearchText))
                 {
-                    var search = _searchText.ToLower();
+                    var search = InventoryPageState.SearchText.ToLower();
                     if (!f.Brand.ToLower().Contains(search) &&
                         !f.ColorName.ToLower().Contains(search) &&
                         !f.Type.ToLower().Contains(search) &&
                         !(f.Finish?.ToLower().Contains(search) ?? false))
                         return false;
                 }
-                if (_typeFilter != "all" && f.Type != _typeFilter) return false;
-                if (_filterLowOnly && GetFilamentStatus(f) == "ok") return false;
+                if (InventoryPageState.TypeFilter != "all" && f.Type != InventoryPageState.TypeFilter) return false;
+                if (InventoryPageState.FilterLowOnly && GetFilamentStatus(f) == "ok") return false;
                 return true;
             })
             .ToList();
 
-        _filteredFilaments = _sortOption switch
+        _filteredFilaments = InventoryPageState.SortOption switch
         {
             "oldest"        => _filteredFilaments.OrderBy(f => f.DateAdded).ToList(),
             "remainingAsc"  => _filteredFilaments.OrderBy(f => f.WeightRemaining).ToList(),
@@ -337,7 +345,7 @@
 
     private void ToggleLowFilter()
     {
-        _filterLowOnly = !_filterLowOnly;
+        InventoryPageState.FilterLowOnly = !InventoryPageState.FilterLowOnly;
         FilterFilaments();
     }
 

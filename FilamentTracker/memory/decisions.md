@@ -64,3 +64,30 @@
 **`formCard` as the universal section container**
 - Border-radius 22px, subtle translucent background, 1px border using `var(--border)`
 - Used on Settings, Help, and all form pages for consistency
+
+## 2026 — Refactor & Maintainability
+
+**Shared live printer card component**
+- Introduced `PrinterStatusCard.razor` and switched both `Index.razor` and `PrinterPage.razor` to use it
+- Rationale: remove duplicated live status markup and guarantee consistent UI/state presentation
+
+**Scoped CSS for page-local styles**
+- Moved large inline style blocks from `Index.razor` and `AMSPage.razor` into `Index.razor.css` and `AMSPage.razor.css`
+- Rationale: keep Razor files focused on markup/logic and avoid page-level style sprawl
+
+**Startup responsibilities split out of `Program.cs`**
+- Added `DatabaseBootstrapService` (schema/default bootstrap) and `AppSettingsBootstrapService` (settings/env/runtime init)
+- Rationale: simplify app entrypoint and make startup behavior easier to reason about and test
+
+**Scoped UI state services for complex pages**
+- Added `InventoryPageState` (filters/search/sort state) and `AmsPageState` (slot-linking transient state)
+- Rationale: reduce page code-behind clutter and prepare state logic for testability
+
+**Debounced live status fan-out**
+- `PrinterStatusStore` now coalesces rapid MQTT updates into ~200ms notification windows
+- Rationale: reduce unnecessary Blazor rerender churn under high-frequency printer telemetry
+
+**Scoped CSS bundle conflict fix**
+- Removed stale committed `wwwroot/FilamentTracker.styles.css` once scoped CSS files were introduced
+- Rationale: avoid Static Web Assets manifest collision (`Sequence contains more than one element`)
+

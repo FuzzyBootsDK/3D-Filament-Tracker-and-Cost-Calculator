@@ -1,0 +1,140 @@
+.shell {
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+}
+
+.sidebar {
+    position: sticky;
+    top: 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--panel);
+    padding: 12px;
+}
+
+.sidebarTitle {
+    font-weight: 900;
+    font-size: 22px;
+    margin-bottom: 14px;
+    text-align: center;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.05;
+    background: linear-gradient(180deg, #7dd3fc 0%, #60a5fa 45%, #c084fc 70%, #ec4899 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px rgba(125, 211, 252, 0.35),
+                 0 0 22px rgba(192, 132, 252, 0.32),
+                 0 0 34px rgba(236, 72, 153, 0.22);
+}
+
+.sidebarButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebarButtons .navbtn {
+    width: 100%;
+    justify-content: flex-start;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transition: transform 0.18s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.sidebarButtons .navbtn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(192, 132, 252, 0.24), rgba(236, 72, 153, 0.2));
+    transform: translateY(100%);
+    transition: transform 0.28s ease;
+    z-index: 0;
+}
+
+.sidebarButtons .navbtn:hover::before,
+.sidebarButtons .navbtn[aria-current="page"]::before {
+    transform: translateY(0);
+}
+
+.sidebarButtons .navbtn:hover {
+    transform: translateY(-1px);
+}
+
+.sidebarButtons .navbtn[aria-current="page"] {
+    box-shadow: 0 0 10px #c084fc99, 0 0 18px #ec489922;
+    border-color: #c084fc;
+}
+
+.sidebarButtons .navbtn > * {
+    position: relative;
+    z-index: 1;
+}
+
+.sidebarButtons .navicon {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+.nav-inventory .navicon { background: linear-gradient(135deg, #06b6d4, #3b82f6); }
+.nav-add .navicon { background: linear-gradient(135deg, #22c55e, #10b981); }
+.nav-spools .navicon { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+.nav-calculator .navicon { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+.nav-mqtt .navicon { background: linear-gradient(135deg, #14b8a6, #0ea5e9); }
+.nav-printer .navicon { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.nav-ams .navicon { background: linear-gradient(135deg, #f97316, #fb7185); }
+.nav-help .navicon { background: linear-gradient(135deg, #a855f7, #ec4899); }
+.nav-settings .navicon { background: linear-gradient(135deg, #64748b, #475569); }
+
+.contentArea {
+    min-width: 0;
+}
+
+.liveStripCard {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--panel);
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.liveStripHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 10px;
+}
+
+.liveStripGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px;
+}
+
+.miniMeta {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+@media (max-width: 980px) {
+    .shell {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: static;
+    }
+}
+

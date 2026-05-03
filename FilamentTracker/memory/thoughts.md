@@ -13,10 +13,20 @@ The refactor from single to multi-connection was structurally sound — dictiona
 The use of emoji as icons is unconventional but works well here — the app is a personal/hobbyist tool, not an enterprise product, so the casual aesthetic is appropriate. The heavy font weights (800–900) are a deliberate choice that improves readability on the semi-transparent dark panels. Maintaining this weight scale is important when adding new UI elements.
 
 ## On the multi-theme system
-The 5-theme approach (dark/light/starbucks/harmony/spring) is a clean extension of the existing CSS variable architecture — each theme is just a new CSS class block overriding the same token names. The background radial gradients per theme give each one a distinct personality without requiring any component-level changes. The visual card picker in SettingsPage is a better UX than radio buttons, and the `ThemeOption` record + `_themes` array makes adding future themes trivial. The main outstanding gap is persistence: theme resets to dark on app restart, which is surprising behaviour for users.
+The 5-theme approach (dark/nebula/starbucks/harmony/spring) is a clean extension of the existing CSS variable architecture — each theme is just a new CSS class block overriding the same token names. The background radial gradients per theme give each one a distinct personality without requiring any component-level changes. The visual card picker in SettingsPage is a better UX than radio buttons, and the `ThemeOption` record + `_themes` array makes adding future themes trivial. The main outstanding gap is persistence: theme resets to dark on app restart, which is surprising behaviour for users.
 
 ## On AMS auto-weight sync
 The decision to require `TagUid` (RFID) rather than `TrayUuid` for auto-matching is the right conservative call. `TrayUuid` is position-based and can change when spools are moved; `TagUid` is tied to the physical chip. The `OnlyDecrease` default is also correct — unexpected weight increases would confuse users more than slightly stale weight readings.
 
 ## On PrinterPage vs MqttPage separation
 Splitting "management" (`MqttPage` — printer CRUD, connection, MQTT log) from "monitoring" (`PrinterPage` — live status dashboard) is the right call. The MQTT tab was already long; adding a full status dashboard would have made it unwieldy. The Printer tab gives the live view a dedicated home and is the natural first destination for a user who just wants to check on an active print.
+
+## On component extraction and simplification
+Extracting `PrinterStatusCard` immediately removed a lot of duplicated live-status markup in `Index` and `PrinterPage`. This is a good pattern for the project: extract only when duplication is real and the component API can stay small (printer/status/variant), otherwise leave inline.
+
+## On scoped CSS migration
+Moving the inline style blocks into `*.razor.css` files made the Razor pages easier to scan and maintain. The one gotcha was the stale committed `FilamentTracker.styles.css` file, which conflicted with SDK-generated scoped assets. Once removed, the scoped CSS setup was clean.
+
+## On startup service split
+`Program.cs` became much easier to read after moving bootstrap logic into `DatabaseBootstrapService` and `AppSettingsBootstrapService`. The next improvement would be tests around these services, since they now contain startup-critical behavior that can evolve independently.
+

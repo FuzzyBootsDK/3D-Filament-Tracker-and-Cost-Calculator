@@ -1,0 +1,15 @@
+<span class="statusPill @GetVariantClass()">@Label</span>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Status";
+    [Parameter] public string Variant { get; set; } = "neutral"; // neutral, connected, printing, offline
+
+    private string GetVariantClass() => Variant.ToLowerInvariant() switch
+    {
+        "connected" => "connected",
+        "printing" => "printing",
+        "offline" => "offline",
+        _ => "neutral"
+    };
+}
+

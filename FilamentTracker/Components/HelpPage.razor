@@ -92,7 +92,7 @@
                 <li><strong>Configurable Thresholds</strong> - Set your own Low and Critical warning levels based on
                     your printing habits
                 </li>
-                <li><strong>Dark/Light Themes</strong> - Choose your preferred visual theme</li>
+                <li><strong>5 Theme Styles</strong> - Choose Dark, Nebula, Starbucks, Harmony, or Spring</li>
                 <li><strong>CSV Import/Export</strong> - Backup your data or migrate from other systems</li>
                 <li><strong>Offline & Private</strong> - All data stored locally on your computer, no cloud sync
                     required
@@ -636,10 +636,13 @@
         <div style="color: var(--muted); line-height: 1.8;">
             <p>The Settings page provides important maintenance and customization options:</p>
 
-            <h3>Theme Toggle</h3>
+            <h3>Theme Selection</h3>
             <ul>
-                <li><strong>Dark Mode</strong> (default) - Comfortable for extended use with dark backgrounds</li>
-                <li><strong>Light Mode</strong> - Bright theme for well-lit environments</li>
+                <li><strong>Dark</strong> (default) - Balanced dark-blue UI</li>
+                <li><strong>Nebula</strong> - Deep indigo/purple UI</li>
+                <li><strong>Starbucks</strong> - Forest and copper tones</li>
+                <li><strong>Harmony</strong> - Navy and orange contrast</li>
+                <li><strong>Spring</strong> - Forest and teal accents</li>
                 <li>Theme preference persists across sessions</li>
             </ul>
 
@@ -1005,11 +1008,11 @@ client.subscribe("device/+/report");  // Subscribe to all printers
             <h4>Workflow 3: Per-Printer AMS Weight Sync</h4>
             <ol>
                 <li>Connect to all printers with AMS units</li>
-                <li>Enable "Auto-update spool weight from AMS" for each printer connection</li>
+                <li>Enable "Auto-update spool weight from AMS" in settings (global toggle)</li>
                 <li>Choose sync mode (one-way recommended)</li>
                 <li>Go to <strong>AMS Page</strong> and link spools to AMS slots (requires tag UID)</li>
                 <li>Weights automatically update from each printer's AMS independently</li>
-                <li>Each printer can have different sync settings</li>
+                <li>Current sync behavior uses one shared setting profile for all connected printers</li>
             </ol>
 
             <h3>❓ Common Questions:</h3>
@@ -1025,12 +1028,10 @@ client.subscribe("device/+/report");  // Subscribe to all printers
                 to specific printers or all printers using MQTT wildcards.</p>
 
             <p><strong>Q: Will the Live View show all printers?</strong></p>
-            <p>A: Currently, the Live View shows the default printer (marked with ⭐). Multi-printer Live View with grid
-                layout is coming in a future update.</p>
+            <p>A: Yes. The top Live View renders a compact card for every enabled printer.</p>
 
             <p><strong>Q: Can I have different AMS auto-update settings per printer?</strong></p>
-            <p>A: Currently, AMS auto-update settings are global and apply to all connected printers. Per-printer settings
-                are planned for a future update.</p>
+            <p>A: Not yet. AMS auto-update settings are global and apply to all connected printers.</p>
 
             <p><strong>Q: What happens if one printer disconnects?</strong></p>
             <p>A: Other printers remain connected. Each connection is independent. The disconnected printer will show "○
@@ -1041,29 +1042,20 @@ client.subscribe("device/+/report");  // Subscribe to all printers
     </div>
 
     <div class="formCard" id="livetracker" style="scroll-margin-top: 20px;">
-        <h2 style="margin-top: 0;">📊 Live Tracking Widget</h2>
+        <h2 style="margin-top: 0;">📊 Live View (Top Cards)</h2>
         <div style="color: var(--muted); line-height: 1.8;">
             <p>
-                The <strong>Live Tracking</strong> widget in the top area provides real-time monitoring of your
-                BambuLab 3D printer status.
-                See print progress, time remaining, and layer information at a glance without opening Bambu Studio!
+                The <strong>Live View</strong> at the top of the app shows compact status cards for all enabled printers.
+                Cards are designed to stay flat, readable, and scan-friendly while still showing the key print metrics.
             </p>
 
-            <h3>Features:</h3>
+            <h3>What You See:</h3>
             <ul>
-                <li><strong>Real-Time Updates</strong> - Direct MQTT connection to your printer for instant status
-                    updates
-                </li>
-                <li><strong>Print Progress</strong> - Large percentage display with animated progress bar</li>
-                <li><strong>Time Tracking</strong> - See both time elapsed and time remaining</li>
-                <li><strong>Layer Counter</strong> - Current layer / Total layers display</li>
-                <li><strong>File Name</strong> - Shows the current G-code file being printed</li>
-                <li><strong>AMS Overview</strong> - All AMS slots shown with color swatch, filament type, and sub-brand
-                    (e.g. "PLA · Matte")
-                </li>
-                <li><strong>Connection Status</strong> - Visual indicator (green pulsing dot) when connected</li>
-                <li><strong>Idle Detection</strong> - Shows "Printer Idle" when connected but not printing</li>
-                <li><strong>Always Visible</strong> - Widget stays visible above page content on all pages</li>
+                <li><strong>Printing state</strong> - Progress %, progress bar, remaining time, ETA, and current/total layers</li>
+                <li><strong>Compact metrics row</strong> - Bed/nozzle temps, remaining time, layer count, and ETA in centered chips</li>
+                <li><strong>Idle state</strong> - Centered temperature chips with a gentle breathing <code>zZZZ</code> indicator</li>
+                <li><strong>Offline state</strong> - Clear disconnected message instead of stale print metrics</li>
+                <li><strong>Live updates</strong> - Data refreshes from MQTT without leaving the current page</li>
             </ul>
 
             <h3>Setting Up Live Tracking:</h3>
@@ -1103,24 +1095,23 @@ client.subscribe("device/+/report");  // Subscribe to all printers
             <h3>Understanding the Display:</h3>
             <p><strong>When Connected and Idle:</strong></p>
             <ul>
-                <li>Green pulsing dot + "Connected" text</li>
-                <li>💤 "Printer Idle" message</li>
+                <li>Status pill shows <strong>Idle</strong></li>
+                <li>Centered temperature chips + breathing <strong>💤 zZZZ</strong></li>
             </ul>
 
             <p><strong>When Printing:</strong></p>
             <ul>
-                <li>Green pulsing dot + "Connected" text</li>
-                <li>Large progress percentage (e.g., "47%")</li>
-                <li>Animated blue progress bar showing completion</li>
-                <li><strong>⏱️ Time:</strong> Shows "1h 23m / 45m" (elapsed / remaining)</li>
-                <li><strong>📏 Layer:</strong> Shows "142 / 387" (current / total)</li>
-                <li><strong>📄 File:</strong> Shows the G-code filename (truncated if long)</li>
+                <li>Status pill shows <strong>Printing</strong></li>
+                <li>Large progress % + progress bar</li>
+                <li><strong>⏳ Remaining:</strong> time remaining from printer status</li>
+                <li><strong>🎯 ETA:</strong> calculated completion time in your configured timezone</li>
+                <li><strong>📏 Layers:</strong> current layer / total layers</li>
             </ul>
 
             <p><strong>When Disconnected:</strong></p>
             <ul>
-                <li>Gray dot + "Disconnected" text</li>
-                <li>"Configure in Settings" message</li>
+                <li>Status pill shows <strong>Offline</strong></li>
+                <li>Card shows <strong>Not connected</strong></li>
             </ul>
 
             <h3>Connection Requirements:</h3>

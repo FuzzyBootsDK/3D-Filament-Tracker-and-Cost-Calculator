@@ -615,19 +615,19 @@ body.spring .tinyBtn.primary,
    ============================================================ */
 
 .calculator-root {
-    --calc-bg-body: #050816;
-    --calc-bg-card: #0f172a;
-    --calc-bg-input: #020617;
-    --calc-bg-pill: #020617;
-    --calc-bg-pill-soft: #020617;
-    --calc-border-subtle: #1e293b;
-    --calc-border-strong: #334155;
-    --calc-accent: #6366f1;
-    --calc-accent-soft: rgba(99, 102, 241, 0.15);
-    --calc-text-main: #e5e7eb;
-    --calc-text-muted: #9ca3af;
-    --calc-text-strong: #f9fafb;
-    --calc-danger: #f97373;
+    --calc-bg-body: var(--bg);
+    --calc-bg-card: var(--panel);
+    --calc-bg-input: var(--panel2);
+    --calc-bg-pill: var(--panel2);
+    --calc-bg-pill-soft: var(--panel2);
+    --calc-border-subtle: var(--border);
+    --calc-border-strong: var(--border2);
+    --calc-accent: var(--accent);
+    --calc-accent-soft: rgba(192, 132, 252, 0.18);
+    --calc-text-main: var(--text);
+    --calc-text-muted: var(--muted);
+    --calc-text-strong: var(--text);
+    --calc-danger: var(--danger);
     --calc-radius-md: 0.75rem;
     --calc-radius-sm: 0.5rem;
     --calc-shadow-card: 0 18px 40px rgba(15, 23, 42, 0.8);
@@ -930,22 +930,6 @@ body.spring .tinyBtn.primary,
     justify-content: space-between;
 }
 
-/* Nebula mode adjustments for calculator */
-.nebula .calculator-root {
-    --calc-bg-body: #141E30;
-    --calc-bg-card: #1b1f3f;
-    --calc-bg-input: #11182b;
-    --calc-bg-pill: #1d2341;
-    --calc-bg-pill-soft: #252d52;
-    --calc-border-subtle: rgba(192, 132, 252, 0.24);
-    --calc-border-strong: rgba(236, 72, 153, 0.30);
-    --calc-accent: #c084fc;
-    --calc-accent-soft: rgba(192, 132, 252, 0.18);
-    --calc-text-main: #f1e8ff;
-    --calc-text-muted: #c5b3e6;
-    --calc-text-strong: #ffffff;
-    --calc-shadow-card: 0 14px 36px rgba(8, 8, 28, 0.55);
-}
 
 /* Calculator Responsive */
 
@@ -2636,6 +2620,26 @@ label {
 }
 
 /* Help Page Navigation Links */
+.skeletonCard {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .03);
+    padding: 12px;
+}
+
+.skeletonLine {
+    height: 12px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .18), rgba(255, 255, 255, .08));
+    background-size: 220% 100%;
+    animation: skeletonShimmer 1.35s ease-in-out infinite;
+}
+
+@keyframes skeletonShimmer {
+    0% { background-position: 220% 0; }
+    100% { background-position: -220% 0; }
+}
+
 .helpNavLink {
     display: block;
     padding: 10px 14px;
@@ -2741,6 +2745,11 @@ label {
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .nebula .printerStatBox {
@@ -2843,5 +2852,216 @@ label {
     font-weight: 800;
     text-align: center;
     color: var(--text);
+}
+
+.appCard {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, .03);
+}
+
+.appBadge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.statusPill {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: rgba(255, 255, 255, .05);
+}
+
+.statusPill.connected {
+    background: rgba(16, 185, 129, .12);
+    border-color: rgba(16, 185, 129, .30);
+    color: #6ee7b7;
+}
+
+.statusPill.printing {
+    background: rgba(59, 130, 246, .18);
+    border-color: rgba(59, 130, 246, .35);
+    color: #93c5fd;
+}
+
+.statusPill.offline {
+    color: var(--muted);
+}
+
+.emptyState {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.emptyStateIcon {
+    font-size: 38px;
+}
+
+.emptyStateTitle {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.emptyStateMessage {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.printerStatusCard {
+    overflow: hidden;
+}
+
+.printerStatusCard.compact .printerStatusHeader {
+    padding: 8px 10px;
+    gap: 8px;
+}
+
+.printerStatusCard.compact .printerStatusBody {
+    padding: 7px 10px 9px;
+}
+
+.printerStatusCard.compact .printerColorDot {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+}
+
+.printerStatusCard.compact .printerStatusName {
+    font-size: 13px;
+}
+
+.printerStatusCard.compact .statusPill {
+    padding: 2px 8px;
+    font-size: 11px;
+}
+
+.printerStatusCard.compact .printerProgressHeader {
+    margin-bottom: 4px;
+}
+
+.printerStatusCard.compact .printerProgressPct {
+    font-size: 18px;
+}
+
+.printerStatusCard.compact .printerLayer {
+    font-size: 11px;
+}
+
+.compactMeta {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.compactMetaRow {
+    margin-top: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.compactMetaRow > span {
+    font-size: 11px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 2px 7px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.compactMetaRow.idle {
+    justify-content: center;
+}
+
+.printerStatusCard.full .printerStatusHeader {
+    padding: 14px 16px;
+}
+
+.printerStatusCard.full .printerStatusBody {
+    padding: 14px 16px;
+}
+
+.printerFile {
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 6px;
+}
+
+.printerProgressHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.printerProgressPct {
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.printerLayer {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.printerStatValue {
+    font-size: 15px;
+}
+
+.printerIdleText {
+    font-size: 14px;
+    font-weight: 700;
+    animation: idleBreath 4.8s ease-in-out infinite;
+    transform-origin: center;
+}
+
+.idleSleep {
+    animation: idleBreath 4.8s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes idleBreath {
+    0%,
+    100% {
+        opacity: 0.58;
+        transform: scale(0.97);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.03);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .printerIdleText,
+    .idleSleep {
+        animation: none;
+        transform: none;
+    }
+}
+
+.printerIdleTemps {
+    font-size: 12px;
+    margin-top: 8px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.printerEmpty .emptyStateIcon {
+    font-size: 40px;
 }
 

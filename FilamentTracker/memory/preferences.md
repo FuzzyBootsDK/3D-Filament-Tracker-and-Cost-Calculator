@@ -6,6 +6,7 @@
 - Keep changes minimal and targeted — do not refactor unrelated code
 - Validate changes compile before finishing (run build)
 - Stick to project folder: `C:\Users\lasr\source\repos\3D-Filament-Tracker-and-Cost-Calculator\FilamentTracker/`
+- Prefer simplification through reusable components/services when it reduces duplication and keeps code easy to work with
 
 ## Code Style
 - C# 14 / .NET 10 / Blazor Server
@@ -25,3 +26,4 @@
 - Status colors must always use CSS variables (`--ok`, `--warn`, `--danger`) — never raw hex for status
 - Emoji icons are part of the UI language — used consistently in section headers and nav buttons
 - Animations kept subtle: pulse for live status dots, smooth progress bar transitions
+- AMS page preference: keep slot card backgrounds neutral (no full-card color tint), but keep/widen the small color swatch preview

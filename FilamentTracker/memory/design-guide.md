@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-Filament Tracker uses a **dark-first, utility-focused design language** built entirely on CSS custom properties. The aesthetic is a deep navy/space dark mode with a clean white/slate light mode — both using radial gradient background blobs to add depth without being distracting. The UI prioritises dense, scannable information layouts with heavy typography and rounded cards.
+Filament Tracker uses a **dark-first, utility-focused design language** built entirely on CSS custom properties. The app currently ships with five dark-family themes (Dark, Nebula, Starbucks, Harmony, Spring), each using radial gradient background blobs to add depth without being distracting. The UI prioritises dense, scannable information layouts with heavy typography and rounded cards.
 
 ---
 
@@ -23,20 +23,7 @@ All colors are defined as CSS custom properties in `wwwroot/css/site.css`. **Nev
 | `--muted` | `rgba(230,237,247,.68)` | Secondary/label text |
 | `--shadow` | `0 18px 55px rgba(0,0,0,.52)` | Elevated shadow |
 
-### Light Mode (`.light`)
-| Token | Value | Usage |
-|---|---|---|
-| `--bg` | `#f8fafc` | Page background base |
-| `--panel` | `#ffffff` | Primary card/panel background |
-| `--panel2` | `#f1f5f9` | Secondary panel, input backgrounds |
-| `--panelSolid` | `#ffffff` | Modals |
-| `--border` | `rgba(0,0,0,.10)` | Standard border |
-| `--border2` | `rgba(0,0,0,.14)` | Elevated border |
-| `--text` | `#0f172a` | Primary text |
-| `--muted` | `rgba(15,23,42,.65)` | Secondary/label text |
-| `--shadow` | `0 8px 30px rgba(0,0,0,.08)` | Elevated shadow |
-
-### Semantic / Accent Colors (both themes)
+### Semantic / Accent Colors (all themes)
 | Token | Value | Usage |
 |---|---|---|
 | `--accent` | `#3b82f6` | Primary interactive accent (blue) |
@@ -46,14 +33,14 @@ All colors are defined as CSS custom properties in `wwwroot/css/site.css`. **Nev
 | `--focus` | `0 0 0 3px rgba(59,130,246,.35/.25)` | Keyboard focus ring |
 
 ### Background Gradient
-Both themes use a two-blob radial gradient overlaid on the base `--bg`:
+Each theme uses a two-blob radial gradient overlaid on the base `--bg`:
 ```css
 background:
   radial-gradient(1200px 600px at 30% -10%, rgba(59,130,246,.18/.08), transparent 60%),
   radial-gradient(900px 500px at 90% 10%,  rgba(16,185,129,.10/.05), transparent 55%),
   var(--bg);
 ```
-Blue blob top-left, green blob top-right — dark values `.18`/`.10`, light values `.08`/`.05`.
+Blue blob top-left with a complementary secondary blob; exact opacity/colors vary by theme.
 
 ### Gradient Accents (UI elements)
 - **Primary action gradient**: `linear-gradient(135deg, #4f46e5, #7c3aed)` (indigo → purple)
@@ -67,9 +54,34 @@ Blue blob top-left, green blob top-right — dark values `.18`/`.10`, light valu
 
 ## 2.5 Named Color Themes
 
-`ThemeService.ThemeName` (string) drives the CSS class on the root `<div>` in `MainLayout.razor` and `document.body.className` via JS interop. Available values: `"dark"`, `"light"`, `"starbucks"`, `"harmony"`, `"spring"`.
+`ThemeService.ThemeName` (string) drives the CSS class on the root `<div>` in `MainLayout.razor` and `document.body.className` via JS interop. Available values: `"dark"`, `"nebula"`, `"starbucks"`, `"harmony"`, `"spring"`.
 
-All three new themes are **dark-based** — they inherit dark-default CSS rules and only override the token values below. Per-theme accent overrides for `.navbtn.active`, `.btn.primary`, `.spoolRow.selected`, and `.tinyBtn.primary` are defined at the end of `site.css`.
+All four named variants are **dark-based** — they inherit dark-default CSS rules and only override the token values below. Per-theme accent overrides for `.navbtn.active`, `.btn.primary`, `.spoolRow.selected`, and `.tinyBtn.primary` are defined at the end of `site.css`.
+
+### 🌌 Nebula (`.nebula`)
+Palette source: deep indigo + violet + magenta highlights.
+
+| Token | Value | Role |
+|---|---|---|
+| `--bg` | `#141E30` | Page background (deep indigo) |
+| `--panel` | `#1F2A44` | Cards |
+| `--panel2` | `#1A243A` | Secondary panels |
+| `--panelSolid` | `#1F2A44` | Modals |
+| `--border` | `rgba(255,255,255,.14)` | Standard border |
+| `--border2` | `rgba(255,255,255,.20)` | Elevated border |
+| `--text` | `#E6E8F5` | Primary text |
+| `--muted` | `rgba(230,232,245,.68)` | Secondary text |
+| `--accent` | `#c084fc` | Interactive accent (violet) |
+| `--ok` | `#22c55e` | Success |
+| `--warn` | `#f59e0b` | Warning |
+| `--danger` | `#ef4444` | Danger |
+| `--focus` | `0 0 0 3px rgba(192,132,252,.35)` | Focus ring |
+
+Background: `radial-gradient(at 30% -10%, rgba(168,85,247,.20))` + `radial-gradient(at 90% 10%, rgba(236,72,153,.10))` over `#141E30`.
+
+Accent overrides:
+- `.navbtn.active`: `rgba(192,132,252,.22)` bg, `rgba(192,132,252,.42)` border
+- `.btn.primary`: `linear-gradient(135deg, #a855f7, #c084fc)`
 
 ### ☕ Starbucks (`.starbucks`)
 Palette source: forest green + warm copper + dark brown cream.

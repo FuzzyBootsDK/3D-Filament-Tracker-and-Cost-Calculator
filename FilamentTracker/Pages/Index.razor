@@ -1,6 +1,6 @@
 @page "/"
 @inject FilamentService FilamentService
-@inject BambuLabService BambuLabService
+@inject PrinterStatusStore PrinterStatusStore
 @using FilamentTracker.Models
 @implements IDisposable
 
@@ -10,31 +10,31 @@
     <aside class="sidebar">
         <div class="sidebarTitle">Filament Tracker</div>
         <div class="sidebarButtons">
-            <button class="navbtn nav-inventory @(currentPage == "inventory" ? "active" : "")" @onclick='() => SetPage("inventory")'>
+            <button class="navbtn nav-inventory" aria-current="@(_currentPage == "inventory" ? "page" : null)" @onclick='() => SetPage("inventory")'>
                 <span class="navicon">📦</span> Inventory
             </button>
-            <button class="navbtn nav-add @(currentPage == "add" ? "active" : "")" @onclick='() => SetPage("add")'>
+            <button class="navbtn nav-add" aria-current="@(_currentPage == "add" ? "page" : null)" @onclick='() => SetPage("add")'>
                 <span class="navicon">➕</span> Add Filament
             </button>
-            <button class="navbtn nav-spools @(currentPage == "spools" ? "active" : "")" @onclick='() => SetPage("spools")'>
+            <button class="navbtn nav-spools" aria-current="@(_currentPage == "spools" ? "page" : null)" @onclick='() => SetPage("spools")'>
                 <span class="navicon">🔁</span> Spools
             </button>
-            <button class="navbtn nav-calculator @(currentPage == "calculator" ? "active" : "")" @onclick='() => SetPage("calculator")'>
+            <button class="navbtn nav-calculator" aria-current="@(_currentPage == "calculator" ? "page" : null)" @onclick='() => SetPage("calculator")'>
                 <span class="navicon">💰</span> Calculator
             </button>
-            <button class="navbtn nav-mqtt @(currentPage == "mqtt" ? "active" : "")" @onclick='() => SetPage("mqtt")'>
+            <button class="navbtn nav-mqtt" aria-current="@(_currentPage == "mqtt" ? "page" : null)" @onclick='() => SetPage("mqtt")'>
                 <span class="navicon">📡</span> MQTT
             </button>
-            <button class="navbtn nav-printer @(currentPage == "printer" ? "active" : "")" @onclick='() => SetPage("printer")'>
+            <button class="navbtn nav-printer" aria-current="@(_currentPage == "printer" ? "page" : null)" @onclick='() => SetPage("printer")'>
                 <span class="navicon">🖨️</span> Printer
             </button>
-            <button class="navbtn nav-ams @(currentPage == "ams" ? "active" : "")" @onclick='() => SetPage("ams")'>
+            <button class="navbtn nav-ams" aria-current="@(_currentPage == "ams" ? "page" : null)" @onclick='() => SetPage("ams")'>
                 <span class="navicon">🗄️</span> AMS
             </button>
-            <button class="navbtn nav-help @(currentPage == "help" ? "active" : "")" @onclick='() => SetPage("help")'>
+            <button class="navbtn nav-help" aria-current="@(_currentPage == "help" ? "page" : null)" @onclick='() => SetPage("help")'>
                 <span class="navicon">💡</span> Help
             </button>
-            <button class="navbtn nav-settings @(currentPage == "settings" ? "active" : "")" @onclick='() => SetPage("settings")'>
+            <button class="navbtn nav-settings" aria-current="@(_currentPage == "settings" ? "page" : null)" @onclick='() => SetPage("settings")'>
                 <span class="navicon">⚙️</span> Settings
             </button>
         </div>
@@ -45,48 +45,30 @@
             <div class="liveStripHeader">
                 <div><strong>🖨️ Live View</strong></div>
             </div>
-            @if (_printers.Any(p => p.Enabled))
+            @if (_isLoadingPrinters)
+            {
+                <div class="liveStripGrid">
+                    @for (var i = 0; i < 3; i++)
+                    {
+                        <LoadingSkeleton />
+                    }
+                </div>
+            }
+            else if (_printers.Any(p => p.Enabled))
             {
                 <div class="liveStripGrid">
                     @foreach (var printer in _printers.Where(p => p.Enabled))
                     {
                         var status = _printerStatuses.GetValueOrDefault(printer.Id);
-                        var isConnected = BambuLabService.IsPrinterConnected(printer.Id);
-                        var isPrinting = status?.IsPrinting == true;
+                        var isConnected = PrinterStatusStore.IsPrinterConnected(printer.Id);
 
-                        <div class="livePrinterCard @(isPrinting ? "printing" : isConnected ? "connected" : "offline")">
-                            <div class="livePrinterTop">
-                                <div class="livePrinterName">🖨️ @printer.Name</div>
-                                <div class="livePrinterState">@(isPrinting ? "Printing" : isConnected ? "Idle" : "Offline")</div>
-                            </div>
-
-                            @if (isPrinting && status != null)
-                            {
-                                <div class="miniProgressRow">
-                                    <div class="miniProgressBar"><div class="miniProgressFill" style="@($"width:{status.Progress}%")"></div></div>
-                                    <div class="miniProgressPct">@status.Progress%</div>
-                                </div>
-                                <div class="liveMiniGrid">
-                                    <div class="miniMetric">🌡️ Nozzle: @status.NozzleTemperature°C</div>
-                                    <div class="miniMetric">🛏️ Bed: @status.BedTemperature°C</div>
-                                    <div class="miniMetric">📏 Layer: @status.CurrentLayer/@status.TotalLayers</div>
-                                    <div class="miniMetric">⏳ Remaining: @status.TimeRemaining</div>
-                                    <div class="miniMetric">🎯 ETA: @GetEstimatedCompletionTime(status.TimeRemaining)</div>
-                                </div>
-                            }
-                            else if (isConnected && status != null)
-                            {
-                                <div class="liveMiniGrid idleCenter">
-                                    <div class="miniMetric">🌡️ Nozzle: @status.NozzleTemperature°C</div>
-                                    <div class="miniMetric">🛏️ Bed: @status.BedTemperature°C</div>
-                                    <div class="miniMetric idleSleep">💤 zZZZ</div>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="miniMeta">Not connected</div>
-                            }
-                        </div>
+                        <PrinterStatusCard
+                            Printer="printer"
+                            Status="status"
+                            IsConnected="isConnected"
+                            Compact="true"
+                            ShowLocation="false"
+                            EtaText="@GetEstimatedCompletionTime(status?.TimeRemaining ?? string.Empty)" />
                     }
                 </div>
             }
@@ -96,303 +78,40 @@
             }
         </section>
 
-        <style>
-            .shell {
-                display: grid;
-                grid-template-columns: 230px minmax(0, 1fr);
-                gap: 12px;
-                align-items: start;
-            }
 
-            .sidebar {
-                position: sticky;
-                top: 12px;
-                border: 1px solid var(--border);
-                border-radius: 12px;
-                background: var(--panel);
-                padding: 12px;
-            }
-
-            .sidebarTitle {
-                font-weight: 900;
-                font-size: 22px;
-                margin-bottom: 14px;
-                text-align: center;
-                letter-spacing: 0.06em;
-                text-transform: uppercase;
-                line-height: 1.05;
-                background: linear-gradient(180deg, #7dd3fc 0%, #60a5fa 45%, #c084fc 70%, #ec4899 100%);
-                -webkit-background-clip: text;
-                background-clip: text;
-                -webkit-text-fill-color: transparent;
-                text-shadow: 0 0 10px rgba(125, 211, 252, 0.35),
-                             0 0 22px rgba(192, 132, 252, 0.32),
-                             0 0 34px rgba(236, 72, 153, 0.22);
-            }
-
-            .sidebarSub {
-                color: var(--muted);
-                font-size: 12px;
-                margin-top: 2px;
-                margin-bottom: 10px;
-            }
-
-            .sidebarButtons {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .sidebarButtons .navbtn {
-                width: 100%;
-                justify-content: flex-start;
-                position: relative;
-                overflow: hidden;
-                isolation: isolate;
-                transition: transform 0.18s ease, box-shadow 0.22s ease, border-color 0.22s ease;
-            }
-
-            .sidebarButtons .navbtn::before {
-                content: "";
-                position: absolute;
-                inset: 0;
-                background: linear-gradient(180deg, rgba(192, 132, 252, 0.24), rgba(236, 72, 153, 0.2));
-                transform: translateY(100%);
-                transition: transform 0.28s ease;
-                z-index: 0;
-            }
-
-            .sidebarButtons .navbtn:hover::before,
-            .sidebarButtons .navbtn.active::before {
-                transform: translateY(0);
-            }
-
-            .sidebarButtons .navbtn:hover {
-                transform: translateY(-1px);
-            }
-
-            .sidebarButtons .navbtn.active {
-                box-shadow: 0 0 10px #c084fc99, 0 0 18px #ec489922;
-                border-color: #c084fc;
-            }
-
-            .sidebarButtons .navbtn > * {
-                position: relative;
-                z-index: 1;
-            }
-
-            .sidebarButtons .navicon {
-                width: 24px;
-                height: 24px;
-                border-radius: 7px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                margin-right: 8px;
-                font-size: 14px;
-            }
-
-            .nav-inventory .navicon { background: linear-gradient(135deg, #06b6d4, #3b82f6); }
-            .nav-add .navicon { background: linear-gradient(135deg, #22c55e, #10b981); }
-            .nav-spools .navicon { background: linear-gradient(135deg, #f59e0b, #ef4444); }
-            .nav-calculator .navicon { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
-            .nav-mqtt .navicon { background: linear-gradient(135deg, #14b8a6, #0ea5e9); }
-            .nav-printer .navicon { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-            .nav-ams .navicon { background: linear-gradient(135deg, #f97316, #fb7185); }
-            .nav-help .navicon { background: linear-gradient(135deg, #a855f7, #ec4899); }
-            .nav-settings .navicon { background: linear-gradient(135deg, #64748b, #475569); }
-
-            .contentArea {
-                min-width: 0;
-            }
-
-            .liveStripCard {
-                border: 1px solid var(--border);
-                border-radius: 12px;
-                background: var(--panel);
-                padding: 10px;
-                margin-bottom: 12px;
-            }
-
-            .liveStripHeader {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 8px;
-                gap: 10px;
-            }
-
-            .liveStripSub {
-                font-size: 12px;
-                color: var(--muted);
-            }
-
-            .liveStripGrid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-                gap: 8px;
-            }
-
-            .livePrinterCard {
-                border: 1px solid var(--border);
-                border-radius: 10px;
-                padding: 8px;
-                background: rgba(255, 255, 255, 0.02);
-            }
-
-            .nebula .livePrinterCard {
-                background: var(--panel2);
-            }
-
-            .livePrinterCard.connected {
-                border-color: rgba(16, 185, 129, 0.35);
-            }
-
-            .livePrinterCard.printing {
-                border-color: rgba(59, 130, 246, 0.45);
-            }
-
-            .livePrinterTop {
-                display: flex;
-                justify-content: space-between;
-                gap: 8px;
-                align-items: center;
-            }
-
-            .livePrinterName {
-                font-weight: 800;
-                font-size: 13px;
-            }
-
-            .livePrinterState {
-                color: var(--muted);
-                font-size: 12px;
-                white-space: nowrap;
-            }
-
-            .miniProgressRow {
-                display: grid;
-                grid-template-columns: 1fr auto;
-                gap: 8px;
-                align-items: center;
-                margin-top: 6px;
-            }
-
-            .miniProgressBar {
-                height: 8px;
-                border-radius: 999px;
-                background: rgba(255, 255, 255, 0.08);
-                overflow: hidden;
-                border: 1px solid var(--border);
-            }
-
-            .miniProgressPct {
-                font-size: 12px;
-                font-weight: 800;
-                color: #60a5fa;
-                min-width: 36px;
-                text-align: right;
-            }
-
-            .miniProgressFill {
-                height: 100%;
-                background: linear-gradient(90deg, #3b82f6, #6366f1);
-            }
-
-            .liveMiniGrid {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 6px;
-                margin-top: 7px;
-            }
-
-            .liveMiniGrid.idleCenter {
-                justify-content: center;
-            }
-
-            .miniMetric {
-                font-size: 11px;
-                color: var(--muted);
-                border: 1px solid var(--border);
-                border-radius: 999px;
-                padding: 3px 8px;
-                background: rgba(255, 255, 255, 0.02);
-            }
-
-            .idleSleep {
-                border-color: rgba(139, 92, 246, 0.45);
-                color: #c4b5fd;
-                animation: idleSleepPulse 1.8s ease-in-out infinite;
-                transform-origin: center;
-            }
-
-            @@keyframes idleSleepPulse {
-                0% {
-                    transform: translateY(0) scale(1);
-                    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.0);
-                    opacity: 0.9;
-                }
-                50% {
-                    transform: translateY(-1px) scale(1.04);
-                    box-shadow: 0 0 0 5px rgba(139, 92, 246, 0.12);
-                    opacity: 1;
-                }
-                100% {
-                    transform: translateY(0) scale(1);
-                    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.0);
-                    opacity: 0.9;
-                }
-            }
-
-            .miniMeta {
-                margin-top: 6px;
-                font-size: 12px;
-                color: var(--muted);
-            }
-
-            @@media (max-width: 980px) {
-                .shell {
-                    grid-template-columns: 1fr;
-                }
-
-                .sidebar {
-                    position: static;
-                }
-            }
-        </style>
-    @if (currentPage == "inventory")
+    @if (_currentPage == "inventory")
     {
         <InventoryPage/>
     }
-    else if (currentPage == "add")
+    else if (_currentPage == "add")
     {
         <AddFilamentPage/>
     }
-    else if (currentPage == "spools")
+    else if (_currentPage == "spools")
     {
         <SpoolsPage/>
     }
-    else if (currentPage == "calculator")
+    else if (_currentPage == "calculator")
     {
         <PrintCalculatorPage/>
     }
-    else if (currentPage == "mqtt")
+    else if (_currentPage == "mqtt")
     {
         <MqttPage/>
     }
-    else if (currentPage == "help")
+    else if (_currentPage == "help")
     {
         <HelpPage/>
     }
-    else if (currentPage == "settings")
+    else if (_currentPage == "settings")
     {
         <SettingsPage/>
     }
-    else if (currentPage == "ams")
+    else if (_currentPage == "ams")
     {
         <AMSPage/>
     }
-    else if (currentPage == "printer")
+    else if (_currentPage == "printer")
     {
         <PrinterPage/>
     }
@@ -400,18 +119,18 @@
 </div>
 
 @code {
-    private string currentPage = "inventory";
+    private string _currentPage = "inventory";
+    private bool _isLoadingPrinters = true;
     private List<Printer> _printers = [];
     private Dictionary<int, PrintStatus> _printerStatuses = [];
     private string _userTimeZoneId = "Europe/Copenhagen";
 
     protected override async Task OnInitializedAsync()
     {
-        // Subscribe to BambuLab status updates (now includes printer ID)
-        BambuLabService.OnStatusUpdated += HandleStatusUpdate;
-
         _printers = await FilamentService.GetAllPrintersAsync();
-        _printerStatuses = BambuLabService.GetAllPrinterStatuses();
+        _printerStatuses = PrinterStatusStore.GetAllStatuses();
+        PrinterStatusStore.OnStatusChanged += HandleStatusUpdate;
+        _isLoadingPrinters = false;
 
         // Load user's timezone setting
         try
@@ -454,39 +173,7 @@
 
     private void SetPage(string page)
     {
-        currentPage = page;
-    }
-
-    private string TruncateFileName(string fileName)
-    {
-        if (fileName.Length <= 20)
-            return fileName;
-
-        return fileName.Substring(0, 17) + "...";
-    }
-
-    private bool IsLongFileName(string fileName)
-    {
-        if (string.IsNullOrEmpty(fileName)) return false;
-        // Treat names longer than 28 characters as long and enable scrolling
-        return fileName.Length > 28;
-    }
-
-    /// <summary>
-    ///     Converts a Wi-Fi signal string like "-59dBm" to a bar count 0-5.
-    ///     ≥ -50 → 5, -51.-60 → 4, -61.-70 → 3, -71.-80 → 2, -81.-90 → 1, &lt; -90 → 0
-    /// </summary>
-    private static int GetWifiBars(string? signal)
-    {
-        if (string.IsNullOrEmpty(signal)) return 0;
-        var numStr = signal.Replace("dBm", "").Trim();
-        if (!int.TryParse(numStr, out var dbm)) return 0;
-        if (dbm >= -50) return 5;
-        if (dbm >= -60) return 4;
-        if (dbm >= -70) return 3;
-        if (dbm >= -80) return 2;
-        if (dbm >= -90) return 1;
-        return 0;
+        _currentPage = page;
     }
 
     /// <summary>
@@ -558,7 +245,7 @@
 
     public void Dispose()
     {
-        BambuLabService.OnStatusUpdated -= HandleStatusUpdate;
+        PrinterStatusStore.OnStatusChanged -= HandleStatusUpdate;
     }
 
 }

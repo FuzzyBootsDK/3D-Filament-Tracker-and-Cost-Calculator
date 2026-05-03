@@ -1,0 +1,19 @@
+<div class="emptyState @Class">
+    @if (!string.IsNullOrWhiteSpace(Icon))
+    {
+        <div class="emptyStateIcon">@Icon</div>
+    }
+    <div class="emptyStateTitle">@Title</div>
+    @if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <div class="emptyStateMessage">@Message</div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Icon { get; set; } = "";
+    [Parameter] public string Title { get; set; } = "Nothing here yet";
+    [Parameter] public string Message { get; set; } = "";
+    [Parameter] public string Class { get; set; } = "";
+}
+

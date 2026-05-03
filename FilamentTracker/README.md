@@ -52,7 +52,7 @@ All configuration is done through the **Settings** page in the web app:
 - **Timezone** — ETA calculation with automatic DST
 - **BambuLab MQTT** — Printer integration settings
 - **MQTT Relay** — Rebroadcast MQTT for ESP32 and other clients
-- **Theme** — Dark or light mode
+- **Theme** — Dark, Nebula, Starbucks, Harmony, Spring
 
 ---
 
@@ -74,14 +74,13 @@ For full documentation including:
 
 ---
 
-## Changelog
+## Recent Changes (Condensed)
 
-- 2026-02-16 — Updated to .NET 10; base/SDK images and docs updated.
-- 2026-02-16 — AMS auto-matching now uses NFC/RFID `tag_uid` only (prevents false matches when an
-  untagged spool is placed into a slot that previously held a different spool).
-- 2026-02-16 — UI: warning badge added on AMS page when a slot reports BambuLab metadata but no UID
-  was read (prompts manual linking). The app still allows manual linking by tray when explicitly saved.
-- 2026-02-16 — Linking now clears conflicting mappings so each RFID/tag is unique in the DB.
+- 2026-05-03 — Live View cards refreshed: flatter compact look, centered compact info chips, and a slow breathing idle `zZZZ` indicator.
+- 2026-05-03 — Printing cards keep the full essentials: progress bar + %, remaining time, ETA, and current/total layer count.
+- 2026-05-03 — `PrinterStatusCard` is reused across the top Live View strip and Printer page for consistent behavior.
+- 2026-05-03 — Startup bootstrap logic is split into dedicated services (`DatabaseBootstrapService`, `AppSettingsBootstrapService`) to keep `Program.cs` lean.
+- 2026-02-16 — Updated to .NET 10; AMS tag-based matching improved (`tag_uid`), with safer link conflict handling and AMS warning badges.
 
 
 ## ✨ Features
@@ -93,7 +92,7 @@ For full documentation including:
 - 🔄 Reusable spool management with automatic in-use tracking
 - 🎨 Sort by colour brightness (dark → light)
 - 📥 CSV import/export (backup & restore)
-- 🌓 Dark/Light theme
+- 🌓 Multiple themes (Dark, Nebula, Starbucks, Harmony, Spring)
 - 🔍 Search by brand, colour, type, finish
 - 📝 Per-spool usage recording
 
@@ -105,6 +104,14 @@ For full documentation including:
 - 📊 Batch optimisation table
 - 💰 Pricing presets — Competitive (25%), Standard (40%), Premium (60%), Luxury (80%), Custom
 - 📑 PDF quote export
+
+### Live View & Printer Monitoring
+
+- 🖨️ Multi-printer compact Live View strip (all enabled printers)
+- 📈 Printing cards show progress bar, percentage, ETA, remaining time, and layer counter
+- 🌡️ Compact centered chips for bed/nozzle temperatures and print metadata
+- 💤 Idle cards use a gentle breathing `zZZZ` visual cue
+- 📡 Real-time status updates via MQTT
 
 ---
 

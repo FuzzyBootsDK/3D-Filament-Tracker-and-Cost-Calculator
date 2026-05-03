@@ -2,7 +2,7 @@
 
 ## UI / UX
 
-- ~~**Multi-printer live widget**~~: **Addressed** — `PrinterPage.razor` (🖨️ Printer tab) now shows a real-time card for every configured printer with printing/idle/offline states, progress bar, temps, and layer count. The live widget in `Index.razor` still shows the first connected printer only; a tab/carousel upgrade there remains optional.
+- ~~**Multi-printer live widget**~~: **Addressed** — both `PrinterPage.razor` and `Index.razor` now render all enabled printers with the same shared card component.
 - **Print history log**: No persistent print history exists. Consider storing completed print events (file name, duration, filament used) to the DB — enables per-filament usage analytics over time.
 - **Filament usage prediction**: Using print history + AMS weight tracking, a "days remaining" or "prints remaining" estimate per spool could be surfaced on the inventory tiles.
 - **Notification support**: Browser push notifications or a Blazor toast/snackbar system for events like "print complete", "filament critical", or "printer disconnected".
@@ -10,10 +10,10 @@
 
 ## Architecture / Code Quality
 
-- **Migrate calculator to use global CSS variables**: The calculator uses its own `--calc-*` namespace isolated from the theme system. Migrating to use `var(--bg)`, `var(--panel)` etc. would allow it to honor light mode (and all 5 themes) properly without duplicating variable overrides.
-- **Centralise `HandleStatusUpdate` pattern**: Multiple pages (Index, AMSPage, PrinterPage) subscribe to `OnStatusUpdated`. A shared base component or service wrapper could reduce boilerplate and ensure consistent null-handling.
+- ~~**Migrate calculator to use global CSS variables**~~: **Addressed** — calculator tokens now derive from global theme variables (`--panel`, `--panel2`, `--border`, `--accent`, `--text`) in `calculator.css`/`site.css`, so themes apply consistently.
+- ~~**Centralise `HandleStatusUpdate` pattern**~~: **Addressed** — `PrinterStatusStore` now centralizes live status fan-out; pages subscribe to one shared source instead of duplicating direct MQTT subscription wiring.
 - **Add integration tests for BambuLabService**: The MQTT connection/disconnection race conditions that caused the `NullReferenceException` are hard to catch without concurrency tests. Consider adding tests with a mock MQTT client.
-- **Rate-limit `StateHasChanged` calls**: High-frequency MQTT messages invoke `StateHasChanged` on every update. Debouncing (e.g., max once per 200ms) would reduce unnecessary re-renders.
+- ~~**Rate-limit `StateHasChanged` calls**~~: **Addressed** — `PrinterStatusStore` now debounces status fan-out (~200ms window) before notifying UI subscribers.
 
 ## Settings & Configuration
 
@@ -23,6 +23,13 @@
 
 ## Design
 
-- ~~**Consistent idle state across all live widgets**~~: **Partially addressed** — `PrinterPage.razor` implements a unified offline/idle/printing card pattern for the Printer tab. The live widget in `Index.razor` still uses its own inline styling. A shared `<PrinterStatusWidget>` component would fully unify these.
-- **Skeleton loading states**: Pages that load data from the DB show nothing until loaded. Skeleton placeholders (translucent animated boxes) would improve perceived performance.
-- **Colour-coded AMS slot indicators**: AMS slot tiles could use the filament `ColorHex` as a subtle background tint for quicker visual scanning.
+- ~~**Consistent idle state across all live widgets**~~: **Addressed** — `PrinterStatusCard.razor` is now shared by `Index.razor` and `PrinterPage.razor` for consistent live/idle/offline rendering.
+- ~~**Skeleton loading states**~~: **Addressed** — reusable `LoadingSkeleton` component is in place and used on `Index`, `PrinterPage`, and `AMSPage`.
+- ~~**Colour-coded AMS slot indicators**~~: **Preview implemented (optional)** — color-tinted slot-card backgrounds were tested; currently reverted per user preference in favor of wider slot color swatches.
+
+## Simplification Opportunities (Next)
+
+- **Add tests for bootstrap services**: Unit/integration tests around `DatabaseBootstrapService` and `AppSettingsBootstrapService` would make startup/schema changes safer.
+- **Extract inventory tile primitives**: `InventoryPage.razor` still contains large repeated tile markup that could be split into focused subcomponents.
+- **Single source for calculator token mapping**: Keep `--calc-*` mapping in one stylesheet to avoid drift between `site.css` and `calculator.css`.
+

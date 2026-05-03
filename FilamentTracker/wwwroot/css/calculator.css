@@ -4,19 +4,19 @@
    ============================================================ */
 
 .calculator-root {
-    --calc-bg-body: #050816;
-    --calc-bg-card: #0f172a;
-    --calc-bg-input: #020617;
-    --calc-bg-pill: #020617;
-    --calc-bg-pill-soft: #020617;
-    --calc-border-subtle: #1e293b;
-    --calc-border-strong: #334155;
-    --calc-accent: #6366f1;
-    --calc-accent-soft: rgba(99, 102, 241, 0.15);
-    --calc-text-main: #e5e7eb;
-    --calc-text-muted: #9ca3af;
-    --calc-text-strong: #f9fafb;
-    --calc-danger: #f97373;
+    --calc-bg-body: var(--bg);
+    --calc-bg-card: var(--panel);
+    --calc-bg-input: var(--panel2);
+    --calc-bg-pill: var(--panel2);
+    --calc-bg-pill-soft: var(--panel2);
+    --calc-border-subtle: var(--border);
+    --calc-border-strong: var(--border2);
+    --calc-accent: var(--accent);
+    --calc-accent-soft: rgba(192, 132, 252, 0.18);
+    --calc-text-main: var(--text);
+    --calc-text-muted: var(--muted);
+    --calc-text-strong: var(--text);
+    --calc-danger: var(--danger);
     --calc-radius-md: 0.75rem;
     --calc-radius-sm: 0.5rem;
     --calc-shadow-card: 0 18px 40px rgba(15, 23, 42, 0.8);
@@ -319,22 +319,6 @@
     justify-content: space-between;
 }
 
-/* Nebula mode adjustments for calculator */
-.nebula .calculator-root {
-    --calc-bg-body: #141E30;
-    --calc-bg-card: #1b1f3f;
-    --calc-bg-input: #11182b;
-    --calc-bg-pill: #1d2341;
-    --calc-bg-pill-soft: #252d52;
-    --calc-border-subtle: rgba(192, 132, 252, 0.24);
-    --calc-border-strong: rgba(236, 72, 153, 0.30);
-    --calc-accent: #c084fc;
-    --calc-accent-soft: rgba(192, 132, 252, 0.18);
-    --calc-text-main: #f1e8ff;
-    --calc-text-muted: #c5b3e6;
-    --calc-text-strong: #ffffff;
-    --calc-shadow-card: 0 14px 36px rgba(8, 8, 28, 0.55);
-}
 
 /* Calculator Responsive */
 

@@ -1,0 +1,108 @@
+@using FilamentTracker.Models
+
+<AppCard Class="@($"printerStatusCard {(Compact ? "compact" : "full")}")" style="@($"border-color:{CardBorderColor};")">
+    <div class="printerStatusHeader">
+        <div class="printerColorDot" style="background: @(Printer.ColorHex ?? "#3b82f6");">
+            @(IsPrinting ? "⚙️" : IsConnected ? "🖨️" : "💤")
+        </div>
+        <div style="flex: 1; min-width: 0;">
+            <div class="printerStatusName">@Printer.Name</div>
+            @if (ShowLocation && !string.IsNullOrEmpty(Printer.Location))
+            {
+                <div class="printerStatusLocation">📍 @Printer.Location</div>
+            }
+        </div>
+        <StatusPill Label="@StateLabel" Variant="@StateVariant" />
+    </div>
+
+    <div class="printerStatusBody">
+        @if (!IsConnected)
+        {
+            @if (Compact)
+            {
+                <div class="compactMeta">Not connected</div>
+            }
+            else
+            {
+                <EmptyState Icon="🔌" Title="Not connected" Message="Connect in MQTT settings" Class="printerEmpty" />
+            }
+        }
+        else if (IsPrinting && Status != null)
+        {
+            @if (!string.IsNullOrEmpty(Status.CurrentFile) && !Compact)
+            {
+                <div class="printerFile">📄 @Status.CurrentFile</div>
+            }
+            <div class="printerProgressHeader">
+                <span class="printerProgressPct">@Status.Progress<span style="font-size: 14px;">%</span></span>
+                <span class="printerLayer">Layer @Status.CurrentLayer / @Status.TotalLayers</span>
+            </div>
+            <div class="printerProgressBar">
+                <div class="printerProgressFill" style="width: @(Status.Progress)%;"></div>
+            </div>
+
+            @if (Compact)
+            {
+                <div class="compactMetaRow">
+                    <span>🛏️ @Status.BedTemperature°C</span>
+                    <span>🌡️ @Status.NozzleTemperature°C</span>
+                    <span>⏳ @Status.TimeRemaining</span>
+                    <span>📏 @Status.CurrentLayer/@Status.TotalLayers</span>
+                    <span>🎯 @EtaText</span>
+                </div>
+            }
+            else
+            {
+                <div class="printerStatGrid">
+                    <div class="printerStatBox"><div class="printerStatLabel">Remaining</div><div class="printerStatValue">@Status.TimeRemaining</div></div>
+                    <div class="printerStatBox"><div class="printerStatLabel">ETA</div><div class="printerStatValue">@EtaText</div></div>
+                    <div class="printerStatBox"><div class="printerStatLabel">Bed</div><div class="printerStatValue">@Status.BedTemperature<span style="font-size: 12px;">°C</span></div></div>
+                    <div class="printerStatBox"><div class="printerStatLabel">Nozzle</div><div class="printerStatValue">@Status.NozzleTemperature<span style="font-size: 12px;">°C</span></div></div>
+                </div>
+            }
+        }
+        else if (Status != null)
+        {
+            @if (Compact)
+            {
+                <div class="compactMetaRow idle">
+                    <span>🛏️ @Status.BedTemperature°C</span>
+                    <span>🌡️ @Status.NozzleTemperature°C</span>
+                    <span class="idleSleep">💤 zZZZ</span>
+                </div>
+            }
+            else
+            {
+                <div class="printerIdleState">
+                    <div class="printerIdleIcon">💤</div>
+                    <div class="printerIdleText">zZZZ</div>
+                    <div class="printerIdleTemps">
+                        <span>🛏️ @Status.BedTemperature°C</span>
+                        <span>🌡️ @Status.NozzleTemperature°C</span>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</AppCard>
+
+@code {
+    [Parameter, EditorRequired] public Printer Printer { get; set; } = default!;
+    [Parameter] public PrintStatus? Status { get; set; }
+    [Parameter] public bool IsConnected { get; set; }
+    [Parameter] public bool Compact { get; set; }
+    [Parameter] public bool ShowLocation { get; set; } = true;
+    [Parameter] public string EtaText { get; set; } = "--:--";
+
+    private bool IsPrinting => Status?.IsPrinting == true;
+
+    private string CardBorderColor => IsPrinting
+        ? "rgba(59, 130, 246, 0.45)"
+        : IsConnected
+            ? "rgba(16, 185, 129, 0.35)"
+            : "var(--border)";
+
+    private string StateLabel => IsPrinting ? "Printing" : IsConnected ? "Idle" : "Offline";
+    private string StateVariant => IsPrinting ? "printing" : IsConnected ? "connected" : "offline";
+}
+

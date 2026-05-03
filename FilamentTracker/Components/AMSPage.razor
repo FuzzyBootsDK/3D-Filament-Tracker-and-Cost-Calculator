@@ -1,5 +1,7 @@
 @inject FilamentService FilamentService
 @inject BambuLabService BambuLabService
+@inject PrinterStatusStore PrinterStatusStore
+@inject AmsPageState AmsPageState
 @using System.Text
 @using FilamentTracker.Models
 @implements IDisposable
@@ -11,20 +13,17 @@
     private bool _amsAttached;
     private List<AMSUnit> _amsUnits = new();
 
-    // Per-slot: linked spool id (0 = none), save-status message
-    private readonly Dictionary<string, int> _slotSpoolMap = new(); // key = slotKey
-    private readonly Dictionary<string, string?> _slotSaveMsg = new(); // key = slotKey
-    private readonly Dictionary<string, bool> _slotSaving = new();
-
     protected override async Task OnInitializedAsync()
     {
         _inventory = await FilamentService.GetAllFilamentsAsync();
-#pragma warning disable CS0618 // Type or member is obsolete
-        RefreshFromStatus(BambuLabService.GetCurrentStatus());
-#pragma warning restore CS0618 // Type or member is obsolete
+        var initialStatus = PrinterStatusStore.GetAllStatuses().Values.FirstOrDefault();
+        if (initialStatus != null)
+            RefreshFromStatus(initialStatus);
+
         await AutoMatchSlotsAsync();
-        BambuLabService.OnStatusUpdated += HandleStatusUpdated;
+        PrinterStatusStore.OnStatusChanged += HandleStatusUpdated;
         BambuLabService.OnAmsWeightUpdated += HandleAmsWeightUpdated;
+        AmsPageState.IsLoading = false;
     }
 
     private void HandleAmsWeightUpdated(int printerId)
@@ -81,19 +80,19 @@
     {
         // Track which spool IDs we've already assigned during this pass so one spool
         // is not auto-matched to multiple AMS slots in the UI.
-        var assigned = new HashSet<int>(_slotSpoolMap.Values.Where(id => id > 0));
+        var assigned = new HashSet<int>(AmsPageState.SlotSpoolMap.Values.Where(id => id > 0));
 
         foreach (var unit in _amsUnits)
         foreach (var slot in unit.Slots)
         {
             var key = SlotKey(unit, slot);
             // Skip only if already successfully matched (don't skip unmatched — keep retrying)
-            if (_slotSpoolMap.TryGetValue(key, out var existing) && existing > 0) continue;
+            if (AmsPageState.SlotSpoolMap.TryGetValue(key, out var existing) && existing > 0) continue;
 
             var spool = await FilamentService.FindSpoolByAmsIdAsync(slot.TrayUuid, slot.TagUid);
             if (spool != null && !assigned.Contains(spool.Id))
             {
-                _slotSpoolMap[key] = spool.Id;
+                AmsPageState.SlotSpoolMap[key] = spool.Id;
                 assigned.Add(spool.Id);
             }
         }
@@ -101,7 +100,7 @@
 
     public void Dispose()
     {
-        BambuLabService.OnStatusUpdated -= HandleStatusUpdated;
+        PrinterStatusStore.OnStatusChanged -= HandleStatusUpdated;
         BambuLabService.OnAmsWeightUpdated -= HandleAmsWeightUpdated;
     }
 
@@ -152,7 +151,7 @@
 
     private string? GetLinkedLabel(string key)
     {
-        if (!_slotSpoolMap.TryGetValue(key, out var spoolId) || spoolId == 0)
+        if (!AmsPageState.SlotSpoolMap.TryGetValue(key, out var spoolId) || spoolId == 0)
             return null;
         foreach (var f in _inventory)
         foreach (var s in f.Spools)
@@ -164,7 +163,7 @@
     /// Returns the current WeightRemaining from the linked inventory spool (null if not linked).
     private decimal? GetLinkedWeight(string key)
     {
-        if (!_slotSpoolMap.TryGetValue(key, out var spoolId) || spoolId == 0)
+        if (!AmsPageState.SlotSpoolMap.TryGetValue(key, out var spoolId) || spoolId == 0)
             return null;
         foreach (var f in _inventory)
         foreach (var s in f.Spools)
@@ -175,21 +174,21 @@
 
     private int GetSelectedSpoolId(string key)
     {
-        return _slotSpoolMap.TryGetValue(key, out var id) ? id : 0;
+        return AmsPageState.SlotSpoolMap.TryGetValue(key, out var id) ? id : 0;
     }
 
     private void OnSpoolSelected(string key, ChangeEventArgs e)
     {
         var raw = e.Value?.ToString();
-        _slotSpoolMap[key] = int.TryParse(raw, out var id) ? id : 0;
-        _slotSaveMsg[key] = null; // clear previous message
+        AmsPageState.SlotSpoolMap[key] = int.TryParse(raw, out var id) ? id : 0;
+        AmsPageState.SlotSaveMessages[key] = null; // clear previous message
     }
 
     private async Task SaveLink(AMSUnit unit, AMSSlot slot)
     {
         var key = SlotKey(unit, slot);
-        _slotSaving[key] = true;
-        _slotSaveMsg[key] = null;
+        AmsPageState.SlotSaving[key] = true;
+        AmsPageState.SlotSaveMessages[key] = null;
         StateHasChanged();
 
         try
@@ -202,32 +201,32 @@
                 var old = await FilamentService.FindSpoolByExactAmsIdAsync(slot.TrayUuid, slot.TagUid);
                 if (old != null)
                     await FilamentService.LinkSpoolToAmsSlotAsync(old.Id, null, null);
-                _slotSaveMsg[key] = "Unlinked.";
+                AmsPageState.SlotSaveMessages[key] = "Unlinked.";
             }
             else
             {
                 await FilamentService.LinkSpoolToAmsSlotAsync(spoolId, slot.TrayUuid, slot.TagUid);
-                _slotSaveMsg[key] = HasRfid(slot)
+                AmsPageState.SlotSaveMessages[key] = HasRfid(slot)
                     ? "✅ Saved — will auto-match next time."
                     : "✅ Saved (no RFID chip — won't auto-match).";
             }
         }
         catch (Exception ex)
         {
-            _slotSaveMsg[key] = $"❌ Error: {ex.Message}";
+            AmsPageState.SlotSaveMessages[key] = $"❌ Error: {ex.Message}";
         }
         finally
         {
-            _slotSaving[key] = false;
+            AmsPageState.SlotSaving[key] = false;
                 // Ensure UI mapping uniqueness: a spool should only be shown as linked to one slot.
                 var savedId = GetSelectedSpoolId(key);
                 if (savedId > 0)
                 {
-                    var keysToClear = _slotSpoolMap.Where(kv => kv.Key != key && kv.Value == savedId)
+                    var keysToClear = AmsPageState.SlotSpoolMap.Where(kv => kv.Key != key && kv.Value == savedId)
                         .Select(kv => kv.Key)
                         .ToList();
                     foreach (var k in keysToClear)
-                        _slotSpoolMap[k] = 0;
+                        AmsPageState.SlotSpoolMap[k] = 0;
                 }
 
                 // If we unlinked, clear any UI entries that referenced that spool id
@@ -246,7 +245,22 @@
 
 }
 
-@if (!_amsAttached)
+@if (AmsPageState.IsLoading)
+{
+    <div class="panel amsPanel">
+        <div class="amsSlotsGrid">
+            @for (var i = 0; i < 4; i++)
+            {
+                <div class="skeletonCard">
+                    <div class="skeletonLine" style="width: 46%;"></div>
+                    <div class="skeletonLine" style="width: 76%; margin-top: 8px;"></div>
+                    <div class="skeletonLine" style="width: 62%; margin-top: 8px;"></div>
+                </div>
+            }
+        </div>
+    </div>
+}
+else if (!_amsAttached)
 {
     <div class="strip">No AMS attached. Connect your printer to use AMS features.</div>
 }
@@ -271,8 +285,8 @@ else
                     var linkedWeight = GetLinkedWeight(key);
                     var selectedId = GetSelectedSpoolId(key);
                     var hasRfid = HasRfid(slot);
-                    var saveMsg = _slotSaveMsg.TryGetValue(key, out var m) ? m : null;
-                    var saving = _slotSaving.TryGetValue(key, out var sv) && sv;
+                    var saveMsg = AmsPageState.SlotSaveMessages.TryGetValue(key, out var m) ? m : null;
+                    var saving = AmsPageState.SlotSaving.TryGetValue(key, out var sv) && sv;
 
                     <div class="amsSlot">
                         <div class="amsSlotCircle" style="background: @(slot.ColorHex ?? "#" + slot.TrayColor)"></div>
@@ -355,113 +369,4 @@ else
     }
 }
 
-<style>
-    .amsPanel {
-        margin-top: 18px;
-        padding: 18px;
-        border-radius: 18px;
-        background: var(--panel);
-        border: 1px solid var(--border);
-    }
 
-    .amsHeader {
-        display: flex;
-        gap: 18px;
-        align-items: center;
-        margin-bottom: 10px;
-        font-weight: 900;
-        color: var(--text);
-    }
-
-    .amsEnv {
-        font-size: 15px;
-        color: var(--muted);
-    }
-
-    .amsSlotsGrid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 18px;
-        margin-top: 10px;
-    }
-
-    .amsSlot {
-        background: rgba(255, 255, 255, .03);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 18px 14px 16px 14px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, .08);
-    }
-
-    .nebula .amsSlot {
-        background: var(--panel2);
-    }
-
-    .amsSlotCircle {
-        width: 38px;
-        height: 38px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, .18);
-        box-shadow: 0 0 0 1px rgba(0, 0, 0, .12);
-    }
-
-    .amsSlotLabel {
-        font-weight: 900;
-        font-size: 16px;
-        color: var(--text);
-    }
-
-    .amsSlotType {
-        font-size: 14px;
-        color: var(--muted);
-        text-align: center;
-    }
-
-    .amsSlotTypePill {
-        display: inline-block;
-        background: rgba(99, 102, 241, .15);
-        border: 1px solid rgba(99, 102, 241, .30);
-        border-radius: 8px;
-        padding: 2px 10px;
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--text);
-        letter-spacing: 0.03em;
-    }
-
-    .amsSlotRemain {
-        font-size: 13px;
-        color: var(--text);
-    }
-
-    .amsLinkedBadge {
-        font-size: 12px;
-        font-weight: 700;
-        color: #10b981;
-        background: rgba(16, 185, 129, .10);
-        border: 1px solid rgba(16, 185, 129, .25);
-        border-radius: 8px;
-        padding: 4px 10px;
-        text-align: center;
-        width: 100%;
-        word-break: break-word;
-    }
-
-    .amsSlotSelect {
-        width: 100%;
-    }
-
-    .amsSlotSelect select {
-        width: 100%;
-        font-size: 13px;
-        border-radius: 12px;
-        border: 1px solid var(--border);
-        background: var(--panel);
-        color: var(--text);
-        padding: 8px 10px;
-    }
-</style>
