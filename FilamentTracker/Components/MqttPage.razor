@@ -2,6 +2,7 @@
 @inject BambuLabService BambuLabService
 @inject MqttRelayService MqttRelayService
 @inject IJSRuntime Js
+@inject NavigationManager Navigation
 @using System.Text
 @using FilamentTracker.Models
 @implements IDisposable
@@ -271,6 +272,9 @@
             <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
                 Default MQTT port is 1883. Change if needed. Make sure this port is not in use.
             </div>
+            <div style="font-size: 12px; color: var(--muted); margin-top: 8px;">
+                Relay endpoint for clients: <strong>@GetRelayHostForClients():@_mqttRelayPort</strong>
+            </div>
         </div>
 
         <div style="margin-bottom: 16px;">
@@ -311,7 +315,7 @@
                     }
                     <p><strong>Configure your ESP32 to connect to this relay:</strong></p>
                     <pre style="background: #0d1117; padding: 10px; border-radius: 6px; overflow-x: auto;">
-const char* mqtt_server = "<strong>@GetServerIpAddress()</strong>";  // This server's IP
+const char* mqtt_server = "<strong>@GetRelayHostForClients()</strong>";  // Host/IP clients should use
 const int mqtt_port = @_mqttRelayPort;
 @if (!string.IsNullOrEmpty(_mqttRelayUsername))
 {
@@ -930,23 +934,50 @@ client.subscribe("device/@serialForInstructions/report");</pre>
         }
     }
 
-    private string GetServerIpAddress()
+    private string GetRelayHostForClients()
+    {
+        try
+        {
+            if (Uri.TryCreate(Navigation.Uri, UriKind.Absolute, out var currentUri))
+            {
+                var host = currentUri.Host;
+                if (!string.IsNullOrWhiteSpace(host) &&
+                    !host.Equals("localhost", StringComparison.OrdinalIgnoreCase) &&
+                    host != "127.0.0.1" &&
+                    host != "::1")
+                {
+                    return host;
+                }
+            }
+
+            var lanIp = GetLanIpv4Address();
+            return string.IsNullOrWhiteSpace(lanIp) ? "YOUR_SERVER_IP" : lanIp;
+        }
+        catch
+        {
+            return "YOUR_SERVER_IP";
+        }
+    }
+
+    private string? GetLanIpv4Address()
     {
         try
         {
             var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
             foreach (var ip in host.AddressList)
             {
-                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork &&
+                    !System.Net.IPAddress.IsLoopback(ip) &&
+                    !ip.ToString().StartsWith("169.254.", StringComparison.Ordinal))
                 {
                     return ip.ToString();
                 }
             }
-            return "YOUR_SERVER_IP";
+            return null;
         }
         catch
         {
-            return "YOUR_SERVER_IP";
+            return null;
         }
     }
 
