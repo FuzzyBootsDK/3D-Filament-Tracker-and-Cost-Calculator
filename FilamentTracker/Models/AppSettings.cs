@@ -12,14 +12,8 @@ public class AppSettings
 
     [Required] [MaxLength(10)] public string Currency { get; set; } = "DKK";
 
-    // BambuLab MQTT Settings
-    [MaxLength(200)] public string? BambuLabIpAddress { get; set; }
-
-    [MaxLength(20)] public string? BambuLabAccessCode { get; set; }
-
-    [MaxLength(100)] public string? BambuLabSerialNumber { get; set; }
-
-    public bool BambuLabEnabled { get; set; } = false;
+    // Active UI theme — persisted so it survives Docker restarts
+    [MaxLength(20)] public string Theme { get; set; } = "dark";
 
     // When true, automatically update spool WeightRemaining from AMS remain% (only for tagged spools)
     public bool AmsAutoUpdateWeight { get; set; } = false;

@@ -249,7 +249,7 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
 
     /// Find a spool that has been previously linked to an AMS tray_uuid or tag_uid.
     /// Returns null when no match (i.e. first time this spool is seen).
-    public async Task<Spool?> FindSpoolByAmsIdAsync(string? trayUuid, string? tagUid)
+    public async Task<Spool?> FindSpoolByAmsIdAsync(string? _, string? tagUid)
     {
         // Auto-matching should only occur on the persistent RFID tag (tagUid).
         // Treat trayUuid as a weak/location identifier and do not auto-match on it
@@ -356,15 +356,13 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
 
         if (count == 0)
         {
-            // Insert defaults
             await using var insertCmd = conn.CreateCommand();
             insertCmd.CommandText = """
-
-                                                    INSERT INTO AppSettings
-                                                        (LowThreshold, CriticalThreshold, Currency, BambuLabEnabled,
-                                                         AmsAutoUpdateWeight, AmsAutoUpdateOnlyDecrease)
-                                                    VALUES (500, 250, 'DKK', 0, 0, 1)
-                                    """;
+                INSERT INTO AppSettings
+                    (LowThreshold, CriticalThreshold, Currency,
+                     AmsAutoUpdateWeight, AmsAutoUpdateOnlyDecrease, Theme)
+                VALUES (500, 250, 'DKK', 0, 1, 'dark')
+                """;
             await insertCmd.ExecuteNonQueryAsync();
         }
 
@@ -372,9 +370,9 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             SELECT Id, LowThreshold, CriticalThreshold, Currency, TimeZoneId,
-                   BambuLabIpAddress, BambuLabAccessCode, BambuLabSerialNumber,
-                   BambuLabEnabled, AmsAutoUpdateWeight, AmsAutoUpdateOnlyDecrease,
-                   MqttRelayEnabled, MqttRelayPort, MqttRelayUsername, MqttRelayPassword
+                   AmsAutoUpdateWeight, AmsAutoUpdateOnlyDecrease,
+                   MqttRelayEnabled, MqttRelayPort, MqttRelayUsername, MqttRelayPassword,
+                   Theme
             FROM AppSettings
             LIMIT 1";
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -389,16 +387,13 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
             CriticalThreshold         = reader.GetDecimal(2),
             Currency                  = reader.GetString(3),
             TimeZoneId                = reader.IsDBNull(4)  ? "Europe/Copenhagen" : reader.GetString(4),
-            BambuLabIpAddress         = reader.IsDBNull(5)  ? null : reader.GetString(5),
-            BambuLabAccessCode        = reader.IsDBNull(6)  ? null : reader.GetString(6),
-            BambuLabSerialNumber      = reader.IsDBNull(7)  ? null : reader.GetString(7),
-            BambuLabEnabled           = !reader.IsDBNull(8) && reader.GetInt32(8) == 1,
-            AmsAutoUpdateWeight       = !reader.IsDBNull(9) && reader.GetInt32(9) == 1,
-            AmsAutoUpdateOnlyDecrease = reader.IsDBNull(10) || reader.GetInt32(10) == 1,
-            MqttRelayEnabled          = !reader.IsDBNull(11) && reader.GetInt32(11) == 1,
-            MqttRelayPort             = reader.IsDBNull(12) ? 1883 : reader.GetInt32(12),
-            MqttRelayUsername         = reader.IsDBNull(13) ? null : reader.GetString(13),
-            MqttRelayPassword         = reader.IsDBNull(14) ? null : reader.GetString(14),
+            AmsAutoUpdateWeight       = !reader.IsDBNull(5) && reader.GetInt32(5) == 1,
+            AmsAutoUpdateOnlyDecrease = reader.IsDBNull(6)  || reader.GetInt32(6) == 1,
+            MqttRelayEnabled          = !reader.IsDBNull(7) && reader.GetInt32(7) == 1,
+            MqttRelayPort             = reader.IsDBNull(8)  ? 1883 : reader.GetInt32(8),
+            MqttRelayUsername         = reader.IsDBNull(9)  ? null : reader.GetString(9),
+            MqttRelayPassword         = reader.IsDBNull(10) ? null : reader.GetString(10),
+            Theme                     = reader.IsDBNull(11) ? "dark" : reader.GetString(11),
         };
     }
 
@@ -413,36 +408,30 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
             await using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
                 UPDATE AppSettings SET
-                    LowThreshold               = $low,
-                    CriticalThreshold          = $crit,
-                    Currency                   = $curr,
-                    TimeZoneId                 = $tz,
-                    BambuLabIpAddress          = $ip,
-                    BambuLabAccessCode         = $code,
-                    BambuLabSerialNumber       = $serial,
-                    BambuLabEnabled            = $enabled,
-                    AmsAutoUpdateWeight        = $autoWeight,
-                    AmsAutoUpdateOnlyDecrease  = $onlyDecrease,
-                    MqttRelayEnabled           = $relayEnabled,
-                    MqttRelayPort              = $relayPort,
-                    MqttRelayUsername          = $relayUsername,
-                    MqttRelayPassword          = $relayPassword
+                    LowThreshold              = $low,
+                    CriticalThreshold         = $crit,
+                    Currency                  = $curr,
+                    TimeZoneId                = $tz,
+                    AmsAutoUpdateWeight       = $autoWeight,
+                    AmsAutoUpdateOnlyDecrease = $onlyDecrease,
+                    MqttRelayEnabled          = $relayEnabled,
+                    MqttRelayPort             = $relayPort,
+                    MqttRelayUsername         = $relayUsername,
+                    MqttRelayPassword         = $relayPassword,
+                    Theme                     = $theme
                 WHERE Id = $id";
-            cmd.Parameters.AddWithValue("$low",            (double)settings.LowThreshold);
-            cmd.Parameters.AddWithValue("$crit",           (double)settings.CriticalThreshold);
-            cmd.Parameters.AddWithValue("$curr",           settings.Currency);
-            cmd.Parameters.AddWithValue("$tz",             settings.TimeZoneId);
-            cmd.Parameters.AddWithValue("$ip",             (object?)settings.BambuLabIpAddress    ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("$code",           (object?)settings.BambuLabAccessCode   ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("$serial",         (object?)settings.BambuLabSerialNumber ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("$enabled",        settings.BambuLabEnabled          ? 1 : 0);
-            cmd.Parameters.AddWithValue("$autoWeight",     settings.AmsAutoUpdateWeight       ? 1 : 0);
-            cmd.Parameters.AddWithValue("$onlyDecrease",   settings.AmsAutoUpdateOnlyDecrease ? 1 : 0);
-            cmd.Parameters.AddWithValue("$relayEnabled",   settings.MqttRelayEnabled ? 1 : 0);
-            cmd.Parameters.AddWithValue("$relayPort",      settings.MqttRelayPort);
-            cmd.Parameters.AddWithValue("$relayUsername",  (object?)settings.MqttRelayUsername ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("$relayPassword",  (object?)settings.MqttRelayPassword ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("$id",             settings.Id);
+            cmd.Parameters.AddWithValue("$low",          (double)settings.LowThreshold);
+            cmd.Parameters.AddWithValue("$crit",         (double)settings.CriticalThreshold);
+            cmd.Parameters.AddWithValue("$curr",         settings.Currency);
+            cmd.Parameters.AddWithValue("$tz",           settings.TimeZoneId);
+            cmd.Parameters.AddWithValue("$autoWeight",   settings.AmsAutoUpdateWeight       ? 1 : 0);
+            cmd.Parameters.AddWithValue("$onlyDecrease", settings.AmsAutoUpdateOnlyDecrease ? 1 : 0);
+            cmd.Parameters.AddWithValue("$relayEnabled", settings.MqttRelayEnabled ? 1 : 0);
+            cmd.Parameters.AddWithValue("$relayPort",    settings.MqttRelayPort);
+            cmd.Parameters.AddWithValue("$relayUsername",(object?)settings.MqttRelayUsername ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$relayPassword",(object?)settings.MqttRelayPassword ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$theme",        settings.Theme);
+            cmd.Parameters.AddWithValue("$id",           settings.Id);
             await cmd.ExecuteNonQueryAsync();
         }
         catch (Exception ex)
@@ -474,13 +463,13 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
             .ThenBy(s => s.DateAdded) // Then oldest first
             .ToList();
 
-        if (!availableSpools.Any())
+        if (availableSpools.Count == 0)
             throw new Exception("No spools available with remaining filament");
 
         var result = new UsageResult
         {
             TotalGramsUsed = gramsUsed,
-            SpoolsAffected = new List<SpoolUsage>()
+            SpoolsAffected = []
         };
 
         var remainingToSubtract = gramsUsed;
@@ -605,33 +594,59 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
     /// <summary>
     /// Migrates legacy single-printer settings to the new Printers table.
     /// Called automatically on startup if no printers exist but legacy settings are present.
+    /// Reads the legacy columns directly from SQLite so the AppSettings model no longer needs them.
     /// </summary>
     public async Task MigrateLegacyPrinterSettingsAsync()
     {
         await using var context = await contextFactory.CreateDbContextAsync();
 
-        // Check if migration is needed
-        var hasExistingPrinters = await context.Printers.AnyAsync();
-        if (hasExistingPrinters)
+        if (await context.Printers.AnyAsync())
             return;
 
-        var settings = await context.AppSettings.FirstOrDefaultAsync();
-        if (settings == null || string.IsNullOrEmpty(settings.BambuLabIpAddress))
+        var connStr = context.Database.GetDbConnection().ConnectionString;
+        await using var conn = new Microsoft.Data.Sqlite.SqliteConnection(connStr);
+        await conn.OpenAsync();
+
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            SELECT BambuLabIpAddress, BambuLabAccessCode, BambuLabSerialNumber, BambuLabEnabled
+            FROM AppSettings
+            LIMIT 1";
+
+        string? ip = null, code = null, serial = null;
+        var enabled = false;
+
+        try
+        {
+            await using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                ip      = reader.IsDBNull(0) ? null : reader.GetString(0);
+                code    = reader.IsDBNull(1) ? null : reader.GetString(1);
+                serial  = reader.IsDBNull(2) ? null : reader.GetString(2);
+                enabled = !reader.IsDBNull(3) && reader.GetInt32(3) == 1;
+            }
+        }
+        catch
+        {
+            // Legacy columns may not exist on a fresh install — nothing to migrate.
+            return;
+        }
+
+        if (string.IsNullOrEmpty(ip))
             return;
 
-        // Create legacy printer from old settings
         var legacyPrinter = new Printer
         {
-            Name = "My BambuLab Printer",
+            Name        = "My BambuLab Printer",
             PrinterType = "BambuLab",
-            IpAddress = settings.BambuLabIpAddress,
-            AccessCode = settings.BambuLabAccessCode ?? "",
-            SerialNumber = settings.BambuLabSerialNumber ?? "",
-            Enabled = settings.BambuLabEnabled,
-            IsDefault = true,
-            Location = null,
-            ColorHex = "#3b82f6",
-            DateAdded = DateTime.UtcNow
+            IpAddress   = ip,
+            AccessCode  = code  ?? "",
+            SerialNumber = serial ?? "",
+            Enabled     = enabled,
+            IsDefault   = true,
+            ColorHex    = "#3b82f6",
+            DateAdded   = DateTime.UtcNow
         };
 
         context.Printers.Add(legacyPrinter);

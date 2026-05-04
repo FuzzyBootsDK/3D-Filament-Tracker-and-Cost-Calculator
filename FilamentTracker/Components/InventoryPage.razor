@@ -133,7 +133,7 @@
                     </div>
 
                     <div class="barWrap">
-                        <div class="bar @(filament.Status == "ok" ? "" : "low")"
+                        <div class="bar @(GetFilamentStatus(filament) == "ok" ? "" : "low")"
                              style="width: @(Math.Round(filament.PercentRemaining, 0))%"></div>
                     </div>
 

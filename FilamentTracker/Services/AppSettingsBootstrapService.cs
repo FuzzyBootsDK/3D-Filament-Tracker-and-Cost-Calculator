@@ -11,47 +11,16 @@ public sealed class AppSettingsBootstrapService(IServiceProvider serviceProvider
         var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<FilamentContext>>();
         await using var context = await contextFactory.CreateDbContextAsync();
 
-        var settings = await context.AppSettings.FirstOrDefaultAsync();
-        if (settings == null)
-            return;
+        var filamentService = scope.ServiceProvider.GetRequiredService<FilamentService>();
+        var settings = await filamentService.GetSettingsAsync();
 
+        // ── Apply MQTT relay environment-variable overrides ──────────────────
         try
         {
             var settingsChanged = false;
 
-            var envBambuEnabled = Environment.GetEnvironmentVariable("BAMBULAB_ENABLED");
-            var envBambuIp = Environment.GetEnvironmentVariable("BAMBULAB_IP");
-            var envBambuCode = Environment.GetEnvironmentVariable("BAMBULAB_CODE");
-            var envBambuSerial = Environment.GetEnvironmentVariable("BAMBULAB_SERIAL");
-
-            if (!string.IsNullOrEmpty(envBambuEnabled) &&
-                (envBambuEnabled == "1" || envBambuEnabled.Equals("true", StringComparison.OrdinalIgnoreCase)) &&
-                !settings.BambuLabEnabled)
-            {
-                settings.BambuLabEnabled = true;
-                settingsChanged = true;
-            }
-
-            if (!string.IsNullOrEmpty(envBambuIp) && settings.BambuLabIpAddress != envBambuIp)
-            {
-                settings.BambuLabIpAddress = envBambuIp;
-                settingsChanged = true;
-            }
-
-            if (!string.IsNullOrEmpty(envBambuCode) && settings.BambuLabAccessCode != envBambuCode)
-            {
-                settings.BambuLabAccessCode = envBambuCode;
-                settingsChanged = true;
-            }
-
-            if (!string.IsNullOrEmpty(envBambuSerial) && settings.BambuLabSerialNumber != envBambuSerial)
-            {
-                settings.BambuLabSerialNumber = envBambuSerial;
-                settingsChanged = true;
-            }
-
-            var envRelayEnabled = Environment.GetEnvironmentVariable("MQTT_RELAY_ENABLED");
-            var envRelayPort = Environment.GetEnvironmentVariable("MQTT_RELAY_PORT");
+            var envRelayEnabled  = Environment.GetEnvironmentVariable("MQTT_RELAY_ENABLED");
+            var envRelayPort     = Environment.GetEnvironmentVariable("MQTT_RELAY_PORT");
             var envRelayUsername = Environment.GetEnvironmentVariable("MQTT_RELAY_USERNAME");
             var envRelayPassword = Environment.GetEnvironmentVariable("MQTT_RELAY_PASSWORD");
 
@@ -63,7 +32,9 @@ public sealed class AppSettingsBootstrapService(IServiceProvider serviceProvider
                 settingsChanged = true;
             }
 
-            if (!string.IsNullOrEmpty(envRelayPort) && int.TryParse(envRelayPort, out var relayPort) && settings.MqttRelayPort != relayPort)
+            if (!string.IsNullOrEmpty(envRelayPort) &&
+                int.TryParse(envRelayPort, out var relayPort) &&
+                settings.MqttRelayPort != relayPort)
             {
                 settings.MqttRelayPort = relayPort;
                 settingsChanged = true;
@@ -82,58 +53,57 @@ public sealed class AppSettingsBootstrapService(IServiceProvider serviceProvider
             }
 
             if (settingsChanged)
-                await context.SaveChangesAsync();
+                await filamentService.UpdateSettingsAsync(settings);
         }
         catch
         {
             // Environment overrides should never block startup.
         }
 
+        // ── Restore singleton service state from persisted settings ──────────
         var thresholdService = scope.ServiceProvider.GetRequiredService<ThresholdService>();
         thresholdService.SetThresholds(settings.LowThreshold, settings.CriticalThreshold);
 
-        if (settings.BambuLabEnabled &&
-            !string.IsNullOrEmpty(settings.BambuLabIpAddress) &&
-            !string.IsNullOrEmpty(settings.BambuLabAccessCode) &&
-            !string.IsNullOrEmpty(settings.BambuLabSerialNumber))
-        {
-            var startupPrinter = await context.Printers
-                .Where(p => p.Enabled)
-                .OrderByDescending(p => p.IsDefault)
-                .ThenBy(p => p.Name)
-                .FirstOrDefaultAsync();
+        var themeService = scope.ServiceProvider.GetRequiredService<ThemeService>();
+        themeService.SetTheme(settings.Theme);
 
+        // ── Connect all enabled printers ─────────────────────────────────────
+        var enabledPrinters = await context.Printers
+            .Where(p => p.Enabled)
+            .OrderByDescending(p => p.IsDefault)
+            .ThenBy(p => p.Name)
+            .ToListAsync();
+
+        if (enabledPrinters.Count > 0)
+        {
             var bambuLabService = scope.ServiceProvider.GetRequiredService<BambuLabService>();
-            bambuLabService.AmsAutoUpdateWeight = settings.AmsAutoUpdateWeight;
+            bambuLabService.AmsAutoUpdateWeight       = settings.AmsAutoUpdateWeight;
             bambuLabService.AmsAutoUpdateOnlyDecrease = settings.AmsAutoUpdateOnlyDecrease;
             var startupLogger = loggerFactory.CreateLogger("BambuLabInit");
 
-            if (startupPrinter == null)
+            foreach (var printer in enabledPrinters)
             {
-                startupLogger.LogWarning("BambuLab is enabled but no enabled printer record exists. Skipping startup connect.");
-            }
-            else
-            {
-            _ = Task.Run(async () =>
-            {
-                try
+                var captured = printer;
+                _ = Task.Run(async () =>
                 {
-                    await bambuLabService.ConnectToPrinterAsync(
-                        startupPrinter.Id,
-                        startupPrinter.IpAddress,
-                        startupPrinter.AccessCode,
-                        startupPrinter.SerialNumber,
-                        startupPrinter.Name
-                    );
-                }
-                catch (Exception ex)
-                {
-                    startupLogger.LogError(ex, "Failed to connect to BambuLab printer on startup");
-                }
-            });
+                    try
+                    {
+                        await bambuLabService.ConnectToPrinterAsync(
+                            captured.Id,
+                            captured.IpAddress,
+                            captured.AccessCode,
+                            captured.SerialNumber,
+                            captured.Name);
+                    }
+                    catch (Exception ex)
+                    {
+                        startupLogger.LogError(ex, "Failed to connect to printer {Name} on startup", captured.Name);
+                    }
+                });
             }
         }
 
+        // ── Start MQTT relay if enabled ───────────────────────────────────────
         if (settings.MqttRelayEnabled)
         {
             var mqttRelayService = scope.ServiceProvider.GetRequiredService<MqttRelayService>();
@@ -145,8 +115,7 @@ public sealed class AppSettingsBootstrapService(IServiceProvider serviceProvider
                     await mqttRelayService.StartRelayServerAsync(
                         settings.MqttRelayPort,
                         settings.MqttRelayUsername,
-                        settings.MqttRelayPassword
-                    );
+                        settings.MqttRelayPassword);
                     relayLogger.LogInformation("MQTT Relay started on port {Port}", settings.MqttRelayPort);
                 }
                 catch (Exception ex)
@@ -157,4 +126,3 @@ public sealed class AppSettingsBootstrapService(IServiceProvider serviceProvider
         }
     }
 }
-

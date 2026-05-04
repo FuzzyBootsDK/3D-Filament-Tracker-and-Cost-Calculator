@@ -24,7 +24,7 @@ public class CsvService
             .Include(f => f.Spools)
             .ToListAsync();
 
-        var records = new List<CsvFilamentRecord>();
+        List<CsvFilamentRecord> records = [];
 
         foreach (var filament in filaments)
         foreach (var spool in filament.Spools)

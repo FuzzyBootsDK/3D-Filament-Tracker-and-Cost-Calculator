@@ -968,7 +968,7 @@ body.spring .tinyBtn.primary,
 
 .navbtn {
     width: 100%;
-    font-size: 20px;
+    font-size: 14px;
     display: flex;
     gap: 10px;
     align-items: center;
@@ -1022,7 +1022,7 @@ body.spring .tinyBtn.primary,
 .navbtn {
     /* Make nav buttons arrange into two rows of three by default */
     flex: 1 1 calc(33.333% - 12px);
-    font-size: 20px;
+    font-size: 14px;
     display: flex;
     gap: 10px;
     align-items: center;
@@ -3065,3 +3065,212 @@ label {
     font-size: 40px;
 }
 
+/* ============================================================
+   RETRO THEME — Night sky dark blue + neon pink / purple / cyan
+   Inspired by 70s/80s retro-futurism
+   ============================================================ */
+
+@keyframes retroNeonFlicker {
+    0%, 17%, 19%, 21%, 53%, 55%, 100% {
+        box-shadow:
+            0 0 6px rgba(255, 45, 120, 0.75),
+            0 0 14px rgba(180, 77, 255, 0.55),
+            0 0 28px rgba(0, 212, 255, 0.30);
+    }
+    18%, 54% {
+        box-shadow: 0 0 2px rgba(255, 45, 120, 0.20);
+    }
+    20% {
+        box-shadow:
+            0 0 10px rgba(255, 45, 120, 0.90),
+            0 0 22px rgba(180, 77, 255, 0.70),
+            0 0 36px rgba(0, 212, 255, 0.40);
+    }
+}
+
+@keyframes retroNeonPulse {
+    0%, 100% {
+        text-shadow:
+            -1px 0 rgba(255, 100, 180, 0.55),
+            1px 0 rgba(0, 180, 255, 0.45),
+            0 0 8px rgba(0, 229, 255, 0.85),
+            0 0 18px rgba(180, 77, 255, 0.70),
+            0 0 30px rgba(255, 45, 120, 0.55),
+            0 0 50px rgba(255, 45, 120, 0.25);
+    }
+    50% {
+        text-shadow:
+            -1px 0 rgba(255, 100, 180, 0.70),
+            1px 0 rgba(0, 180, 255, 0.60),
+            0 0 12px rgba(0, 229, 255, 1),
+            0 0 26px rgba(180, 77, 255, 0.90),
+            0 0 44px rgba(255, 45, 120, 0.75),
+            0 0 70px rgba(255, 45, 120, 0.40);
+    }
+}
+
+@keyframes retroNeonActiveGlow {
+    0%, 100% {
+        box-shadow:
+            0 0 8px #ff2d78cc,
+            0 0 20px #b44dff88,
+            0 0 36px #ff2d7840;
+        border-color: #ff2d78;
+    }
+    50% {
+        box-shadow:
+            0 0 14px #ff2d78ff,
+            0 0 30px #b44dffaa,
+            0 0 52px #ff2d7866,
+            0 0 72px #00d4ff22;
+        border-color: #ff6ea0;
+    }
+}
+
+body.retro,
+.retro,
+.retro body {
+    --bg: #04050f;
+    --panel: #070b1c;
+    --panel2: #0a0f25;
+    --panelSolid: #06091a;
+    --border: rgba(100, 60, 220, .22);
+    --border2: rgba(255, 45, 120, .28);
+    --text: #e8d8ff;
+    --muted: rgba(232, 216, 255, .58);
+    --accent: #ff2d78;
+    --danger: #ff2d78;
+    --warn: #ff9f0a;
+    --ok: #00e5ff;
+    --shadow: 0 18px 55px rgba(0, 0, 0, .88);
+    --radius: 16px;
+    --radiusSm: 12px;
+    --focus: 0 0 0 3px rgba(255, 45, 120, .40);
+    /* Sidebar nav hooks — consumed by Index.razor.css via CSS variable inheritance */
+    --nav-active-shadow: 0 0 8px #ff2d78cc, 0 0 20px #b44dff88, 0 0 36px #ff2d7840;
+    --nav-active-border: #ff2d78;
+    --nav-before-bg: linear-gradient(180deg, rgba(0, 212, 255, 0.18), rgba(255, 45, 120, 0.20));
+    --nav-hover-anim: retroNeonFlicker 2.2s infinite;
+}
+
+body.retro,
+.retro body {
+    background:
+        radial-gradient(900px 500px at 18% -5%, rgba(100, 0, 200, .22), transparent 60%),
+        radial-gradient(700px 400px at 88% 6%, rgba(0, 180, 255, .15), transparent 55%),
+        radial-gradient(600px 350px at 55% 85%, rgba(255, 45, 120, .08), transparent 60%),
+        #04050f;
+}
+
+/* Retro — sidebar title: italic neon-bent text with pulsing glow */
+body.retro .sidebarTitle {
+    font-style: italic;
+    letter-spacing: 0.12em;
+    background: linear-gradient(175deg, #00e5ff 0%, #b44dff 40%, #ff2d78 72%, #ffaac8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow:
+        -1px 0 rgba(255, 100, 180, 0.55),
+        1px 0 rgba(0, 180, 255, 0.45),
+        0 0 8px rgba(0, 229, 255, 0.85),
+        0 0 18px rgba(180, 77, 255, 0.70),
+        0 0 30px rgba(255, 45, 120, 0.55),
+        0 0 50px rgba(255, 45, 120, 0.25);
+    animation: retroNeonPulse 3s ease-in-out infinite;
+}
+
+/* Retro — active nav button: steady pulsing neon glow behind it */
+body.retro .sidebarButtons .navbtn[aria-current="page"],
+.retro .sidebarButtons .navbtn[aria-current="page"] {
+    animation: retroNeonActiveGlow 2.5s ease-in-out infinite;
+}
+
+/* Retro — navicon pill: boosted brightness and subtle glow */
+body.retro .navicon,
+.retro .navicon {
+    filter: brightness(1.2) saturate(1.35);
+    box-shadow: 0 0 8px rgba(255, 255, 255, .18);
+}
+
+/* Retro — accent overrides */
+body.retro .navbtn.active,
+.retro .navbtn.active {
+    background: rgba(255, 45, 120, .15);
+    border-color: rgba(255, 45, 120, .45);
+}
+
+body.retro .btn.primary,
+.retro .btn.primary {
+    background: linear-gradient(135deg, #ff2d78, #b44dff);
+    border-color: #ff2d78;
+    color: #fff0f8;
+}
+
+body.retro .spoolRow.selected,
+.retro .spoolRow.selected {
+    border-color: #ff2d78;
+    background: rgba(255, 45, 120, .12);
+}
+
+body.retro .tinyBtn.primary,
+.retro .tinyBtn.primary {
+    background: rgba(255, 45, 120, .18);
+    border-color: rgba(255, 45, 120, .48);
+    color: #ffd0e8;
+}
+
+
+
+/* ============================================================
+   SIDEBAR SCROLL — unscoped globals so they are never blocked
+   by Blazor scoped-CSS attribute selectors.
+   ============================================================ */
+
+/* Sidebar panel: bounded to viewport height so the nav list
+   can scroll independently of the page content. */
+.sidebar {
+    max-height: calc(100vh - 24px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Nav button list: fills remaining space inside sidebar,
+   scrolls when items overflow, scrollbar hidden by default. */
+.sidebarButtons {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;               /* Firefox */
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.25s ease;
+    padding-right: 2px;
+    padding: 4px 4px 14px 4px;
+}
+
+/* Reveal scrollbar on hover — Firefox */
+.sidebarButtons:hover {
+    scrollbar-color: var(--border) transparent;
+}
+
+/* Webkit (Chrome / Edge / Safari) — always reserve the 4px gutter,
+   keep thumb invisible until hover so it doesn't flash on load. */
+.sidebarButtons::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebarButtons::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebarButtons::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 4px;
+    transition: background 0.25s ease;
+}
+
+.sidebarButtons:hover::-webkit-scrollbar-thumb {
+    background: var(--border);
+}

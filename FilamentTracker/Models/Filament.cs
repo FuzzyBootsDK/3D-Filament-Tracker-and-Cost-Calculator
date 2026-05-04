@@ -27,7 +27,7 @@ public class Filament
     public DateTime DateAdded { get; init; } = DateTime.Now;
 
     // Navigation property
-    public ICollection<Spool> Spools { get; init; } = new List<Spool>();
+    public ICollection<Spool> Spools { get; init; } = [];
 
     // Computed properties
     public decimal TotalWeight => Spools.Sum(s => s.TotalWeight);
@@ -46,20 +46,10 @@ public class Filament
 
             // Otherwise, calculate weighted average from spools
             var spoolsWithPrices = Spools.Where(s => s.PurchasePricePerKg.HasValue).ToList();
-            if (spoolsWithPrices.Any()) return spoolsWithPrices.Average(s => s.PurchasePricePerKg!.Value);
+            if (spoolsWithPrices.Count > 0) return spoolsWithPrices.Average(s => s.PurchasePricePerKg!.Value);
 
             // Default fallback when no prices are set
             return 0m;
-        }
-    }
-
-    public string Status
-    {
-        get
-        {
-            if (WeightRemaining < 250) return "critical";
-            if (WeightRemaining < 500) return "low";
-            return "ok";
         }
     }
 

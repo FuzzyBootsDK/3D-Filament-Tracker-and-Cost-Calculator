@@ -67,7 +67,7 @@
                                 {
                                     <span>• @printer.Location</span>
                                 }
-                                @if (BambuLabService.IsConnected && _connectedPrinterSerial == printer.SerialNumber)
+                                @if (BambuLabService.IsPrinterConnected(printer.Id) && _connectedPrinterSerial == printer.SerialNumber)
                                 {
                                     <span style="color: #10b981;">● Connected</span>
                                 }
@@ -220,7 +220,7 @@
                     }
 
                     <div class="row">
-                        @if (!BambuLabService.IsConnected)
+                        @if (!BambuLabService.IsPrinterConnected(selectedPrinter.Id))
                         {
                             <button class="btn primary" @onclick="() => ConnectToPrinter(selectedPrinter)" disabled="@_isProcessing">
                                 @if (_isProcessing)
@@ -255,10 +255,10 @@
             </div>
 
             <div class="checkRow" style="margin-bottom: 16px;">
-                <input type="checkbox" @bind="_mqttRelayEnabled" id="mqttRelayEnabled" disabled="@(!BambuLabService.IsConnected)"/>
-                <label for="mqttRelayEnabled" style="@(!BambuLabService.IsConnected ? "color: var(--muted);" : "")">Enable MQTT Relay Server</label>
+                <input type="checkbox" @bind="_mqttRelayEnabled" id="mqttRelayEnabled" disabled="@(!BambuLabService.IsAnyConnected)"/>
+                <label for="mqttRelayEnabled" style="@(!BambuLabService.IsAnyConnected ? "color: var(--muted);" : "")">Enable MQTT Relay Server</label>
             </div>
-            @if (!BambuLabService.IsConnected)
+            @if (!BambuLabService.IsAnyConnected)
             {
                 <div style="font-size: 12px; color: var(--muted); margin-bottom: 16px; margin-left: 26px;">
                     ⚠️ BambuLab MQTT must be connected before the relay can work.
@@ -373,7 +373,7 @@ client.subscribe("device/@serialForInstructions/report");</pre>
             <button class="btn" @onclick="ClearMqttDisplay">🗑️ Clear Display</button>
             <button class="btn" @onclick="SaveMqttLogCsv">💾 Save Log (CSV)</button>
             <button class="btn" @onclick="SaveServerMqttLog">📥 Save Server Log</button>
-            @if (BambuLabService.IsConnected)
+            @if (BambuLabService.IsAnyConnected)
             {
                 <span style="font-size: 12px; color: #10b981;">● Connected</span>
             }
@@ -479,13 +479,13 @@ client.subscribe("device/@serialForInstructions/report");</pre>
         RefreshMqttLog();
         BambuLabService.OnMqttMessageLogged += OnNewMqttMessage;
 
-        // Track connected printer
-#pragma warning disable CS0618 // Type or member is obsolete
-        if (BambuLabService.IsConnected)
+        // Track connected printer (serial is set when connecting via ConnectToPrinter/TestConnection)
+        var connectedIds = BambuLabService.GetConnectedPrinterIds();
+        if (connectedIds.Count > 0)
         {
-            _connectedPrinterSerial = BambuLabService.GetCurrentStatus().PrinterName?.Split('(').LastOrDefault()?.TrimEnd(')') ?? "";
+            var status = BambuLabService.GetPrinterStatus(connectedIds[0]);
+            _connectedPrinterSerial = status?.PrinterName ?? "";
         }
-#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public void Dispose()
@@ -890,7 +890,7 @@ client.subscribe("device/@serialForInstructions/report");</pre>
             await FilamentService.UpdateSettingsAsync(settings);
 
             // Start or stop the relay server
-            if (_mqttRelayEnabled && BambuLabService.IsConnected)
+            if (_mqttRelayEnabled && BambuLabService.IsAnyConnected)
             {
                 try
                 {
@@ -912,7 +912,7 @@ client.subscribe("device/@serialForInstructions/report");</pre>
                 _mqttRelayStatus = "Settings saved. MQTT Relay disabled.";
                 _mqttRelayStatusSuccess = true;
             }
-            else if (_mqttRelayEnabled && !BambuLabService.IsConnected)
+            else if (_mqttRelayEnabled && !BambuLabService.IsAnyConnected)
             {
                 _mqttRelayStatus = "⚠️ Settings saved, but relay cannot start until BambuLab MQTT is connected.";
                 _mqttRelayStatusSuccess = false;

@@ -524,7 +524,7 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
 
     private static List<AMSUnit> ParseAmsUnits(JsonElement amsArray)
     {
-        var units = new List<AMSUnit>();
+        List<AMSUnit> units = [];
         foreach (var amsObj in amsArray.EnumerateArray())
         {
             double.TryParse(

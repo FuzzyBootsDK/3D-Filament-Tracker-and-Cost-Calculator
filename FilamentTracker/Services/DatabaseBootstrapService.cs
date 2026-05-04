@@ -126,6 +126,9 @@ public sealed class DatabaseBootstrapService(IServiceProvider serviceProvider, I
         await context.Database.ExecuteSqlRawAsync("UPDATE AppSettings SET MqttRelayEnabled = 0 WHERE MqttRelayEnabled IS NULL");
         await context.Database.ExecuteSqlRawAsync("UPDATE AppSettings SET MqttRelayPort = 1883 WHERE MqttRelayPort IS NULL OR MqttRelayPort = 0");
 
+        if (!await ColumnExistsAsync("AppSettings", "Theme"))
+            await context.Database.ExecuteSqlRawAsync("ALTER TABLE AppSettings ADD COLUMN Theme TEXT NOT NULL DEFAULT 'dark'");
+
         await context.Database.ExecuteSqlRawAsync("PRAGMA foreign_keys = ON");
 
         await context.Database.ExecuteSqlRawAsync(@"

@@ -70,7 +70,10 @@ public class MqttRelayService : IAsyncDisposable
 
             _logger.LogInformation("✅ MQTT Relay Server successfully started on port {Port}", port);
             _logger.LogInformation("ESP32 and other clients can now connect to this server instead of the printer");
-            _logger.LogInformation("Authentication: {Auth}", string.IsNullOrEmpty(username) ? "Disabled (no credentials required)" : $"Enabled (username: {username})");
+            if (string.IsNullOrEmpty(username))
+                _logger.LogInformation("Authentication: Disabled (no credentials required)");
+            else
+                _logger.LogInformation("Authentication: Enabled (username: {Username})", username);
         }
         catch (Exception ex)
         {
