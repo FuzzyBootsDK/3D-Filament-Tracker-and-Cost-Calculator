@@ -360,6 +360,8 @@ client.subscribe("device/@serialForInstructions/report");</pre>
             Live feed of the last 50 incoming MQTT messages from your BambuLab printer.
         </div>
 
+        @{ var filteredEntries = GetFilteredLogEntries(); }
+
         <div style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center; flex-wrap: wrap;">
             <!-- Printer Filter Dropdown -->
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -386,10 +388,10 @@ client.subscribe("device/@serialForInstructions/report");</pre>
                 <span style="font-size: 12px; color: var(--muted);">○ Not connected</span>
             }
             <div style="margin-left: auto; font-size: 12px; color: var(--muted);">
-                Messages: <strong>@GetFilteredLogEntries().Count</strong>
-                @if (GetFilteredLogEntries().Any())
+                Messages: <strong>@filteredEntries.Count</strong>
+                @if (filteredEntries.Any())
                 {
-                    <span> · Last: <strong>@GetFilteredLogEntries().Last().Timestamp.ToString("HH:mm:ss")</strong></span>
+                    <span> · Last: <strong>@filteredEntries.Last().Timestamp.ToString("HH:mm:ss")</strong></span>
                 }
             </div>
         </div>
@@ -406,9 +408,6 @@ client.subscribe("device/@serialForInstructions/report");</pre>
             line-height: 1.6;
             color: #e6edf3;
         ">
-            @{
-                var filteredEntries = GetFilteredLogEntries();
-            }
             @if (!filteredEntries.Any())
             {
                 <div style="color: #6e7681; text-align: center; padding-top: 160px;">
@@ -475,6 +474,10 @@ client.subscribe("device/@serialForInstructions/report");</pre>
     // MQTT log terminal
     private List<MqttLogEntry> _mqttLogEntries = new();
     private int? _selectedLogPrinterId; // null = show all printers
+    private readonly object _logRefreshLock = new();
+    private bool _refreshScheduled;
+    private readonly CancellationTokenSource _disposeCts = new();
+    private const int UiRefreshIntervalMs = 250;
 
     protected override async Task OnInitializedAsync()
     {
@@ -494,36 +497,63 @@ client.subscribe("device/@serialForInstructions/report");</pre>
 
     public void Dispose()
     {
+        _disposeCts.Cancel();
         BambuLabService.OnMqttMessageLogged -= OnNewMqttMessage;
     }
 
     private void OnNewMqttMessage(MqttLogEntry entry)
     {
-        try
-        {
-            InvokeAsync(() =>
-            {
-                try
-                {
-                    _mqttLogEntries = BambuLabService.GetMqttLog().ToList();
-                    StateHasChanged();
-                }
-                catch
-                {
-                    /* component may have been disposed */
-                }
-            });
-        }
-        catch
-        {
-            /* swallow to protect the MQTT background thread */
-        }
+        ScheduleLogRefresh();
     }
 
     private void RefreshMqttLog()
     {
-        _mqttLogEntries = BambuLabService.GetMqttLog().ToList();
+        _mqttLogEntries = BambuLabService.GetMqttLog().TakeLast(50).ToList();
         StateHasChanged();
+    }
+
+    private void ScheduleLogRefresh()
+    {
+        lock (_logRefreshLock)
+        {
+            if (_refreshScheduled)
+                return;
+            _refreshScheduled = true;
+        }
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(UiRefreshIntervalMs, _disposeCts.Token);
+                if (_disposeCts.IsCancellationRequested)
+                    return;
+
+                await InvokeAsync(() =>
+                {
+                    if (_disposeCts.IsCancellationRequested)
+                        return;
+
+                    _mqttLogEntries = BambuLabService.GetMqttLog().TakeLast(50).ToList();
+                    StateHasChanged();
+                });
+            }
+            catch (OperationCanceledException)
+            {
+                // No-op when component is being disposed.
+            }
+            catch
+            {
+                // Swallow to protect the MQTT background thread.
+            }
+            finally
+            {
+                lock (_logRefreshLock)
+                {
+                    _refreshScheduled = false;
+                }
+            }
+        });
     }
 
     private List<MqttLogEntry> GetFilteredLogEntries()

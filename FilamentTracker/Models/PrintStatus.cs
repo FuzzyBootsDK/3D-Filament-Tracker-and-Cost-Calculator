@@ -18,6 +18,7 @@ public class PrintStatus
     public string? WifiSignal { get; set; } // e.g. "-59dBm"
 
     // AMS info
+    public bool HasSeenAmsMessage { get; set; }
     public List<AMSUnit>? AMSUnits { get; set; } = new();
 }
 

@@ -458,6 +458,7 @@ public class BambuLabService(ILogger<BambuLabService> logger, IServiceProvider s
                     ams.TryGetProperty("ams", out var amsArray))
                 {
                     var amsUnits = ParseAmsUnits(amsArray);
+                    status.HasSeenAmsMessage = true;
                     status.AMSUnits = amsUnits;
                     logger.LogInformation("Printer {PrinterId}: AMS data parsed: {Count} unit(s)", printerId, amsUnits.Count);
 

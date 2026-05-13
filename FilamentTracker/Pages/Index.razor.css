@@ -103,6 +103,8 @@
 
 .contentArea {
     min-width: 0;
+    margin-right: 12px;
+    box-sizing: border-box;
 }
 
 .liveStripCard {

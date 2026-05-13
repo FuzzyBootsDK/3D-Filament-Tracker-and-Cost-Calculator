@@ -11,6 +11,7 @@
     // ── State ──────────────────────────────────────────────────────────────────
     private List<Filament> _inventory = new();
     private bool _amsAttached;
+    private bool _hasSeenAmsMessage;
     private List<AMSUnit> _amsUnits = new();
 
     protected override async Task OnInitializedAsync()
@@ -71,6 +72,17 @@
 
     private void RefreshFromStatus(PrintStatus status)
     {
+        if (!status.HasSeenAmsMessage)
+        {
+            if (!_hasSeenAmsMessage)
+            {
+                _amsAttached = false;
+                _amsUnits = new List<AMSUnit>();
+            }
+            return;
+        }
+
+        _hasSeenAmsMessage = true;
         _amsAttached = status.AMSUnits is { Count: > 0 };
         _amsUnits = status.AMSUnits ?? new List<AMSUnit>();
     }
@@ -260,9 +272,13 @@
         </div>
     </div>
 }
+else if (!_hasSeenAmsMessage)
+{
+    <div class="strip">No AMS yet — waiting for the first AMS message.</div>
+}
 else if (!_amsAttached)
 {
-    <div class="strip">No AMS attached. Connect your printer to use AMS features.</div>
+    <div class="strip">No AMS reported in the latest AMS message.</div>
 }
 else
 {
