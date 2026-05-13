@@ -103,7 +103,8 @@
 
 .contentArea {
     min-width: 0;
-    margin-right: 12px;
+    width: 100%;
+    padding-inline-end: 12px;
     box-sizing: border-box;
 }
 
@@ -142,6 +143,10 @@
 
     .sidebar {
         position: static;
+    }
+
+    .contentArea {
+        padding-inline-end: 0;
     }
 }
 

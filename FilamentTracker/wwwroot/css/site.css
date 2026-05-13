@@ -1592,7 +1592,8 @@ label {
 
 /* Keep a visible right-side gutter so overlay scrollbars do not cover content. */
 main.contentArea {
-    margin-right: 12px;
+    width: 100%;
+    padding-inline-end: 12px;
     box-sizing: border-box;
 }
 
