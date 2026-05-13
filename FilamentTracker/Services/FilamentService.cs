@@ -360,8 +360,9 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
             insertCmd.CommandText = """
                 INSERT INTO AppSettings
                     (LowThreshold, CriticalThreshold, Currency,
-                     AmsAutoUpdateWeight, AmsAutoUpdateOnlyDecrease, Theme)
-                VALUES (500, 250, 'DKK', 0, 1, 'dark')
+                     AmsAutoUpdateWeight, AmsAutoUpdateOnlyDecrease, Theme,
+                     AzureSyncEnabled, AzureAutoPushEnabled)
+                VALUES (500, 250, 'DKK', 0, 1, 'dark', 0, 0)
                 """;
             await insertCmd.ExecuteNonQueryAsync();
         }
@@ -372,7 +373,8 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
             SELECT Id, LowThreshold, CriticalThreshold, Currency, TimeZoneId,
                    AmsAutoUpdateWeight, AmsAutoUpdateOnlyDecrease,
                    MqttRelayEnabled, MqttRelayPort, MqttRelayUsername, MqttRelayPassword,
-                   Theme
+                   Theme,
+                   AzureSyncEnabled, AzureAutoPushEnabled, AzureEndpoint, AzureUsername, AzurePassword
             FROM AppSettings
             LIMIT 1";
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -394,6 +396,11 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
             MqttRelayUsername         = reader.IsDBNull(9)  ? null : reader.GetString(9),
             MqttRelayPassword         = reader.IsDBNull(10) ? null : reader.GetString(10),
             Theme                     = reader.IsDBNull(11) ? "dark" : reader.GetString(11),
+            AzureSyncEnabled          = !reader.IsDBNull(12) && reader.GetInt32(12) == 1,
+            AzureAutoPushEnabled      = !reader.IsDBNull(13) && reader.GetInt32(13) == 1,
+            AzureEndpoint             = reader.IsDBNull(14) ? null : reader.GetString(14),
+            AzureUsername             = reader.IsDBNull(15) ? null : reader.GetString(15),
+            AzurePassword             = reader.IsDBNull(16) ? null : reader.GetString(16),
         };
     }
 
@@ -418,7 +425,12 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
                     MqttRelayPort             = $relayPort,
                     MqttRelayUsername         = $relayUsername,
                     MqttRelayPassword         = $relayPassword,
-                    Theme                     = $theme
+                    Theme                     = $theme,
+                    AzureSyncEnabled          = $azureEnabled,
+                    AzureAutoPushEnabled      = $azureAuto,
+                    AzureEndpoint             = $azureEndpoint,
+                    AzureUsername             = $azureUsername,
+                    AzurePassword             = $azurePassword
                 WHERE Id = $id";
             cmd.Parameters.AddWithValue("$low",          (double)settings.LowThreshold);
             cmd.Parameters.AddWithValue("$crit",         (double)settings.CriticalThreshold);
@@ -431,6 +443,11 @@ public class FilamentService(IDbContextFactory<FilamentContext> contextFactory, 
             cmd.Parameters.AddWithValue("$relayUsername",(object?)settings.MqttRelayUsername ?? DBNull.Value);
             cmd.Parameters.AddWithValue("$relayPassword",(object?)settings.MqttRelayPassword ?? DBNull.Value);
             cmd.Parameters.AddWithValue("$theme",        settings.Theme);
+            cmd.Parameters.AddWithValue("$azureEnabled", settings.AzureSyncEnabled ? 1 : 0);
+            cmd.Parameters.AddWithValue("$azureAuto",    settings.AzureAutoPushEnabled ? 1 : 0);
+            cmd.Parameters.AddWithValue("$azureEndpoint",(object?)settings.AzureEndpoint ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$azureUsername",(object?)settings.AzureUsername ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("$azurePassword",(object?)settings.AzurePassword ?? DBNull.Value);
             cmd.Parameters.AddWithValue("$id",           settings.Id);
             await cmd.ExecuteNonQueryAsync();
         }

@@ -38,8 +38,10 @@ builder.Services.AddDbContextFactory<FilamentContext>(options =>
     }));
 
 // Add custom services
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<FilamentService>();
 builder.Services.AddScoped<CsvService>();
+builder.Services.AddScoped<AzureInventorySyncService>();
 builder.Services.AddScoped<InventoryPageState>();
 builder.Services.AddScoped<AmsPageState>();
 builder.Services.AddSingleton<ThemeService>();
@@ -50,6 +52,7 @@ builder.Services.AddSingleton<DatabaseBootstrapService>();
 builder.Services.AddSingleton<AppSettingsBootstrapService>();
 builder.Services.AddSingleton<MqttRelayService>();
 builder.Services.AddSingleton<EditStateService>();
+builder.Services.AddHostedService<AzureInventoryBackgroundSyncService>();
 
 var app = builder.Build();
 

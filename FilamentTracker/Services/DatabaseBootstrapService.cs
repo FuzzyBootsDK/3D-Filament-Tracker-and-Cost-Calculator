@@ -50,7 +50,12 @@ public sealed class DatabaseBootstrapService(IServiceProvider serviceProvider, I
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 LowThreshold REAL NOT NULL,
                 CriticalThreshold REAL NOT NULL,
-                Currency TEXT NOT NULL DEFAULT 'DKK'
+                Currency TEXT NOT NULL DEFAULT 'DKK',
+                AzureSyncEnabled INTEGER NOT NULL DEFAULT 0,
+                AzureAutoPushEnabled INTEGER NOT NULL DEFAULT 0,
+                AzureEndpoint TEXT,
+                AzureUsername TEXT,
+                AzurePassword TEXT
             )");
 
         await context.Database.ExecuteSqlRawAsync(@"
@@ -128,6 +133,24 @@ public sealed class DatabaseBootstrapService(IServiceProvider serviceProvider, I
 
         if (!await ColumnExistsAsync("AppSettings", "Theme"))
             await context.Database.ExecuteSqlRawAsync("ALTER TABLE AppSettings ADD COLUMN Theme TEXT NOT NULL DEFAULT 'dark'");
+
+        if (!await ColumnExistsAsync("AppSettings", "AzureSyncEnabled"))
+            await context.Database.ExecuteSqlRawAsync("ALTER TABLE AppSettings ADD COLUMN AzureSyncEnabled INTEGER NOT NULL DEFAULT 0");
+
+        if (!await ColumnExistsAsync("AppSettings", "AzureAutoPushEnabled"))
+            await context.Database.ExecuteSqlRawAsync("ALTER TABLE AppSettings ADD COLUMN AzureAutoPushEnabled INTEGER NOT NULL DEFAULT 0");
+
+        if (!await ColumnExistsAsync("AppSettings", "AzureEndpoint"))
+            await context.Database.ExecuteSqlRawAsync("ALTER TABLE AppSettings ADD COLUMN AzureEndpoint TEXT");
+
+        if (!await ColumnExistsAsync("AppSettings", "AzureUsername"))
+            await context.Database.ExecuteSqlRawAsync("ALTER TABLE AppSettings ADD COLUMN AzureUsername TEXT");
+
+        if (!await ColumnExistsAsync("AppSettings", "AzurePassword"))
+            await context.Database.ExecuteSqlRawAsync("ALTER TABLE AppSettings ADD COLUMN AzurePassword TEXT");
+
+        await context.Database.ExecuteSqlRawAsync("UPDATE AppSettings SET AzureSyncEnabled = 0 WHERE AzureSyncEnabled IS NULL");
+        await context.Database.ExecuteSqlRawAsync("UPDATE AppSettings SET AzureAutoPushEnabled = 0 WHERE AzureAutoPushEnabled IS NULL");
 
         await context.Database.ExecuteSqlRawAsync("PRAGMA foreign_keys = ON");
 

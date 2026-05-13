@@ -30,3 +30,9 @@ Moving the inline style blocks into `*.razor.css` files made the Razor pages eas
 ## On startup service split
 `Program.cs` became much easier to read after moving bootstrap logic into `DatabaseBootstrapService` and `AppSettingsBootstrapService`. The next improvement would be tests around these services, since they now contain startup-critical behavior that can evolve independently.
 
+## On Azure sync readiness implementation
+The current approach (settings + manual push + hourly worker) is a solid "ready now, wire later" pattern. It allows iterative backend development without blocking UI/DB integration. The decision to keep `PullInventoryAsync()` explicitly unimplemented is good: restore workflows are where data loss risk lives, and that should not be guessed before contract + merge behavior are defined.
+
+## On cloud security posture
+Persisting Azure username/password in app settings is acceptable for local prototyping, but should be treated as temporary. Before production rollout, the app should shift to token-based auth (or short-lived signed requests) and avoid storing long-lived secrets in plain text.
+

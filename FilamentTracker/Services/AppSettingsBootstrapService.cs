@@ -23,6 +23,11 @@ public sealed class AppSettingsBootstrapService(IServiceProvider serviceProvider
             var envRelayPort     = Environment.GetEnvironmentVariable("MQTT_RELAY_PORT");
             var envRelayUsername = Environment.GetEnvironmentVariable("MQTT_RELAY_USERNAME");
             var envRelayPassword = Environment.GetEnvironmentVariable("MQTT_RELAY_PASSWORD");
+            var envAzureEnabled  = Environment.GetEnvironmentVariable("AZURE_SYNC_ENABLED");
+            var envAzureAutoPush = Environment.GetEnvironmentVariable("AZURE_SYNC_AUTO_PUSH_ENABLED");
+            var envAzureEndpoint = Environment.GetEnvironmentVariable("AZURE_SYNC_ENDPOINT");
+            var envAzureUsername = Environment.GetEnvironmentVariable("AZURE_SYNC_USERNAME");
+            var envAzurePassword = Environment.GetEnvironmentVariable("AZURE_SYNC_PASSWORD");
 
             if (!string.IsNullOrEmpty(envRelayEnabled) &&
                 (envRelayEnabled == "1" || envRelayEnabled.Equals("true", StringComparison.OrdinalIgnoreCase)) &&
@@ -49,6 +54,44 @@ public sealed class AppSettingsBootstrapService(IServiceProvider serviceProvider
             if (!string.IsNullOrEmpty(envRelayPassword) && settings.MqttRelayPassword != envRelayPassword)
             {
                 settings.MqttRelayPassword = envRelayPassword;
+                settingsChanged = true;
+            }
+
+            if (!string.IsNullOrEmpty(envAzureEnabled))
+            {
+                var azureEnabled = envAzureEnabled == "1" || envAzureEnabled.Equals("true", StringComparison.OrdinalIgnoreCase);
+                if (settings.AzureSyncEnabled != azureEnabled)
+                {
+                    settings.AzureSyncEnabled = azureEnabled;
+                    settingsChanged = true;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(envAzureAutoPush))
+            {
+                var azureAuto = envAzureAutoPush == "1" || envAzureAutoPush.Equals("true", StringComparison.OrdinalIgnoreCase);
+                if (settings.AzureAutoPushEnabled != azureAuto)
+                {
+                    settings.AzureAutoPushEnabled = azureAuto;
+                    settingsChanged = true;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(envAzureEndpoint) && settings.AzureEndpoint != envAzureEndpoint)
+            {
+                settings.AzureEndpoint = envAzureEndpoint;
+                settingsChanged = true;
+            }
+
+            if (!string.IsNullOrEmpty(envAzureUsername) && settings.AzureUsername != envAzureUsername)
+            {
+                settings.AzureUsername = envAzureUsername;
+                settingsChanged = true;
+            }
+
+            if (!string.IsNullOrEmpty(envAzurePassword) && settings.AzurePassword != envAzurePassword)
+            {
+                settings.AzurePassword = envAzurePassword;
                 settingsChanged = true;
             }
 

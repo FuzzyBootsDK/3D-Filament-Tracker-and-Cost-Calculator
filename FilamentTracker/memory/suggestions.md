@@ -20,6 +20,11 @@
 - ~~**Printer management UI**~~: **Addressed** — `MqttPage.razor` (📡 MQTT tab) provides full per-printer management: add, edit (rename/update IP/access code), delete, connect/disconnect without leaving the page.
 - **Export print history to CSV**: Extend the existing CSV export to include print history once that feature is added.
 - **Theme preference persisted per user**: Theme is currently stored app-wide in `ThemeService` (singleton, resets on restart). Consider tying it to `AppSettings` in the DB so the chosen theme survives restarts and Docker volume resets.
+- ~~**Azure sync readiness scaffold**~~: **Addressed** — settings, manual push, and hourly auto-push worker are now in place.
+- **Finalize Azure API contract**: Define endpoint paths, request/response schema, and auth strategy before production enablement.
+- **Implement Azure pull/import**: Complete `PullInventoryAsync()` with real restore logic and conflict strategy (replace vs merge).
+- **Harden cloud auth storage**: Move away from plain-text password persistence toward token/secrets pattern.
+- **Add sync observability in UI**: show last success timestamp, last error, and next scheduled auto-push time.
 
 ## Design
 

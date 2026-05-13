@@ -7,6 +7,7 @@
 - Validate changes compile before finishing (run build)
 - Stick to project folder: `C:\Users\lasr\source\repos\3D-Filament-Tracker-and-Cost-Calculator\FilamentTracker/`
 - Prefer simplification through reusable components/services when it reduces duplication and keeps code easy to work with
+- User prefers preparing cloud-sync features in-app before backend infrastructure is fully available
 
 ## Code Style
 - C# 14 / .NET 10 / Blazor Server

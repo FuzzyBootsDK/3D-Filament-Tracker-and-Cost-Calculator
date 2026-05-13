@@ -91,3 +91,20 @@
 - Removed stale committed `wwwroot/FilamentTracker.styles.css` once scoped CSS files were introduced
 - Rationale: avoid Static Web Assets manifest collision (`Sequence contains more than one element`)
 
+## 2026 — Cloud Sync Readiness
+
+**Azure sync scaffold added before backend exists**
+- Added Azure settings fields to `AppSettings` and SQLite bootstrap (`AzureSyncEnabled`, `AzureAutoPushEnabled`, `AzureEndpoint`, `AzureUsername`, `AzurePassword`)
+- Added UI controls in `SettingsPage` and manual push action in `InventoryPage`
+- Added hourly background auto-push worker gated by enable flags
+- Rationale: make app cloud-ready now while Azure server/API is still pending
+
+**Push now implemented, pull intentionally deferred**
+- `AzureInventorySyncService.PushInventoryAsync()` exports local inventory as CSV and posts to configured endpoint
+- `PullInventoryAsync()` intentionally returns a "not wired" status until API contract is finalized
+- Rationale: avoid locking into the wrong restore API/merge semantics before backend design is agreed
+
+**Simple credentials model accepted temporarily**
+- Username/password fields are persisted in app settings for now
+- Rationale: keep setup friction low during prototype; security hardening (token/secrets/encryption) is a planned follow-up
+

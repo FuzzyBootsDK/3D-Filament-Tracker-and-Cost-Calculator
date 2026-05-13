@@ -37,4 +37,18 @@ public class AppSettings
 
     [MaxLength(50)]
     public string? MqttRelayPassword { get; set; }
+
+    // Azure inventory sync (app-side configuration; backend API can be connected later)
+    public bool AzureSyncEnabled { get; set; } = false;
+
+    public bool AzureAutoPushEnabled { get; set; } = false;
+
+    [MaxLength(300)]
+    public string? AzureEndpoint { get; set; }
+
+    [MaxLength(100)]
+    public string? AzureUsername { get; set; }
+
+    [MaxLength(200)]
+    public string? AzurePassword { get; set; }
 }

@@ -2,6 +2,7 @@
 @inject FilamentService FilamentService
 @inject CsvService CsvService
 @inject ThresholdService ThresholdService
+@inject AzureInventorySyncService AzureInventorySyncService
 @inject IJSRuntime Js
 @using System.Text
 @using FilamentTracker.Models
@@ -212,6 +213,63 @@
     </div>
 
     <div class="formCard">
+        <h2 style="margin-top: 0;">☁️ Azure Inventory Sync</h2>
+        <div style="color: var(--muted); margin-bottom: 16px;">
+            Prepare cloud backup/sync for new installs. Configure endpoint + credentials now and wire your Azure API later.
+        </div>
+
+        <div style="display: grid; gap: 12px; margin-bottom: 16px;">
+            <label class="checkRow" style="margin: 0;">
+                <input type="checkbox" @bind="_azureSyncEnabled"/>
+                <span>Enable Azure sync</span>
+            </label>
+
+            <label class="checkRow" style="margin: 0;">
+                <input type="checkbox" @bind="_azureAutoPushEnabled" disabled="@(!_azureSyncEnabled)"/>
+                <span>Auto-push inventory every hour</span>
+            </label>
+
+            <div>
+                <label class="label">Azure Endpoint URL</label>
+                <input class="input" @bind="_azureEndpoint" placeholder="https://your-api.azurewebsites.net/api/inventory/push"
+                       disabled="@(!_azureSyncEnabled)"/>
+            </div>
+
+            <div>
+                <label class="label">Username</label>
+                <input class="input" @bind="_azureUsername" placeholder="Azure sync username" disabled="@(!_azureSyncEnabled)"/>
+            </div>
+
+            <div>
+                <label class="label">Password</label>
+                <input type="password" class="input" @bind="_azurePassword" placeholder="Azure sync password"
+                       disabled="@(!_azureSyncEnabled)"/>
+            </div>
+        </div>
+
+        <div class="row" style="gap: 8px; flex-wrap: wrap;">
+            <button class="btn primary" @onclick="SaveAzureSyncSettings" disabled="@_isProcessing">
+                @if (_isProcessing)
+                {
+                    <text>Saving...</text>
+                }
+                else
+                {
+                    <text>💾 Save Azure Settings</text>
+                }
+            </button>
+
+            <button class="btn" @onclick="PushToAzureNow" disabled="@_isProcessing">
+                ☁️ Push Inventory Now
+            </button>
+
+            <button class="btn" @onclick="PullFromAzure" disabled="@_isProcessing">
+                ☁️ Pull Inventory
+            </button>
+        </div>
+    </div>
+
+    <div class="formCard">
         <h2 style="margin-top: 0;">📥 Import Data</h2>
         <div style="color: var(--muted); margin-bottom: 16px;">
             Upload a CSV file to import filament data. The CSV should have the following columns:
@@ -378,6 +436,11 @@
     private int _criticalThreshold = 250;
     private string _selectedCurrency = "DKK";
     private string _selectedTimeZone = "Europe/Copenhagen";
+    private bool _azureSyncEnabled;
+    private bool _azureAutoPushEnabled;
+    private string _azureEndpoint = "";
+    private string _azureUsername = "";
+    private string _azurePassword = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -393,6 +456,87 @@
         _criticalThreshold = (int)settings.CriticalThreshold;
         _selectedCurrency = settings.Currency;
         _selectedTimeZone = settings.TimeZoneId;
+        _azureSyncEnabled = settings.AzureSyncEnabled;
+        _azureAutoPushEnabled = settings.AzureAutoPushEnabled;
+        _azureEndpoint = settings.AzureEndpoint ?? "";
+        _azureUsername = settings.AzureUsername ?? "";
+        _azurePassword = settings.AzurePassword ?? "";
+    }
+
+    private async Task SaveAzureSyncSettings()
+    {
+        try
+        {
+            _isProcessing = true;
+            StateHasChanged();
+
+            if (_azureSyncEnabled &&
+                (string.IsNullOrWhiteSpace(_azureEndpoint) ||
+                 string.IsNullOrWhiteSpace(_azureUsername) ||
+                 string.IsNullOrWhiteSpace(_azurePassword)))
+            {
+                ShowMessage("Endpoint, username, and password are required when Azure sync is enabled.", true);
+                return;
+            }
+
+            var settings = await FilamentService.GetSettingsAsync();
+            settings.AzureSyncEnabled = _azureSyncEnabled;
+            settings.AzureAutoPushEnabled = _azureSyncEnabled && _azureAutoPushEnabled;
+            settings.AzureEndpoint = string.IsNullOrWhiteSpace(_azureEndpoint) ? null : _azureEndpoint.Trim();
+            settings.AzureUsername = string.IsNullOrWhiteSpace(_azureUsername) ? null : _azureUsername.Trim();
+            settings.AzurePassword = string.IsNullOrWhiteSpace(_azurePassword) ? null : _azurePassword;
+
+            await FilamentService.UpdateSettingsAsync(settings);
+            ShowMessage("Azure sync settings saved.", false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error saving Azure settings: {ex.Message}", true);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
+    }
+
+    private async Task PushToAzureNow()
+    {
+        try
+        {
+            _isProcessing = true;
+            StateHasChanged();
+
+            var result = await AzureInventorySyncService.PushInventoryAsync("settings-manual");
+            ShowMessage(result.Message, !result.Success);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error pushing to Azure: {ex.Message}", true);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
+    }
+
+    private async Task PullFromAzure()
+    {
+        try
+        {
+            _isProcessing = true;
+            StateHasChanged();
+
+            var result = await AzureInventorySyncService.PullInventoryAsync();
+            ShowMessage(result.Message, !result.Success);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Error pulling from Azure: {ex.Message}", true);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
     }
 
     private async Task SaveCurrency()

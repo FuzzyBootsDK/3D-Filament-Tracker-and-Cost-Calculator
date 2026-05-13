@@ -5,6 +5,7 @@
 @inject PrinterStatusStore PrinterStatusStore
 @inject EditStateService EditStateService
 @inject InventoryPageState InventoryPageState
+@inject AzureInventorySyncService AzureInventorySyncService
 @implements IDisposable
 
 <section>
@@ -59,6 +60,9 @@
     }
 
     <div class="controls">
+        <button class="btn" @onclick="PushInventoryToAzure" disabled="@_isAzurePushProcessing">
+            @(_isAzurePushProcessing ? "Pushing..." : "☁️ Push to Azure")
+        </button>
         <input class="input" placeholder="Search (brand, color, type, finish)..." @bind="InventoryPageState.SearchText"
                @bind:event="oninput" @bind:after="FilterFilaments"/>
         <select class="input" @bind="InventoryPageState.TypeFilter" @bind:after="FilterFilaments">
@@ -83,6 +87,13 @@
         <div class="spacer"></div>
         <span class="pill">@_filteredFilaments.Count items</span>
     </div>
+
+    @if (!string.IsNullOrEmpty(_syncMessage))
+    {
+        <section class="strip" style="margin-top: 10px; @(_syncMessageIsError ? "border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12);" : "border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.12);")">
+            <div>@_syncMessage</div>
+        </section>
+    }
 
     <section class="grid">
         @foreach (var filament in _filteredFilaments)
@@ -163,6 +174,9 @@
     private List<Filament> _filteredFilaments = new();
     private Dictionary<string, int> _statistics = new();
     private Filament? _selectedFilament;
+    private bool _isAzurePushProcessing;
+    private string _syncMessage = string.Empty;
+    private bool _syncMessageIsError;
 
     // spoolId → AMS-reported remain % (from live MQTT)
     private Dictionary<int, int> _amsRemainBySpoolId = new();
@@ -355,5 +369,28 @@
     {
         _selectedFilament = null;
         StateHasChanged(); // Force immediate UI update when modal closes
+    }
+
+    private async Task PushInventoryToAzure()
+    {
+        try
+        {
+            _isAzurePushProcessing = true;
+            _syncMessage = string.Empty;
+            StateHasChanged();
+
+            var result = await AzureInventorySyncService.PushInventoryAsync("inventory-page-manual");
+            _syncMessage = result.Message;
+            _syncMessageIsError = !result.Success;
+        }
+        catch (Exception ex)
+        {
+            _syncMessage = $"Error pushing to Azure: {ex.Message}";
+            _syncMessageIsError = true;
+        }
+        finally
+        {
+            _isAzurePushProcessing = false;
+        }
     }
 }

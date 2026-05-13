@@ -7,9 +7,10 @@ Filament Tracker is a self-hosted **Blazor Server** web application (.NET 10) fo
 - Calculate print costs
 - Monitor BambuLab printers live via MQTT
 - Sync AMS (Automatic Material System) slot data back to the inventory
+- Optionally push inventory snapshots to an Azure endpoint (hourly/manual scaffold)
 - Relay MQTT messages to other devices (ESP32 etc.)
 
-All data is stored in a local **SQLite** database. There is no cloud sync. It runs as a Docker container on a NAS or any machine.
+All primary data is stored in a local **SQLite** database. Optional Azure push sync scaffolding now exists, but full cloud restore flow is not yet wired. It runs as a Docker container on a NAS or any machine.
 
 ---
 
@@ -45,6 +46,8 @@ FilamentTracker/
 │   ├── FilamentService.cs        # All CRUD for filaments, spools, brands, settings, AMS linking
 │   ├── BambuLabService.cs        # MQTT client — connects to printer(s), fires events
 │   ├── MqttRelayService.cs       # MQTT broker — rebroadcasts printer messages
+│   ├── AzureInventorySyncService.cs  # Azure push/pull sync facade (pull currently scaffolded)
+│   ├── AzureInventoryBackgroundSyncService.cs # Hourly auto-push worker
 │   ├── ThemeService.cs           # Dark/light mode state (singleton)
 │   ├── ThresholdService.cs       # Low/critical weight thresholds (singleton)
 │   ├── EditStateService.cs       # Prevents inventory refresh during active modal edits
@@ -118,7 +121,7 @@ FilamentTracker/
 | `Spool` | `Spools` | One record per physical spool. FK → `Filament`. Tracks `WeightRemaining`, `TotalWeight`, AMS RFID IDs (`AmsTrayUuid`, `AmsTagUid`), `PurchasePricePerKg`, `DateEmptied` |
 | `ReusableSpool` | `ReusableSpools` | Tracks the physical spool shell (not the filament). FK → `Spool` (nullable, set null on delete). When a spool empties, `InUse = false`, `CurrentSpoolId = null` |
 | `Brand` | `Brands` | Simple name registry. Populated via Settings page, used in dropdowns |
-| `AppSettings` | `AppSettings` | Single-row config table. ID always = 1 by convention |
+| `AppSettings` | `AppSettings` | Single-row config table. ID always = 1 by convention (includes Azure sync endpoint/credentials/flags) |
 | `PrintStatus` | *(in-memory only)* | Live state from MQTT. Not persisted. Nested: `AMSUnit[]` → `AMSSlot[]` |
 
 ### 5.2 Relationships
@@ -213,6 +216,18 @@ Acts as an MQTT **broker** (server), not a client. Subscribes to `BambuLabServic
 
 ### 6.6 CsvService (Scoped)
 Handles CSV export (filaments → CSV rows) and import (CSV rows → create Filaments + Spools). Injected into `FilamentService`-adjacent operations and called from `SettingsPage`.
+
+### 6.7 AzureInventorySyncService (Scoped)
+- `PushInventoryAsync(source)` exports current inventory CSV and POSTs JSON payload to configured Azure endpoint.
+- Validates enable flag + endpoint + credentials before attempting network call.
+- `PullInventoryAsync()` is currently a placeholder returning a "not wired yet" status until backend contract is finalized.
+
+### 6.8 AzureInventoryBackgroundSyncService (Hosted)
+- Runs with a 1-hour `PeriodicTimer`.
+- On each tick, checks `AppSettings` and only pushes when both:
+  - `AzureSyncEnabled == true`
+  - `AzureAutoPushEnabled == true`
+- Logs success/failure and never throws out of background loop.
 
 ---
 
