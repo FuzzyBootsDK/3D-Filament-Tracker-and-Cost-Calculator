@@ -88,7 +88,12 @@
     align-items: center;
     justify-content: center;
     margin-right: 8px;
-    font-size: 14px;
+}
+
+.sidebarButtons .navicon svg {
+    width: 16px;
+    height: 16px;
+    display: block;
 }
 
 .nav-inventory .navicon { background: linear-gradient(135deg, #06b6d4, #3b82f6); }
@@ -149,4 +154,3 @@
         padding-inline-end: 0;
     }
 }
-

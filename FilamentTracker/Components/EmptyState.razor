@@ -1,5 +1,9 @@
 <div class="emptyState @Class">
-    @if (!string.IsNullOrWhiteSpace(Icon))
+    @if (!string.IsNullOrWhiteSpace(IconName))
+    {
+        <HeroIcon Name="@IconName" Class="emptyStateIcon" Size="2.5rem" Title="@Title" />
+    }
+    else if (!string.IsNullOrWhiteSpace(Icon))
     {
         <div class="emptyStateIcon">@Icon</div>
     }
@@ -12,8 +16,8 @@
 
 @code {
     [Parameter] public string Icon { get; set; } = "";
+    [Parameter] public string IconName { get; set; } = "";
     [Parameter] public string Title { get; set; } = "Nothing here yet";
     [Parameter] public string Message { get; set; } = "";
     [Parameter] public string Class { get; set; } = "";
 }
-

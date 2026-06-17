@@ -3,13 +3,13 @@
 <AppCard Class="@($"printerStatusCard {(Compact ? "compact" : "full")}")" style="@($"border-color:{CardBorderColor};")">
     <div class="printerStatusHeader">
         <div class="printerColorDot" style="background: @(Printer.ColorHex ?? "#3b82f6");">
-            @(IsPrinting ? "⚙️" : IsConnected ? "🖨️" : "💤")
+            <HeroIcon Name="printer" Class="@($"printerStateIcon {(IsPrinting ? "printing" : IsConnected ? "connected" : "offline")}")" Title="@StateLabel" />
         </div>
         <div style="flex: 1; min-width: 0;">
             <div class="printerStatusName">@Printer.Name</div>
             @if (ShowLocation && !string.IsNullOrEmpty(Printer.Location))
             {
-                <div class="printerStatusLocation">📍 @Printer.Location</div>
+                <div class="printerStatusLocation">@Printer.Location</div>
             }
         </div>
         <StatusPill Label="@StateLabel" Variant="@StateVariant" />
@@ -24,14 +24,14 @@
             }
             else
             {
-                <EmptyState Icon="🔌" Title="Not connected" Message="Connect in MQTT settings" Class="printerEmpty" />
+                <EmptyState IconName="printer" Title="Not connected" Message="Connect in MQTT settings" Class="printerEmpty" />
             }
         }
         else if (IsPrinting && Status != null)
         {
             @if (!string.IsNullOrEmpty(Status.CurrentFile) && !Compact)
             {
-                <div class="printerFile">📄 @Status.CurrentFile</div>
+                <div class="printerFile">@Status.CurrentFile</div>
             }
             <div class="printerProgressHeader">
                 <span class="printerProgressPct">@Status.Progress<span style="font-size: 14px;">%</span></span>
@@ -44,11 +44,11 @@
             @if (Compact)
             {
                 <div class="compactMetaRow">
-                    <span>🛏️ @Status.BedTemperature°C</span>
-                    <span>🌡️ @Status.NozzleTemperature°C</span>
-                    <span>⏳ @Status.TimeRemaining</span>
-                    <span>📏 @Status.CurrentLayer/@Status.TotalLayers</span>
-                    <span>🎯 @EtaText</span>
+                    <span>Bed @Status.BedTemperature°C</span>
+                    <span>Nozzle @Status.NozzleTemperature°C</span>
+                    <span>Time @Status.TimeRemaining</span>
+                    <span>Layer @Status.CurrentLayer/@Status.TotalLayers</span>
+                    <span>ETA @EtaText</span>
                 </div>
             }
             else
@@ -66,19 +66,19 @@
             @if (Compact)
             {
                 <div class="compactMetaRow idle">
-                    <span>🛏️ @Status.BedTemperature°C</span>
-                    <span>🌡️ @Status.NozzleTemperature°C</span>
-                    <span class="idleSleep">💤 zZZZ</span>
+                    <span>Bed @Status.BedTemperature°C</span>
+                    <span>Nozzle @Status.NozzleTemperature°C</span>
+                    <span class="idleSleep">Idle</span>
                 </div>
             }
             else
             {
                 <div class="printerIdleState">
-                    <div class="printerIdleIcon">💤</div>
-                    <div class="printerIdleText">zZZZ</div>
+                    <div class="printerIdleIcon"><HeroIcon Name="printer" Class="printerIdleIconSvg" Title="Idle" /></div>
+                    <div class="printerIdleText">Idle</div>
                     <div class="printerIdleTemps">
-                        <span>🛏️ @Status.BedTemperature°C</span>
-                        <span>🌡️ @Status.NozzleTemperature°C</span>
+                        <span>Bed @Status.BedTemperature°C</span>
+                        <span>Nozzle @Status.NozzleTemperature°C</span>
                     </div>
                 </div>
             }
@@ -105,4 +105,3 @@
     private string StateLabel => IsPrinting ? "Printing" : IsConnected ? "Idle" : "Offline";
     private string StateVariant => IsPrinting ? "printing" : IsConnected ? "connected" : "offline";
 }
-

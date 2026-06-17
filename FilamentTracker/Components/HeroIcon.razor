@@ -1,0 +1,48 @@
+@inject IWebHostEnvironment Environment
+
+<span class="heroIcon @Class" style="@IconStyle" role="img" aria-label="@Title">
+    @((MarkupString)_svgMarkup)
+</span>
+
+@code {
+    private static readonly Dictionary<string, string> SvgCache = new(StringComparer.OrdinalIgnoreCase);
+
+    [Parameter, EditorRequired] public string Name { get; set; } = "";
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Size { get; set; } = "25px";
+
+    private string _svgMarkup = "";
+
+    protected override void OnParametersSet()
+    {
+        _svgMarkup = LoadSvg(Name);
+    }
+
+    private string IconStyle => string.IsNullOrWhiteSpace(Size)
+        ? ""
+        : $"width:{Size};height:{Size};";
+
+    private string LoadSvg(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return "";
+
+        if (SvgCache.TryGetValue(name, out var cached))
+            return cached;
+
+        var iconFolder = Path.Combine(Environment.WebRootPath, "HeroIcons");
+        var exactPath = Path.Combine(iconFolder, $"{name}.svg");
+
+        var path = File.Exists(exactPath)
+            ? exactPath
+            : Directory.EnumerateFiles(iconFolder, "*.svg")
+                .FirstOrDefault(file =>
+                    string.Equals(Path.GetFileNameWithoutExtension(file), name, StringComparison.OrdinalIgnoreCase))
+              ?? "";
+
+        var markup = File.Exists(path) ? File.ReadAllText(path) : "";
+        SvgCache[name] = markup;
+        return markup;
+    }
+}

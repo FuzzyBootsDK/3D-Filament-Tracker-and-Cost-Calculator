@@ -11,31 +11,31 @@
         <div class="sidebarTitle">Filament Tracker</div>
         <div class="sidebarButtons">
             <button class="navbtn nav-inventory" aria-current="@(_currentPage == "inventory" ? "page" : null)" @onclick='() => SetPage("inventory")'>
-                <span class="navicon">📦</span> Inventory
+                <HeroIcon Name="inventory" Class="navicon" Title="Inventory" /> Inventory
             </button>
             <button class="navbtn nav-add" aria-current="@(_currentPage == "add" ? "page" : null)" @onclick='() => SetPage("add")'>
-                <span class="navicon">➕</span> Add Filament
+                <HeroIcon Name="add_filamemt" Class="navicon" Title="Add Filament" /> Add Filament
             </button>
             <button class="navbtn nav-spools" aria-current="@(_currentPage == "spools" ? "page" : null)" @onclick='() => SetPage("spools")'>
-                <span class="navicon">🔁</span> Spools
+                <HeroIcon Name="spools" Class="navicon" Title="Spools" /> Spools
             </button>
             <button class="navbtn nav-calculator" aria-current="@(_currentPage == "calculator" ? "page" : null)" @onclick='() => SetPage("calculator")'>
-                <span class="navicon">💰</span> Calculator
+                <HeroIcon Name="calculator" Class="navicon" Title="Calculator" /> Calculator
             </button>
             <button class="navbtn nav-mqtt" aria-current="@(_currentPage == "mqtt" ? "page" : null)" @onclick='() => SetPage("mqtt")'>
-                <span class="navicon">📡</span> MQTT
+                <HeroIcon Name="mqtt" Class="navicon" Title="MQTT" /> MQTT
             </button>
             <button class="navbtn nav-printer" aria-current="@(_currentPage == "printer" ? "page" : null)" @onclick='() => SetPage("printer")'>
-                <span class="navicon">🖨️</span> Printer
+                <HeroIcon Name="printer" Class="navicon" Title="Printer" /> Printer
             </button>
             <button class="navbtn nav-ams" aria-current="@(_currentPage == "ams" ? "page" : null)" @onclick='() => SetPage("ams")'>
-                <span class="navicon">🗄️</span> AMS
+                <HeroIcon Name="AMS" Class="navicon" Title="AMS" /> AMS
             </button>
             <button class="navbtn nav-help" aria-current="@(_currentPage == "help" ? "page" : null)" @onclick='() => SetPage("help")'>
-                <span class="navicon">💡</span> Help
+                <HeroIcon Name="help" Class="navicon" Title="Help" /> Help
             </button>
             <button class="navbtn nav-settings" aria-current="@(_currentPage == "settings" ? "page" : null)" @onclick='() => SetPage("settings")'>
-                <span class="navicon">⚙️</span> Settings
+                <HeroIcon Name="settings" Class="navicon" Title="Settings" /> Settings
             </button>
         </div>
     </aside>
@@ -43,7 +43,7 @@
     <main class="contentArea">
         <section class="liveStripCard">
             <div class="liveStripHeader">
-                <div><strong>🖨️ Live View</strong></div>
+                <div><strong><HeroIcon Name="printer" Class="navicon" Title="Live View" /> Live View</strong></div>
             </div>
             @if (_isLoadingPrinters)
             {

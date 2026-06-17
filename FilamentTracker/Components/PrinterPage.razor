@@ -5,7 +5,7 @@
 
 <section>
     <div class="pageHeader">
-        <h1>🖨️ Live Printers</h1>
+        <h1><HeroIcon Name="printer" Class="navicon" Title="Live Printers" /> Live Printers</h1>
         <div class="sub">Real-time status for all configured printers</div>
     </div>
 
@@ -21,7 +21,7 @@
     else if (!_printers.Any())
     {
         <div class="formCard" style="padding: 40px;">
-            <EmptyState Icon="🖨️" Title="No printers configured" Message="Add printers in the MQTT page to see live status here." />
+            <EmptyState IconName="printer" Title="No printers configured" Message="Add printers in the MQTT page to see live status here." />
         </div>
     }
     else
